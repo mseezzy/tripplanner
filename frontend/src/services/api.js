@@ -381,10 +381,50 @@ function generateClientRecommendations(req) {
       }
     });
 
+    // Compute enjoyment meters for each member
+    const memberEnjoyment = family.map((m) => {
+      let mScore = 78;
+      const mAge = m.age || 20;
+      const mLikes = m.likes || [];
+      const mName = m.name || 'Member';
+
+      if (mAge <= 3) {
+        if (dest.stroller_friendly) mScore += 14;
+        else mScore -= 10;
+      } else if (mAge <= 12) {
+        mScore += 10;
+      } else if (mAge <= 17) {
+        if (dest.primary_categories.some(c => ["theme_parks", "adventure", "water_parks"].includes(c))) mScore += 14;
+      }
+
+      mLikes.forEach(lk => {
+        if (dest.primary_categories.some(cat => cat.includes(lk.replace(' ', '_')))) {
+          mScore += 8;
+        }
+      });
+
+      const finalMScore = Math.min(99, Math.max(65, mScore));
+      let highlight = "Great overall experience and easy pacing";
+      if (mAge <= 3) highlight = dest.stroller_friendly ? "Stroller-friendly walking and gentle splash zones" : "Uneven paths, best with a carrier";
+      else if (mAge <= 12) highlight = "Excited for interactive discovery zones and character meets";
+      else if (mAge <= 17) highlight = "Loves thrill rides, adventure sports and photo spots";
+      else if (mLikes.length > 0) highlight = `Looking forward to ${mLikes.map(l => l.replace('_', ' ')).slice(0, 2).join(', ')}`;
+      else highlight = "Relaxing atmosphere, scenic dining & family time";
+
+      return {
+        name: mName,
+        age: mAge,
+        enjoyment_score: finalMScore,
+        sentiment: finalMScore >= 90 ? "😍 Super Excited" : finalMScore >= 80 ? "😊 Very Happy" : "👍 Good Time",
+        highlight
+      };
+    });
+
     return {
       ...dest,
       match_score: Math.min(99, Math.max(60, score)),
-      score_reasons: reasons.slice(0, 3)
+      score_reasons: reasons.slice(0, 3),
+      member_enjoyment: memberEnjoyment
     };
   });
 

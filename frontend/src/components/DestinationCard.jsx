@@ -153,6 +153,86 @@ export default function DestinationCard({
               </Box>
             )}
 
+            {/* FAMILY MEMBER ENJOYMENT METERS */}
+            {destination.member_enjoyment && destination.member_enjoyment.length > 0 && (
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.primary', display: 'flex', alignItems: 'center', gap: 0.8, mb: 1.5, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                  <TrendingUp sx={{ color: 'secondary.main', fontSize: 18 }} />
+                  Family Member Enjoyment Meters:
+                </Typography>
+
+                <Grid container spacing={1.5}>
+                  {destination.member_enjoyment.map((member, mIdx) => {
+                    const score = member.enjoyment_score || 85;
+                    const meterColor = score >= 90 ? '#10b981' : score >= 80 ? '#0284c7' : '#f59e0b';
+
+                    return (
+                      <Grid item xs={12} sm={6} key={mIdx}>
+                        <Box
+                          sx={{
+                            p: 1.8,
+                            borderRadius: 2.5,
+                            bgcolor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.04)' : '#ffffff',
+                            border: `1px solid ${theme.palette.divider}`,
+                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.03)',
+                          }}
+                        >
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                              <Typography variant="subtitle2" sx={{ fontWeight: 800, lineHeight: 1 }}>
+                                {member.name}
+                              </Typography>
+                              <Chip
+                                label={`${member.age} yrs`}
+                                size="small"
+                                sx={{ height: 18, fontSize: '0.65rem', fontWeight: 700 }}
+                              />
+                            </Box>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                              <Typography variant="caption" sx={{ fontWeight: 800, color: meterColor, fontSize: '0.9rem' }}>
+                                {score}%
+                              </Typography>
+                            </Box>
+                          </Box>
+
+                          {/* Progress Meter Bar */}
+                          <Box sx={{ width: '100%', height: 6, bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.1)' : '#e2e8f0', borderRadius: 3, overflow: 'hidden', mb: 1 }}>
+                            <Box
+                              sx={{
+                                width: `${score}%`,
+                                height: '100%',
+                                bgcolor: meterColor,
+                                borderRadius: 3,
+                                transition: 'width 0.8s ease-in-out',
+                              }}
+                            />
+                          </Box>
+
+                          {/* Sentiment & Highlight */}
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 1 }}>
+                            <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.74rem', lineHeight: 1.3 }}>
+                              {member.highlight}
+                            </Typography>
+                            <Chip
+                              label={member.sentiment || "Super Excited"}
+                              size="small"
+                              sx={{
+                                height: 20,
+                                fontSize: '0.65rem',
+                                fontWeight: 700,
+                                bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.06)' : '#f1f5f9',
+                                flexShrink: 0,
+                              }}
+                            />
+                          </Box>
+                        </Box>
+                      </Grid>
+                    );
+                  })}
+                </Grid>
+              </Box>
+            )}
+
             {/* Highlights bullet list */}
             {destination.highlight_features && (
               <Box>

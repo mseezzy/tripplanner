@@ -12,6 +12,79 @@ def get_age_group(age: int) -> str:
     else:
         return "adults"
 
+def calculate_member_enjoyment(
+    destination: Dict[str, Any],
+    member: Dict[str, Any],
+    dislikes: List[str]
+) -> Dict[str, Any]:
+    name = member.get("name", "Family Member")
+    age = member.get("age", 25)
+    ag = get_age_group(age)
+    likes = member.get("likes", [])
+    
+    score = 75.0
+    dest_categories = destination.get("primary_categories", [])
+    dest_target_ages = destination.get("target_age_groups", [])
+
+    # 1. Age appropriateness
+    if ag in dest_target_ages:
+        score += 10
+    else:
+        score -= 8
+
+    if ag == "toddlers":
+        if destination.get("stroller_friendly", False):
+            score += 10
+            highlight = "Stroller-friendly paved paths and gentle shallow splash areas"
+        else:
+            score -= 12
+            highlight = "Uneven terrain may require carrier rather than stroller"
+    elif ag == "kids":
+        highlight = "Interactive kid discovery zones, character meets & easy pacing"
+    elif ag == "tweens":
+        highlight = "Hands-on exploration, water fun & engaging family tours"
+    elif ag == "teens":
+        if any(c in ["theme_parks", "adventure", "water_parks"] for c in dest_categories):
+            score += 12
+            highlight = "Exciting thrill attractions, outdoor sports & freedom to explore"
+        else:
+            highlight = "Scenic sightseeing, food sampling & cultural photo spots"
+    else: # adults
+        highlight = "Relaxing resort atmosphere, scenic vistas & quality dining"
+
+    # 2. Individual Likes Match
+    matched_likes = []
+    for lk in likes:
+        norm_like = lk.lower().replace(" ", "_")
+        for cat in dest_categories:
+            if norm_like in cat or cat in norm_like:
+                matched_likes.append(lk.replace("_", " ").title())
+                score += 8
+
+    if matched_likes:
+        highlight = f"Excited for {', '.join(matched_likes[:2])} and fun activities"
+
+    # 3. Dislikes / Weather Penalty
+    for dis in dislikes:
+        if "heat" in dis.lower() and destination.get("climate_type") in ["tropical", "subtropical", "arid"]:
+            score -= 6
+        if "crowd" in dis.lower() and destination.get("crowd_level") == "high":
+            score -= 8
+
+    final_score = int(max(60, min(99, score)))
+
+    sentiment = "😍 Super Excited" if final_score >= 90 else ("😊 Very Happy" if final_score >= 80 else "👍 Good Time")
+
+    return {
+        "name": name,
+        "age": age,
+        "age_group": ag,
+        "enjoyment_score": final_score,
+        "sentiment": sentiment,
+        "highlight": highlight,
+        "matched_interests": matched_likes
+    }
+
 def calculate_destination_score(
     destination: Dict[str, Any],
     family_members: List[Dict[str, Any]],
@@ -21,6 +94,12 @@ def calculate_destination_score(
 ) -> Dict[str, Any]:
     score = 70.0  # Base score
     reasons: List[str] = []
+
+    # Calculate enjoyment meter for each family member
+    member_enjoyment = [
+        calculate_member_enjoyment(destination, m, dislikes)
+        for m in family_members
+    ]
 
     # Aggregate both individual member likes and shared likes
     all_individual_likes = []
@@ -88,7 +167,8 @@ def calculate_destination_score(
     return {
         "match_score": final_score,
         "score_reasons": reasons[:4],
-        "age_suitability": f"{int(age_ratio * 100)}% family age match"
+        "age_suitability": f"{int(age_ratio * 100)}% family age match",
+        "member_enjoyment": member_enjoyment
     }
 
 def filter_and_rank_activities(
