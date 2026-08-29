@@ -11,9 +11,9 @@ import {
   Paper,
   Chip
 } from '@mui/material';
-import { Download, Print, Close } from '@mui/icons-material';
+import { Download, Print, Close, Share as ShareIcon } from '@mui/icons-material';
 
-export default function PrintExport({ open, onClose, tripData }) {
+export default function PrintExport({ open, onClose, tripData, onOpenShare }) {
   if (!tripData) return null;
 
   const handleDownloadJSON = () => {
@@ -33,7 +33,7 @@ export default function PrintExport({ open, onClose, tripData }) {
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle sx={{ fontWeight: 800, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        Export / Print Family Travel Plan
+        Export / Share Family Travel Plan
         <Button size="small" onClick={onClose} color="inherit">
           <Close />
         </Button>
@@ -41,7 +41,7 @@ export default function PrintExport({ open, onClose, tripData }) {
 
       <DialogContent dividers>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-          You can print this plan directly to a formatted PDF guide for your trip or download the structured JSON file.
+          You can print this plan directly to a formatted PDF guide, share via Email/SMS, or download the structured JSON file.
         </Typography>
 
         <Paper elevation={0} sx={{ p: 2, bgcolor: '#f8fafc', borderRadius: 2, border: '1px solid #e2e8f0', mb: 2 }}>
@@ -58,6 +58,16 @@ export default function PrintExport({ open, onClose, tripData }) {
       </DialogContent>
 
       <DialogActions sx={{ p: 2, gap: 1 }}>
+        <Button
+          variant="outlined"
+          startIcon={<ShareIcon />}
+          onClick={() => {
+            onClose();
+            if (onOpenShare) onOpenShare();
+          }}
+        >
+          Share (SMS/Email)
+        </Button>
         <Button variant="outlined" startIcon={<Download />} onClick={handleDownloadJSON}>
           Download JSON
         </Button>

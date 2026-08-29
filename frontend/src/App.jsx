@@ -27,6 +27,7 @@ import BudgetBreakdown from './components/BudgetBreakdown';
 import ItineraryView from './components/ItineraryView';
 import MapView from './components/MapView';
 import PrintExport from './components/PrintExport';
+import ShareDialog from './components/ShareDialog';
 
 export default function App() {
   const [darkMode, setDarkMode] = useState(false);
@@ -35,6 +36,7 @@ export default function App() {
   const [backendConnected, setBackendConnected] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const [toast, setToast] = useState({ open: false, message: '', severity: 'info' });
 
   const theme = getAppTheme(darkMode ? 'dark' : 'light');
@@ -101,6 +103,7 @@ export default function App() {
           setDarkMode={setDarkMode}
           hasResults={Boolean(tripData)}
           onPrint={() => setExportOpen(true)}
+          onShare={() => setShareOpen(true)}
           onReset={handleReset}
           backendConnected={backendConnected}
         />
@@ -232,6 +235,14 @@ export default function App() {
         <PrintExport
           open={exportOpen}
           onClose={() => setExportOpen(false)}
+          tripData={tripData}
+          onOpenShare={() => setShareOpen(true)}
+        />
+
+        {/* Share via SMS / Email Dialog */}
+        <ShareDialog
+          open={shareOpen}
+          onClose={() => setShareOpen(false)}
           tripData={tripData}
         />
 

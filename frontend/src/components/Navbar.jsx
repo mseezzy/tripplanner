@@ -26,6 +26,7 @@ export default function Navbar({
   setDarkMode,
   hasResults,
   onPrint,
+  onShare,
   onReset,
   backendConnected
 }) {
@@ -99,6 +100,16 @@ export default function Navbar({
 
           {hasResults && (
             <>
+              <Button
+                variant="contained"
+                color="primary"
+                size="small"
+                startIcon={<Share />}
+                onClick={onShare}
+                sx={{ borderRadius: 2, fontWeight: 700 }}
+              >
+                Share
+              </Button>
               <Button
                 variant="outlined"
                 color="inherit"
