@@ -265,6 +265,7 @@ export function generateShareableUrl(tripParams) {
       d: tripParams.dislikes || [],
       dur: tripParams.duration_days || 5,
       dest: tripParams.preferred_destination || '',
+      stops: tripParams.destinations?.map(s => ({ d: s.destination, dur: s.duration_days, o: s.order })),
       orig: tripParams.origin_city || '',
       b: tripParams.budget_tier || 'moderate'
     };
@@ -290,6 +291,7 @@ export function parseShareableUrl() {
         dislikes: decoded.d || [],
         duration_days: decoded.dur || 5,
         preferred_destination: decoded.dest || '',
+        destinations: decoded.stops?.map((s, idx) => ({ id: `stop-${idx}`, destination: s.d, duration_days: s.dur, order: s.o || idx })) || null,
         origin_city: decoded.orig || '',
         budget_tier: decoded.b || 'moderate'
       };
@@ -332,56 +334,31 @@ function generateClientRecommendations(req) {
     ? req.family_members
     : [{ name: "Adult", age: 35 }, { name: "Child", age: 8 }];
   
-  const duration = req.duration_days || 5;
-  const preferred = (req.preferred_destination || '').toLowerCase().trim();
   const likes = req.likes || [];
   const dislikes = req.dislikes || [];
   const numPeople = family.length;
 
-  let destList = fallbackDestinations;
-  if (preferred) {
-    const matched = fallbackDestinations.filter(d => 
-      d.name.toLowerCase().includes(preferred) || 
-      d.country.toLowerCase().includes(preferred) ||
-      d.region.toLowerCase().includes(preferred)
-    );
-    if (matched.length > 0) {
-      destList = matched;
-    }
+  // Process stops
+  let stops = [];
+  if (req.destinations && req.destinations.length > 0) {
+    stops = req.destinations.filter(s => s.destination.trim());
+  } else if (req.preferred_destination && req.preferred_destination.trim()) {
+    stops = [{ destination: req.preferred_destination.trim(), duration_days: req.duration_days || 5 }];
+  } else {
+    stops = [{ destination: fallbackDestinations[0].name, duration_days: req.duration_days || 5 }];
   }
 
-  // Score destinations
-  const scored = destList.map(dest => {
-    let score = 75;
-    const reasons = [];
+  const totalDuration = stops.reduce((sum, s) => sum + (parseInt(s.duration_days, 10) || 3), 0);
 
-    const hasToddler = family.some(m => m.age <= 3);
-    const hasTeen = family.some(m => m.age >= 13 && m.age <= 17);
+  // Score destinations for each stop
+  const processedStops = stops.map((stop, stopIdx) => {
+    const q = (stop.destination || '').toLowerCase().trim();
+    const matched = fallbackDestinations.find(d => 
+      d.name.toLowerCase().includes(q) || 
+      d.country.toLowerCase().includes(q) ||
+      d.region.toLowerCase().includes(q)
+    ) || fallbackDestinations[stopIdx % fallbackDestinations.length];
 
-    if (hasToddler && dest.stroller_friendly) {
-      score += 10;
-      reasons.push("Stroller-friendly and toddler accessible");
-    }
-    if (hasTeen && dest.primary_categories.some(c => ["theme_parks", "adventure"].includes(c))) {
-      score += 8;
-      reasons.push("Thrilling rides and teen attractions");
-    }
-
-    likes.forEach(like => {
-      const match = dest.primary_categories.some(cat => cat.includes(like.toLowerCase().replace(' ', '_')));
-      if (match) {
-        score += 6;
-        reasons.push(`Matches interest in ${like}`);
-      }
-    });
-
-    dislikes.forEach(dislike => {
-      if (dislike.toLowerCase().includes("crowd") && dest.crowd_level === "high") {
-        score -= 8;
-      }
-    });
-
-    // Compute enjoyment meters for each member
     const memberEnjoyment = family.map((m) => {
       let mScore = 78;
       const mAge = m.age || 20;
@@ -389,23 +366,23 @@ function generateClientRecommendations(req) {
       const mName = m.name || 'Member';
 
       if (mAge <= 3) {
-        if (dest.stroller_friendly) mScore += 14;
+        if (matched.stroller_friendly) mScore += 14;
         else mScore -= 10;
       } else if (mAge <= 12) {
         mScore += 10;
       } else if (mAge <= 17) {
-        if (dest.primary_categories.some(c => ["theme_parks", "adventure", "water_parks"].includes(c))) mScore += 14;
+        if (matched.primary_categories.some(c => ["theme_parks", "adventure", "water_parks"].includes(c))) mScore += 14;
       }
 
       mLikes.forEach(lk => {
-        if (dest.primary_categories.some(cat => cat.includes(lk.replace(' ', '_')))) {
+        if (matched.primary_categories.some(cat => cat.includes(lk.replace(' ', '_')))) {
           mScore += 8;
         }
       });
 
       const finalMScore = Math.min(99, Math.max(65, mScore));
       let highlight = "Great overall experience and easy pacing";
-      if (mAge <= 3) highlight = dest.stroller_friendly ? "Stroller-friendly walking and gentle splash zones" : "Uneven paths, best with a carrier";
+      if (mAge <= 3) highlight = matched.stroller_friendly ? "Stroller-friendly walking and gentle splash zones" : "Uneven paths, best with a carrier";
       else if (mAge <= 12) highlight = "Excited for interactive discovery zones and character meets";
       else if (mAge <= 17) highlight = "Loves thrill rides, adventure sports and photo spots";
       else if (mLikes.length > 0) highlight = `Looking forward to ${mLikes.map(l => l.replace('_', ' ')).slice(0, 2).join(', ')}`;
@@ -420,16 +397,60 @@ function generateClientRecommendations(req) {
       };
     });
 
+    const stopLodgingPrices = matched.lodging_daily_usd;
+    const stopDuration = parseInt(stop.duration_days, 10) || 3;
+
     return {
-      ...dest,
-      match_score: Math.min(99, Math.max(60, score)),
-      score_reasons: reasons.slice(0, 3),
-      member_enjoyment: memberEnjoyment
+      stop_number: stopIdx + 1,
+      duration_days: stopDuration,
+      destination: {
+        ...matched,
+        match_score: 92,
+        score_reasons: [`Matches family interests in ${matched.primary_categories[0]}`],
+        member_enjoyment: memberEnjoyment
+      },
+      lodging: {
+        price_range: {
+          low_per_night: stopLodgingPrices.budget_inn,
+          avg_per_night: stopLodgingPrices.family_suite,
+          peak_per_night: stopLodgingPrices.luxury_resort,
+          total_trip_low: stopLodgingPrices.budget_inn * stopDuration,
+          total_trip_avg: stopLodgingPrices.family_suite * stopDuration,
+          total_trip_peak: stopLodgingPrices.luxury_resort * stopDuration,
+        },
+        duration_nights: stopDuration,
+        options: [
+          {
+            id: `opt-vacation-${stopIdx}`,
+            name: `Spacious Family Vacation Rental in ${matched.name.split(',')[0]}`,
+            category: "Vacation Rental (Airbnb / VRBO)",
+            nightly_rate_usd: stopLodgingPrices.vacation_rental,
+            total_trip_usd: stopLodgingPrices.vacation_rental * stopDuration,
+            rating: 4.88,
+            reviews_count: 120,
+            family_amenities: ["Full Kitchen", "Washer & Dryer", "Fenced Yard", "Crib on request"],
+            bed_layout: "2 Queen Beds + 2 Twin Bunks",
+            best_for: "Family comfort & home-cooked meals"
+          },
+          {
+            id: `opt-resort-${stopIdx}`,
+            name: `Family Resort Suite with Splash Pool (${matched.name.split(',')[0]})`,
+            category: "Resort / Hotel Suite",
+            nightly_rate_usd: stopLodgingPrices.family_suite,
+            total_trip_usd: stopLodgingPrices.family_suite * stopDuration,
+            rating: 4.76,
+            reviews_count: 280,
+            family_amenities: ["Free Hot Breakfast", "Heated Pool & Splash Pad", "Kids Club", "Shuttle"],
+            bed_layout: "2 Queen Beds + Pull-out Sofa",
+            best_for: "Resort amenities & hassle-free breakfast"
+          }
+        ]
+      }
     };
   });
 
-  scored.sort((a, b) => b.match_score - a.match_score);
-  const primaryDest = scored[0];
+  const primaryDest = processedStops[0].destination;
+  const numStops = processedStops.length;
 
   // Flights
   const flightBase = primaryDest.flight_base_usd;

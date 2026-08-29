@@ -191,6 +191,8 @@ export default function App() {
                     allDestinations={tripData.all_ranked_destinations}
                     onSelectDestination={handleSelectAlternativeDestination}
                     weather={tripData.weather}
+                    isMultiDestination={tripData.is_multi_destination}
+                    stops={tripData.stops}
                   />
 
                   {/* High-Level Budget & Price Ranges */}
@@ -225,7 +227,7 @@ export default function App() {
                   />
 
                   {/* OpenStreetMap Area Map */}
-                  <MapView destination={tripData.destination} />
+                  <MapView destination={tripData.destination} stops={tripData.stops} />
                 </Box>
               )}
             </Box>

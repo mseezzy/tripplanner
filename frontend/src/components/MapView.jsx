@@ -6,7 +6,7 @@ import {
   Box,
   useTheme
 } from '@mui/material';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
 import { Map as MapIcon, Place } from '@mui/icons-material';
 import L from 'leaflet';
 
@@ -18,23 +18,30 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 });
 
-function ChangeMapView({ coords }) {
+function ChangeMapView({ bounds, center }) {
   const map = useMap();
   useEffect(() => {
-    if (coords && coords.lat && coords.lng) {
-      map.setView([coords.lat, coords.lng], 11);
+    if (bounds && bounds.length > 1) {
+      map.fitBounds(bounds, { padding: [40, 40] });
+    } else if (center && center.lat && center.lng) {
+      map.setView([center.lat, center.lng], 11);
     }
-  }, [coords, map]);
+  }, [bounds, center, map]);
   return null;
 }
 
-export default function MapView({ destination }) {
+export default function MapView({ destination, stops = [] }) {
   const theme = useTheme();
 
-  if (!destination || !destination.coordinates) return null;
+  const allStops = stops.length > 0 ? stops.map(s => s.destination) : (destination ? [destination] : []);
+  if (allStops.length === 0) return null;
 
-  const lat = destination.coordinates.lat || 28.5383;
-  const lng = destination.coordinates.lng || -81.3792;
+  const validPoints = allStops
+    .filter(d => d.coordinates && d.coordinates.lat && d.coordinates.lng)
+    .map(d => [d.coordinates.lat, d.coordinates.lng]);
+
+  const centerLat = allStops[0]?.coordinates?.lat || 28.5383;
+  const centerLng = allStops[0]?.coordinates?.lng || -81.3792;
 
   return (
     <Card sx={{ mb: 3 }}>
@@ -72,23 +79,38 @@ export default function MapView({ destination }) {
           }}
         >
           <MapContainer
-            center={[lat, lng]}
-            zoom={11}
+            center={[centerLat, centerLng]}
+            zoom={10}
             scrollWheelZoom={false}
             style={{ height: '100%', width: '100%' }}
           >
-            <ChangeMapView coords={{ lat, lng }} />
+            <ChangeMapView bounds={validPoints} center={{ lat: centerLat, lng: centerLng }} />
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            <Marker position={[lat, lng]}>
-              <Popup>
-                <strong>{destination.name}</strong>
-                <br />
-                {destination.short_description}
-              </Popup>
-            </Marker>
+            {allStops.map((dest, idx) => {
+              const dLat = dest.coordinates?.lat;
+              const dLng = dest.coordinates?.lng;
+              if (!dLat || !dLng) return null;
+              return (
+                <Marker key={dest.id || idx} position={[dLat, dLng]}>
+                  <Popup>
+                    <strong>Stop {idx + 1}: {dest.name}</strong>
+                    <br />
+                    {dest.short_description}
+                  </Popup>
+                </Marker>
+              );
+            })}
+            {validPoints.length > 1 && (
+              <Polyline
+                positions={validPoints}
+                color="#0284c7"
+                dashArray="6, 8"
+                weight={3}
+              />
+            )}
           </MapContainer>
         </Box>
       </CardContent>

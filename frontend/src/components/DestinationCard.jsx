@@ -27,14 +27,53 @@ export default function DestinationCard({
   destination,
   allDestinations = [],
   onSelectDestination,
-  weather
+  weather,
+  isMultiDestination,
+  stops = []
 }) {
   const theme = useTheme();
 
   return (
     <Card sx={{ overflow: 'hidden', mb: 3 }}>
-      {/* Top Alternative Destination Switcher if multiple are returned */}
-      {allDestinations.length > 1 && (
+      {/* Multi-Destination Route Breadcrumbs */}
+      {isMultiDestination && stops.length > 1 && (
+        <Box
+          sx={{
+            p: 1.5,
+            bgcolor: 'primary.main',
+            color: '#ffffff',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
+            flexWrap: 'wrap',
+          }}
+        >
+          <Place fontSize="small" sx={{ color: '#ffffff' }} />
+          <Typography variant="caption" sx={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+            Multi-Destination Route:
+          </Typography>
+          {stops.map((s, idx) => (
+            <React.Fragment key={idx}>
+              <Chip
+                label={`Stop ${idx + 1}: ${s.destination?.name?.split(',')[0]} (${s.duration_days} Days)`}
+                size="small"
+                sx={{
+                  bgcolor: destination.id === s.destination?.id ? '#ffffff' : 'rgba(255,255,255,0.2)',
+                  color: destination.id === s.destination?.id ? 'primary.main' : '#ffffff',
+                  fontWeight: 800,
+                  fontSize: '0.72rem',
+                  cursor: 'pointer',
+                }}
+                onClick={() => onSelectDestination && onSelectDestination(s.destination)}
+              />
+              {idx < stops.length - 1 && <span style={{ fontWeight: 800 }}>➔</span>}
+            </React.Fragment>
+          ))}
+        </Box>
+      )}
+
+      {/* Top Alternative Destination Switcher if multiple are returned in single-destination mode */}
+      {!isMultiDestination && allDestinations.length > 1 && (
         <Box sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: 'background.subtle', px: 2 }}>
           <Tabs
             value={allDestinations.findIndex((d) => d.id === destination.id)}

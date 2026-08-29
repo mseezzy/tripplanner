@@ -86,6 +86,30 @@ async def test_backend():
         assert res_sms.status_code == 200
         print("Test 6: Share SMS endpoint PASSED")
 
+        # Test 7: Multi-Destination Trip (Stop 1: Orlando 4 days, Stop 2: Yellowstone 3 days)
+        payload_multi = {
+            "family_members": [
+                {"name": "Mom", "age": 38, "role": "Adult", "likes": ["food_culinary", "relaxing"]},
+                {"name": "Dad", "age": 40, "role": "Adult", "likes": ["theme_parks", "nature"]},
+                {"name": "Emma", "age": 8, "role": "Child", "likes": ["theme_parks", "animals_wildlife"]}
+            ],
+            "destinations": [
+                {"destination": "Orlando, Florida", "duration_days": 4, "order": 1},
+                {"destination": "Yellowstone & Grand Teton, Wyoming", "duration_days": 3, "order": 2}
+            ],
+            "origin_city": "Chicago (ORD)",
+            "budget_tier": "moderate"
+        }
+        res_multi = await client.post("/api/recommendations", json=payload_multi)
+        assert res_multi.status_code == 200
+        data_multi = res_multi.json()
+        assert data_multi["is_multi_destination"] is True
+        assert data_multi["total_stops"] == 2
+        assert len(data_multi["stops"]) == 2
+        assert len(data_multi["itinerary"]) == 7
+        route_str = str(data_multi['flights'].get('multi_destination_route', '')).replace('\u2794', '->')
+        print(f"Test 7: Multi-destination trip PASSED (Total Stops: {data_multi['total_stops']}, Total Days: {data_multi['budget_summary']['duration_days']}, Route: {route_str})")
+
     print("\nALL BACKEND AUTOMATED TESTS PASSED SUCCESSFULLY!")
 
 if __name__ == "__main__":

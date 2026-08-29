@@ -66,7 +66,7 @@ const AVAILABLE_DISLIKES = [
 
 const PRESETS = [
   {
-    name: 'Family with Young Kids',
+    name: 'Multi-Stop: Florida + Cancun (2 Stops, 7d)',
     members: [
       { name: 'Mom (Sarah)', age: 36, role: 'Adult', likes: ['relaxing', 'food_culinary', 'beaches'] },
       { name: 'Dad (David)', age: 37, role: 'Adult', likes: ['theme_parks', 'food_culinary'] },
@@ -74,12 +74,14 @@ const PRESETS = [
       { name: 'Leo', age: 2, role: 'Toddler', likes: ['water_parks', 'animals_wildlife'] }
     ],
     likes: ['beaches'],
-    dislikes: ['stroller_friendly', 'avoid_strenuous_hiking'],
-    destination: 'Orlando, Florida',
-    duration: 5
+    dislikes: ['stroller_friendly'],
+    destinations: [
+      { id: 'stop-1', destination: 'Orlando, Florida', duration_days: 4 },
+      { id: 'stop-2', destination: 'Cancun & Riviera Maya, Mexico', duration_days: 3 }
+    ]
   },
   {
-    name: 'Family with Teens',
+    name: 'Family with Teens (Yellowstone)',
     members: [
       { name: 'Mom', age: 44, role: 'Adult', likes: ['nature', 'relaxing', 'food_culinary'] },
       { name: 'Dad', age: 46, role: 'Adult', likes: ['adventure', 'nature', 'hiking'] },
@@ -88,20 +90,23 @@ const PRESETS = [
     ],
     likes: ['nature', 'adventure'],
     dislikes: ['avoid_crowds'],
-    destination: 'Yellowstone & Grand Teton, Wyoming',
-    duration: 6
+    destinations: [
+      { id: 'stop-1', destination: 'Yellowstone & Grand Teton, Wyoming', duration_days: 5 }
+    ]
   },
   {
-    name: 'Open Destination (Surprise Us)',
+    name: 'Euro Trip: London + Barcelona (2 Stops, 8d)',
     members: [
-      { name: 'Mom', age: 38, role: 'Adult', likes: ['beaches', 'food_culinary'] },
-      { name: 'Dad', age: 39, role: 'Adult', likes: ['beaches', 'science_museums'] },
-      { name: 'Sophia', age: 9, role: 'Tween', likes: ['animals_wildlife', 'water_parks', 'theme_parks'] }
+      { name: 'Mom', age: 38, role: 'Adult', likes: ['beaches', 'food_culinary', 'science_museums'] },
+      { name: 'Dad', age: 39, role: 'Adult', likes: ['science_museums', 'food_culinary'] },
+      { name: 'Sophia', age: 11, role: 'Tween', likes: ['science_museums', 'animals_wildlife', 'theme_parks'] }
     ],
-    likes: ['beaches'],
+    likes: ['food_culinary'],
     dislikes: ['avoid_heat'],
-    destination: '',
-    duration: 7
+    destinations: [
+      { id: 'stop-1', destination: 'London, United Kingdom', duration_days: 4 },
+      { id: 'stop-2', destination: 'Barcelona, Spain', duration_days: 4 }
+    ]
   }
 ];
 
@@ -123,10 +128,57 @@ export default function FamilyForm({ onSubmit, loading, initialValues }) {
   const [dislikes, setDislikes] = useState(initialValues?.dislikes || ['stroller_friendly']);
   const [startDate, setStartDate] = useState(new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0]);
   const [endDate, setEndDate] = useState(new Date(Date.now() + 20 * 86400000).toISOString().split('T')[0]);
-  const [durationDays, setDurationDays] = useState(initialValues?.duration_days || 6);
-  const [preferredDestination, setPreferredDestination] = useState(initialValues?.preferred_destination || '');
+  
+  // Multi-destination stops state
+  const [tripStops, setTripStops] = useState(
+    initialValues?.destinations?.length > 0
+      ? initialValues.destinations
+      : initialValues?.preferred_destination
+      ? [{ id: 'stop-1', destination: initialValues.preferred_destination, duration_days: initialValues.duration_days || 5 }]
+      : [{ id: 'stop-1', destination: 'Orlando, Florida', duration_days: 4 }]
+  );
+
   const [originCity, setOriginCity] = useState(initialValues?.origin_city || 'Chicago (ORD)');
   const [budgetTier, setBudgetTier] = useState(initialValues?.budget_tier || 'moderate');
+
+  const addDestinationStop = () => {
+    setTripStops([
+      ...tripStops,
+      { id: `stop-${Date.now()}`, destination: '', duration_days: 3 }
+    ]);
+  };
+
+  const removeDestinationStop = (idx) => {
+    if (tripStops.length > 1) {
+      setTripStops(tripStops.filter((_, i) => i !== idx));
+    }
+  };
+
+  const updateDestinationStop = (idx, field, val) => {
+    const updated = [...tripStops];
+    updated[idx][field] = val;
+    setTripStops(updated);
+  };
+
+  const moveStopUp = (idx) => {
+    if (idx === 0) return;
+    const updated = [...tripStops];
+    const temp = updated[idx - 1];
+    updated[idx - 1] = updated[idx];
+    updated[idx] = temp;
+    setTripStops(updated);
+  };
+
+  const moveStopDown = (idx) => {
+    if (idx === tripStops.length - 1) return;
+    const updated = [...tripStops];
+    const temp = updated[idx + 1];
+    updated[idx + 1] = updated[idx];
+    updated[idx] = temp;
+    setTripStops(updated);
+  };
+
+  const totalDurationDays = tripStops.reduce((acc, s) => acc + (parseInt(s.duration_days, 10) || 1), 0);
 
   const addMember = () => {
     setFamilyMembers([
@@ -186,8 +238,9 @@ export default function FamilyForm({ onSubmit, loading, initialValues }) {
     setFamilyMembers(preset.members);
     setLikes(preset.likes);
     setDislikes(preset.dislikes);
-    setPreferredDestination(preset.destination);
-    setDurationDays(preset.duration);
+    if (preset.destinations) {
+      setTripStops(preset.destinations);
+    }
   };
 
   const handleSubmit = (e) => {
@@ -198,8 +251,9 @@ export default function FamilyForm({ onSubmit, loading, initialValues }) {
       dislikes,
       start_date: startDate,
       end_date: endDate,
-      duration_days: durationDays,
-      preferred_destination: preferredDestination,
+      duration_days: totalDurationDays,
+      destinations: tripStops,
+      preferred_destination: tripStops[0]?.destination || '',
       origin_city: originCity,
       budget_tier: budgetTier
     });
@@ -420,11 +474,144 @@ export default function FamilyForm({ onSubmit, loading, initialValues }) {
             <Divider />
           </Grid>
 
-          {/* SECTION 4: TRIP DATES & DESTINATION */}
-          <Grid item xs={12} sm={6} md={3}>
+          {/* SECTION 4: MULTI-DESTINATION TRIP ROUTE BUILDER */}
+          <Grid item xs={12}>
+            <Paper
+              elevation={0}
+              sx={{
+                p: 2.5,
+                bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : '#f8fafc',
+                borderRadius: 3,
+                border: `1px solid ${theme.palette.divider}`,
+              }}
+            >
+              <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { sm: 'center' }, gap: 1, mb: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Place color="primary" />
+                  <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+                    Trip Destinations & Route Order
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Chip
+                    label={`Total: ${totalDurationDays} Days (${tripStops.length} ${tripStops.length === 1 ? 'Stop' : 'Stops'})`}
+                    color="primary"
+                    size="small"
+                    sx={{ fontWeight: 800 }}
+                  />
+                  <Button
+                    startIcon={<Place />}
+                    size="small"
+                    variant="outlined"
+                    onClick={addDestinationStop}
+                    sx={{ borderRadius: 2, fontWeight: 700 }}
+                  >
+                    Add Stop
+                  </Button>
+                </Box>
+              </Box>
+
+              <Grid container spacing={2}>
+                {tripStops.map((stop, idx) => (
+                  <Grid item xs={12} key={stop.id || idx}>
+                    <Paper
+                      elevation={0}
+                      sx={{
+                        p: 2,
+                        borderRadius: 2.5,
+                        bgcolor: 'background.paper',
+                        border: `1px solid ${theme.palette.divider}`,
+                        display: 'flex',
+                        flexDirection: { xs: 'column', md: 'row' },
+                        alignItems: { md: 'center' },
+                        gap: 2,
+                      }}
+                    >
+                      {/* Stop Sequence Indicator & Order Buttons */}
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: { md: 150 } }}>
+                        <Chip
+                          label={`Stop ${idx + 1}`}
+                          color={idx === 0 ? "primary" : "secondary"}
+                          sx={{ fontWeight: 800 }}
+                        />
+                        <Box sx={{ display: 'flex' }}>
+                          <Tooltip title="Move Stop Earlier (Up)">
+                            <span>
+                              <IconButton
+                                size="small"
+                                disabled={idx === 0}
+                                onClick={() => moveStopUp(idx)}
+                              >
+                                ▲
+                              </IconButton>
+                            </span>
+                          </Tooltip>
+                          <Tooltip title="Move Stop Later (Down)">
+                            <span>
+                              <IconButton
+                                size="small"
+                                disabled={idx === tripStops.length - 1}
+                                onClick={() => moveStopDown(idx)}
+                              >
+                                ▼
+                              </IconButton>
+                            </span>
+                          </Tooltip>
+                        </Box>
+                      </Box>
+
+                      {/* Destination Name Input */}
+                      <TextField
+                        fullWidth
+                        size="small"
+                        label={`Destination #${idx + 1}`}
+                        placeholder="e.g. Orlando, FL, Yellowstone, London, Cancun, Tokyo"
+                        value={stop.destination}
+                        onChange={(e) => updateDestinationStop(idx, 'destination', e.target.value)}
+                        InputProps={{
+                          startAdornment: <Place sx={{ mr: 1, color: 'text.secondary' }} fontSize="small" />
+                        }}
+                      />
+
+                      {/* Duration Input for this specific stop */}
+                      <Box sx={{ minWidth: { md: 170 } }}>
+                        <TextField
+                          fullWidth
+                          size="small"
+                          type="number"
+                          label="Stay Duration (Days)"
+                          value={stop.duration_days}
+                          inputProps={{ min: 1, max: 30 }}
+                          onChange={(e) => updateDestinationStop(idx, 'duration_days', parseInt(e.target.value, 10) || 1)}
+                          InputProps={{
+                            startAdornment: <DateRange sx={{ mr: 1, color: 'text.secondary' }} fontSize="small" />
+                          }}
+                        />
+                      </Box>
+
+                      {/* Remove Stop Button */}
+                      {tripStops.length > 1 && (
+                        <IconButton
+                          size="small"
+                          color="error"
+                          onClick={() => removeDestinationStop(idx)}
+                          sx={{ alignSelf: { xs: 'flex-end', md: 'center' } }}
+                        >
+                          <Delete fontSize="small" />
+                        </IconButton>
+                      )}
+                    </Paper>
+                  </Grid>
+                ))}
+              </Grid>
+            </Paper>
+          </Grid>
+
+          {/* SECTION 5: ORIGIN & BUDGET TIER */}
+          <Grid item xs={12} sm={6} md={6}>
             <TextField
               fullWidth
-              label="Departure City / Airport"
+              label="Departure City / Airport (Roundtrip Origin)"
               placeholder="e.g. Chicago (ORD), New York (JFK)"
               value={originCity}
               onChange={(e) => setOriginCity(e.target.value)}
@@ -434,35 +621,7 @@ export default function FamilyForm({ onSubmit, loading, initialValues }) {
             />
           </Grid>
 
-          <Grid item xs={12} sm={6} md={4}>
-            <TextField
-              fullWidth
-              label="Preferred Destination (Optional)"
-              placeholder="e.g. Orlando, London, Hawaii, or leave blank"
-              helperText="Leave blank for smart auto-recommendations"
-              value={preferredDestination}
-              onChange={(e) => setPreferredDestination(e.target.value)}
-              InputProps={{
-                startAdornment: <Place sx={{ mr: 1, color: 'text.secondary' }} fontSize="small" />
-              }}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={2.5}>
-            <TextField
-              fullWidth
-              type="number"
-              label="Trip Duration (Days)"
-              value={durationDays}
-              inputProps={{ min: 2, max: 21 }}
-              onChange={(e) => setDurationDays(parseInt(e.target.value, 10) || 5)}
-              InputProps={{
-                startAdornment: <DateRange sx={{ mr: 1, color: 'text.secondary' }} fontSize="small" />
-              }}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={2.5}>
+          <Grid item xs={12} sm={6} md={6}>
             <FormControl fullWidth>
               <InputLabel>Budget Tier</InputLabel>
               <Select
