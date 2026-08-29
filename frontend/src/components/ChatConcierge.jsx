@@ -32,11 +32,14 @@ import {
   DeleteOutline,
   ExpandLess,
   ExpandMore,
-  VpnKey
+  VpnKey,
+  Accessible,
+  InfoOutlined
 } from '@mui/icons-material';
 import { sendChatMessage } from '../services/geminiService';
 
 const QUICK_PROMPTS = [
+  { label: '♿ Prep Children with Disabilities & Sensory Needs', prompt: 'How should we prepare and accommodate our children with disabilities, sensory sensitivities, or special needs on this trip?' },
   { label: '🎒 Packing List', prompt: 'What specific clothes, gear, and essentials should we pack for our family on this trip?' },
   { label: '👶 Toddler & Stroller Tips', prompt: 'What are the best toddler pacing, stroller accessibility, and nap-friendly tips for this itinerary?' },
   { label: '🍜 Family Restaurant Advice', prompt: 'Where are the best family-friendly food spots or meals suitable for kids near our destination?' },
@@ -51,7 +54,7 @@ export default function ChatConcierge({ tripData }) {
     {
       id: 'welcome',
       sender: 'bot',
-      text: "👋 Hi there! I'm your **AI Travel Concierge** powered by Gemini. I have complete context about your planned vacation, budget, family member ages, and local festivals. Ask me anything!",
+      text: "👋 Hi there! I'm your **AI Travel Concierge**. I have complete context about your planned vacation, budget, family member ages, accessibility considerations, and local festivals. Ask me anything!",
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }
   ]);
@@ -299,7 +302,7 @@ export default function ChatConcierge({ tripData }) {
               {/* Quick Suggestion Chips */}
               <Box
                 sx={{
-                  p: 1.5,
+                  p: 1.2,
                   bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.02)' : '#f8fafc',
                   borderBottom: `1px solid ${theme.palette.divider}`,
                   display: 'flex',
@@ -329,6 +332,52 @@ export default function ChatConcierge({ tripData }) {
                     }}
                   />
                 ))}
+              </Box>
+
+              {/* AI Key Mode Status Bar */}
+              <Box
+                sx={{
+                  px: 2,
+                  py: 0.6,
+                  bgcolor: hasCustomKey
+                    ? (theme.palette.mode === 'dark' ? 'rgba(16, 185, 129, 0.12)' : '#ecfdf5')
+                    : (theme.palette.mode === 'dark' ? 'rgba(2, 132, 199, 0.08)' : '#f0f9ff'),
+                  borderBottom: `1px solid ${theme.palette.divider}`,
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}
+              >
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontSize: '0.68rem',
+                    color: hasCustomKey ? '#059669' : '#0369a1',
+                    fontWeight: 700,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 0.6
+                  }}
+                >
+                  <AutoAwesome sx={{ fontSize: 12 }} />
+                  {hasCustomKey ? "Live Gemini Flash AI Connected" : "Contextual Travel Assistant Active"}
+                </Typography>
+                {!hasCustomKey && (
+                  <Button
+                    size="small"
+                    onClick={() => setSettingsOpen(true)}
+                    sx={{
+                      fontSize: '0.66rem',
+                      fontWeight: 800,
+                      p: 0,
+                      minWidth: 'auto',
+                      textTransform: 'none',
+                      color: '#0284c7'
+                    }}
+                  >
+                    + Add Free Gemini Key
+                  </Button>
+                )}
               </Box>
 
               {/* Chat Message Scrollable Container */}
