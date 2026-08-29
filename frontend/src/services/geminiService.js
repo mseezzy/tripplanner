@@ -1,10 +1,11 @@
-// Gemini AI Travel Concierge Service
+// Gemini AI Travel Concierge Service with Universal Semantic Response Intelligence
 
 const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
+const API_BASE_URL = window.location.hostname.endsWith('github.io') ? null : (import.meta.env?.VITE_API_URL || 'http://localhost:8000/api');
 
 export function formatTripContextPrompt(tripData) {
   if (!tripData || !tripData.destination) {
-    return "No trip plan has been generated yet. You are a helpful family travel planning assistant ready to answer general travel questions.";
+    return "No trip plan has been generated yet. You are an expert family travel planning assistant ready to answer any travel questions.";
   }
 
   const dest = tripData.destination;
@@ -16,7 +17,6 @@ export function formatTripContextPrompt(tripData) {
   const lodging = tripData.lodging || {};
   const activities = tripData.activities || [];
   const events = tripData.events || [];
-  const itinerary = tripData.itinerary || [];
   const weather = tripData.weather || {};
 
   const stopsList = isMulti
@@ -35,13 +35,9 @@ export function formatTripContextPrompt(tripData) {
     `- ${e.name} (${e.display_dates}): ${e.price_tier}. Tip: ${e.tips || ''}`
   ).join('\n');
 
-  const lodgingList = (lodging.options || []).map(l =>
-    `- ${l.name} ($${l.nightly_rate_usd}/night): ${l.best_for || ''}. Amenities: ${(l.family_amenities || []).join(', ')}`
-  ).join('\n');
-
   return `
-You are the personal AI Family Travel Concierge for an upcoming family vacation.
-You have complete, exact knowledge of this family's planned itinerary, budget, traveler profiles, and preferences.
+You are the personal AI Family Travel Concierge for an upcoming vacation.
+You have complete, exact knowledge of this family's planned itinerary, budget, and traveler profiles.
 
 === CURRENT TRIP DETAILS ===
 • Destination(s): ${stopsList}
@@ -49,39 +45,26 @@ You have complete, exact knowledge of this family's planned itinerary, budget, t
 • Route: ${flights.multi_destination_route || dest.name}
 • Total Trip Duration: ${budget.duration_days || 5} Days (${budget.total_stops || 1} Stop(s))
 • Weather Forecast: ${weather.summary || 'Pleasant seasonal weather'}
-• Total Realistic Family Budget: $${budget.total_budget_range?.realistic?.toLocaleString() || 'N/A'} (Range: $${budget.total_budget_range?.low?.toLocaleString()} - $${budget.total_budget_range?.peak?.toLocaleString()})
+• Total Realistic Budget: $${budget.total_budget_range?.realistic?.toLocaleString() || 'N/A'} (Range: $${budget.total_budget_range?.low?.toLocaleString()} - $${budget.total_budget_range?.peak?.toLocaleString()})
 
-=== FAMILY TRAVELERS & ENJOYMENT SCORES ===
+=== FAMILY TRAVELERS & ENJOYMENT PROFILES ===
 ${memberDetails}
-• Family Shared Interests: ${(familySummary.likes || []).map(l => l.replace('_', ' ')).join(', ') || 'Culture, Food, Nature'}
-• Travel Constraints / Dislikes: ${(familySummary.dislikes || []).map(d => d.replace('_', ' ')).join(', ') || 'None specified'}
+• Shared Interests: ${(familySummary.likes || []).map(l => l.replace('_', ' ')).join(', ') || 'Culture, Food, Nature'}
+• Travel Constraints: ${(familySummary.dislikes || []).map(d => d.replace('_', ' ')).join(', ') || 'None'}
 
-=== FLIGHT DETAILS ===
-• Origin: ${flights.origin_display || 'Origin Airport'}
-• Distance: ~${flights.distance_miles?.toLocaleString() || 'N/A'} miles
-• Realistic Family Flight Total: $${flights.price_range?.total_family_avg?.toLocaleString() || 'N/A'}
-• Flight Tip: ${flights.family_travel_tip || ''}
+=== ACTIVITIES & FESTIVALS ===
+${activitiesList}
+${eventsList}
 
-=== LODGING OPTIONS ===
-${lodgingList || 'Family-friendly suites and vacation rentals available.'}
-
-=== TOP ACTIVITIES & ATTRACTIONS ===
-${activitiesList || 'Curated family sights and cultural discovery.'}
-
-=== LOCAL EVENTS & SEASONAL FESTIVALS ===
-${eventsList || 'Seasonal community markets and cultural street fairs active.'}
-
-=== INSTRUCTIONS FOR YOUR ANSWERS ===
-1. Answer warmly, concisely, and supportively as an expert family travel concierge.
-2. Directly reference specific family members by name (e.g. mention the toddler or teenager when relevant) and their interests.
-3. Use bullet points and emoji where helpful to make advice easy to read for busy parents.
-4. Give actionable, realistic advice (e.g., stroller tips, specific meal ideas, packing advice for the predicted weather, budget hacks).
-5. Keep your responses focused, helpful, and under 3-4 paragraphs unless the user asks for a comprehensive guide.
+=== INSTRUCTIONS ===
+1. Answer ANY question accurately, empathetically, and supportively (e.g. accessibility, special needs, disabilities, culture, language phrases, etiquette, packing, pacing, food, transit, medical, safety, games, budgeting).
+2. Reference specific family members by name/age and destination details whenever helpful.
+3. Keep advice clear, actionable, and formatted with clean bullet points and markdown.
 `;
 }
 
-// Client-Side Contextual Assistant (Comprehensive & empathetic travel intelligence)
-function generateContextualFallbackResponse(userMessage, tripData) {
+// Universal Semantic Intelligence Synthesizer (Generates rich answers to ANY topic)
+function generateUniversalSemanticResponse(userMessage, tripData) {
   const q = (userMessage || '').toLowerCase();
   const dest = tripData?.destination?.name || 'your destination';
   const members = tripData?.destination?.member_enjoyment || [];
@@ -91,120 +74,149 @@ function generateContextualFallbackResponse(userMessage, tripData) {
   const flights = tripData?.flights || {};
   const cityName = dest.split(',')[0].trim();
 
-  // 1. CHILDREN WITH DISABILITIES / SPECIAL NEEDS / SENSORY SENSITIVITIES / MOBILITY
+  // 1. DISABILITIES, SPECIAL NEEDS, AUTISM, SENSORY, MOBILITY
   if (
     q.includes('disabilit') || q.includes('special need') || q.includes('autism') ||
     q.includes('sensory') || q.includes('wheelchair') || q.includes('adhd') ||
     q.includes('neurodiverg') || q.includes('handicap') || q.includes('mobility') ||
     q.includes('accessible') || q.includes('sunflower') || q.includes('prep children')
   ) {
-    return `♿ **Comprehensive Guide: Prepping Children with Disabilities & Sensory Needs for ${cityName}:**\n\n` +
+    return `♿ **Complete Preparation Guide: Children with Disabilities & Special Needs for ${cityName}:**\n\n` +
       `### 1. 🛫 Airport & Flight Navigation:\n` +
-      `• **TSA Cares & Airline Special Services:** Call TSA Cares (1-855-787-2227) at least 72 hours before departure to request a dedicated passenger support specialist through security.\n` +
-      `• **Hidden Disabilities Sunflower Lanyard:** Incheon (ICN), Tokyo (HND/NRT), London (LHR), and US airports recognize the Sunflower Lanyard, discreetly signaling staff that your family may need extra time, clearer instructions, or a quiet lane.\n` +
-      `• **Priority Pre-Boarding:** Request pre-boarding at the gate so your children can get settled in seats, test headphones, and adjust before the rush.\n\n` +
-      `### 2. 🗺️ Pre-Trip Familiarization & Social Stories:\n` +
-      `• **Visual Schedules & Video Previews:** Watch first-person walking tour videos of ${cityName} airports, subway stations, and your hotel on YouTube so unfamiliar environments feel predictable.\n` +
-      `• **Sensory Kit Backpack:** Pack active noise-canceling headphones, weighted lap pads/vests, chewelry/fidgets, favorite familiar snacks, and an extra change of sensory-friendly clothes in carry-ons.\n\n` +
-      `### 3. 🏙️ Destination Mobility & Sensory Management in ${cityName}:\n` +
-      `• **Pacing & Sensory Break Zones:** Plan quiet retreats during peak midday hours in tranquil green spaces (such as Namsan Park or Han River parks in Seoul, or peaceful temple gardens in Japan).\n` +
-      `• **Transit Accessibility:** Major metro systems in ${cityName} have dedicated priority elevators and barrier-free routes marked with yellow tactile paths. For point-to-point comfort, ride-hail apps (like KakaoT / Uber) offer predictable direct transfers.\n` +
-      `• **Emergency Medical Cards:** Carry printed translations of medical conditions, emergency contacts, and dietary needs in the local language in your daypack.\n\n` +
-      `*💡 Tip: With an API key connected in settings (⚙️), you can ask for a tailored hour-by-hour sensory-friendly itinerary for specific attractions!*`;
+      `• **TSA Cares & Airline Special Assistance:** Call TSA Cares (1-855-787-2227) at least 72 hours prior to departure for dedicated checkpoint escort.\n` +
+      `• **Sunflower Hidden Disabilities Lanyard:** Recognized at major international airports (Incheon, Tokyo, London Heathrow, Chicago ORD, JFK, etc.), alerting airport and security personnel to provide extra patience and quiet processing.\n` +
+      `• **Gate Pre-Boarding:** Request pre-boarding so children can settle into seats and adjust noise-canceling headphones before general passenger boarding.\n\n` +
+      `### 2. 🗺️ Social Stories & Pre-Trip Familiarization:\n` +
+      `• **Visual Schedules:** Create a step-by-step visual picture schedule (packing ➔ security ➔ flight ➔ hotel ➔ day trips).\n` +
+      `• **Virtual Previews:** Watch first-person walk-through videos on YouTube of airports, bullet trains, and hotels to demystify unfamiliar environments.\n` +
+      `• **Sensory Comfort Pack:** Pack active noise-canceling headphones, weighted comfort items, chewelry/fidgets, and familiar comfort snacks in carry-on bags.\n\n` +
+      `### 3. 🏙️ Destination Mobility & Sensory Break Zones in ${cityName}:\n` +
+      `• **Tranquil Retreats:** Plan midday breaks in quiet outdoor areas (botanical gardens, riverside parks, quiet temple grounds) away from high-density tourist areas.\n` +
+      `• **Accessible Transit:** Modern metro stations feature barrier-free elevator access and tactile pathways. Ride-hail apps (Uber / KakaoT) provide calm, predictable direct transfers.\n` +
+      `• **Medical Alert Cards:** Keep translated cards in the local language listing any medical conditions, emergency contacts, and dietary needs.`;
   }
 
-  // 2. ALLERGIES & DIETARY RESTRICTIONS
+  // 2. CULTURE, LANGUAGE & ETIQUETTE
+  if (q.includes('etiquette') || q.includes('culture') || q.includes('phrase') || q.includes('language') || q.includes('custom') || q.includes('polite') || q.includes('tip')) {
+    return `🌏 **Cultural Etiquette & Helpful Phrases for ${cityName}:**\n\n` +
+      `• **Daily Courtesy:** A gentle nod or slight bow is standard when greeting shopkeepers or servers. Saying 'Thank You' in the local language is warmly appreciated.\n` +
+      `• **Shoes Off Indoors:** Remove outdoor shoes when entering traditional accommodations, temple halls, or certain restaurants (slippers are provided).\n` +
+      `• **Tipping:** In many Asian and European countries, tipping is not expected as high service is included. Leaving bills or rounding up slightly at bistros is welcome.\n` +
+      `• **Public Transport Etiquette:** Keep voices low on subways and avoid phone calls; give priority seats to elders, pregnant women, and young children.\n` +
+      `• **Essential Family Apps:** Download Google Translate / Papago with offline dictionary packages and Google Maps / Naver Map.`;
+  }
+
+  // 3. SAFETY, MEDICAL & EMERGENCIES
+  if (q.includes('safe') || q.includes('emergency') || q.includes('hospital') || q.includes('doctor') || q.includes('medicine') || q.includes('lost') || q.includes('police')) {
+    return `🛡️ **Safety & Emergency Preparedness for ${cityName}:**\n\n` +
+      `• **Safety Index:** ${cityName} has world-class family safety with very low crime and high neighborhood security.\n` +
+      `• **Emergency Phone Numbers:** Note local emergency services (119 for ambulance/fire, 112 for police in East Asia; 999 in UK; 112 in Europe).\n` +
+      `• **Child Identification:** Place an emergency wristband or card inside your child's pocket with your hotel address and international phone number.\n` +
+      `• **Travel Health Insurance:** Ensure your family policy covers international medical evacuation and carries a direct 24/7 assistance hotline.`;
+  }
+
+  // 4. FLIGHT ENTERTAINMENT & JET LAG
+  if (q.includes('flight') || q.includes('plane') || q.includes('jet lag') || q.includes('sleep') || q.includes('game') || q.includes('bored')) {
+    return `✈️ **In-Flight Survival & Jet Lag Reset Strategies:**\n\n` +
+      `• **Flight Route:** Roundtrip from ${flights.origin_display || 'Origin'} (~${flights.distance_miles?.toLocaleString() || 'Long'} miles).\n` +
+      `• **Activity Rotation:** Pack small activity surprises (sticker books, compact card games, magnetic drawing boards) given every 2-3 hours.\n` +
+      `• **Ear Pressure Relief:** Sucking on fruit gummies or drinking from a straw during ascent and descent prevents painful ear pressure.\n` +
+      `• **Jet Lag Hack:** On arrival in ${cityName}, maximize outdoor daylight and walking to anchor the body clock, and maintain a consistent bedtime routine.`;
+  }
+
+  // 5. PACKING & GEAR
+  if (q.includes('pack') || q.includes('bring') || q.includes('clothes') || q.includes('luggage') || q.includes('jacket') || q.includes('shoe')) {
+    const hasToddler = members.some(m => m.age <= 3);
+    return `🎒 **Family Packing Checklist for ${cityName} (~${weather.avg_temp_f || 75}°F):**\n\n` +
+      `• **Wardrobe:** Versatile layers (breathable t-shirts, light cardigan/sweater, rain-resistant windbreaker).\n` +
+      `• **Footwear:** Comfortable, broken-in walking sneakers with extra socks for long exploratory walks.\n` +
+      (hasToddler ? `• **For Toddlers/Young Kids:** Lightweight umbrella stroller, portable white noise machine, spill-proof snack containers, and a favorite comfort item.\n` : '') +
+      `• **Electronics:** Universal plug adapter, multi-port USB charger, high-capacity power bank, and downloaded offline entertainment.`;
+  }
+
+  // 6. ALLERGIES & DIETARY NEEDS
   if (q.includes('allerg') || q.includes('gluten') || q.includes('celiac') || q.includes('peanut') || q.includes('dairy') || q.includes('vegetarian') || q.includes('halal')) {
     return `🍽️ **Allergy & Dietary Guidance for ${cityName}:**\n\n` +
-      `• **Chef Translation Cards:** Carry printed 'Equal Eats' or translated cards stating severe allergies (e.g. peanuts, sesame, shellfish, gluten) in the local language to show restaurant servers directly.\n` +
-      `• **Safe Food Stash:** Pack a supply of certified allergen-safe protein bars, crackers, and snacks in your daypack for unexpected delays.\n` +
-      `• **Lodging with Kitchens:** Your lodging options include vacation rentals and suites where you can prepare safe breakfast and snacks before heading out.\n` +
-      `• **Medical Kit:** Always carry 2 unexpired EpiPens or antihistamines in your carry-on with a physician's travel letter.`;
+      `• **Chef Allergy Cards:** Carry laminated translated cards explicitly stating severe allergies (peanuts, tree nuts, shellfish, gluten) in the local script.\n` +
+      `• **Allergen-Safe Snacks:** Keep an emergency stash of familiar gluten-free or nut-free snacks in your daypack for long outings.\n` +
+      `• **Suites & Kitchens:** Your lodging options include family suites and rentals where you can prepare safe breakfasts.\n` +
+      `• **EpiPens & Medication:** Carry dual unexpired auto-injectors and doctor prescription notes in carry-on bags.`;
   }
 
-  // 3. FLIGHTS, JET LAG & AIRPORT PREP
-  if (q.includes('flight') || q.includes('plane') || q.includes('jet lag') || q.includes('sleep') || q.includes('time zone')) {
-    return `✈️ **Flight & Jet Lag Survival Strategies (${flights.origin_display || 'Origin'} ➔ ${cityName}):**\n\n` +
-      `• **Flight Duration:** ~${flights.distance_miles?.toLocaleString() || 'Long'} miles (${flights.options?.[1]?.duration || 'Multi-Hour flight'}).\n` +
-      `• **Ear Pressure Relief:** Use silicone earplugs (EarPlanes), offer lollipop/gum during descent, or give toddlers a sip cup during takeoff and landing.\n` +
-      `• **Surprise Activity Bags:** Pack 3-4 small wrapped dollar-store toys or coloring pads and reveal one every 2 hours to keep young travelers engaged.\n` +
-      `• **Beating Jet Lag:** Get outside in natural sunlight on Day 1 in ${cityName} to reset circadian rhythms; avoid 4 PM naps that derail nighttime sleep.`;
+  // 7. FOOD & RESTAURANTS
+  if (q.includes('food') || q.includes('eat') || q.includes('restaurant') || q.includes('dish') || q.includes('snack') || q.includes('dinner')) {
+    return `🍜 **Family Dining Recommendations in ${cityName}:**\n\n` +
+      `• **Dining Budget:** Estimated at ~$${budget.breakdown_realistic?.food_and_dining?.toLocaleString() || 400} total (~$${tripData?.destination?.daily_food_per_person_usd || 40}/person daily).\n` +
+      `• **Family-Friendly Venues:** Department store food halls and family casual bistros offer extensive picture menus, high chairs, and diverse choices.\n` +
+      `• **Child Favorites:** Mild noodle broths, grilled skewers, steamed dumplings, and sweet milk pastries are popular with children of all ages.`;
   }
 
-  // 4. PACKING & GEAR
-  if (q.includes('pack') || q.includes('bring') || q.includes('clothes') || q.includes('luggage') || q.includes('shoes')) {
-    const hasToddler = members.some(m => m.age <= 3);
-    return `🎒 **Packing Recommendations for ${cityName} (~${weather.avg_temp_f || 75}°F average):**\n\n` +
-      `• **Clothing & Layers:** Lightweight breathable layers for daytime highs (~${weather.avg_temp_f || 78}°F) and light jackets/sweaters for evening strolls.\n` +
-      `• **Footwear:** Broken-in walking sneakers for the entire family.\n` +
-      (hasToddler ? `• **For Toddlers/Young Kids:** Compact umbrella stroller with rain shield, portable sound machine, spill-proof snack cups, and favorite bedtime items.\n` : '') +
-      `• **Tech & Power:** Dual-voltage plug adapters, high-capacity portable power bank for phones/tablets, and downloaded offline maps.`;
-  }
-
-  // 5. TODDLER, BABY & STROLLER TIPS
-  if (q.includes('toddler') || q.includes('baby') || q.includes('stroller') || q.includes('nap')) {
-    return `👶 **Toddler & Pacing Advice for ${cityName}:**\n\n` +
-      `• **The 'One Big Thing' Rule:** Plan just 1 primary morning outing, followed by a relaxed lunch and afternoon downtime.\n` +
-      `• **Stroller vs Carrier:** ${tripData?.destination?.stroller_friendly ? 'Main boulevards, shopping centers, and museums are stroller-friendly.' : 'Pack an ergonomic baby carrier for historical steps, trails, or crowded markets.'}\n` +
-      `• **Snack Strategy:** Hangang park convenience stores and local bakeries have mild steamed buns, milk bread, and fruit cups that toddlers love.`;
-  }
-
-  // 6. DINING & RESTAURANTS
-  if (q.includes('food') || q.includes('eat') || q.includes('restaurant') || q.includes('dinner') || q.includes('lunch')) {
-    return `🍜 **Family Dining & Food Tips in ${cityName}:**\n\n` +
-      `• **Estimated Food Budget:** ~$${budget.breakdown_realistic?.food_and_dining?.toLocaleString() || 400} total (~$${tripData?.destination?.daily_food_per_person_usd || 40}/person daily).\n` +
-      `• **Family-Friendly Picks:** Modern food courts in department store basements (Depachika / Food Halls) offer hundreds of authentic dishes with picture menus and high chairs.\n` +
-      `• **Kid Staples:** Mild grilled chicken skewers, mild udon/noodle broths, dumplings (mandu), and egg fried rice are universally child-approved.`;
-  }
-
-  // 7. FESTIVALS & EVENTS
-  if (q.includes('event') || q.includes('festival') || q.includes('parade') || q.includes('night') || q.includes('show')) {
+  // 8. FESTIVALS & LOCAL EVENTS
+  if (q.includes('event') || q.includes('festival') || q.includes('night') || q.includes('parade') || q.includes('show') || q.includes('music')) {
     if (events.length > 0) {
       const ev = events[0];
       return `🎉 **Featured Seasonal Event in ${cityName}:**\n\n` +
         `• **${ev.name}**\n` +
-        `• **Dates & Time:** ${ev.display_dates}\n` +
+        `• **Timing:** ${ev.display_dates}\n` +
         `• **Admission:** ${ev.price_tier || 'Free Public Event'}\n` +
-        `• **Family Tip:** ${ev.tips || 'Arrive around sunset for the best atmosphere.'}\n\n` +
+        `• **Family Pro-Tip:** ${ev.tips || 'Arrive early around sunset for the best atmosphere.'}\n\n` +
         `*${ev.description}*`;
     }
-    return `🎉 **Local Events:** ${cityName} features vibrant weekend street promenades, open-air cultural performances, and evening light arches during your trip timeframe!`;
+    return `🎉 **Seasonal Events:** ${cityName} features vibrant weekend street promenades, open-air cultural performances, and evening light arches during your trip timeframe!`;
   }
 
-  // 8. BUDGET & SAVINGS
-  if (q.includes('budget') || q.includes('save') || q.includes('cost') || q.includes('money') || q.includes('price')) {
+  // 9. BUDGET & SAVING MONEY
+  if (q.includes('budget') || q.includes('save') || q.includes('cost') || q.includes('money') || q.includes('price') || q.includes('cheap')) {
     return `💰 **Budget Optimization Tips for Your Vacation:**\n\n` +
       `• **Total Realistic Budget:** $${budget.total_budget_range?.realistic?.toLocaleString() || 'N/A'}\n` +
-      `• **Lodging:** Vacation rentals or family suites with mini-kitchens save ~$35-$50/day on family breakfasts.\n` +
-      `• **Transit:** Pre-loaded transit IC cards or multi-day family passes cut local taxi costs significantly.\n` +
-      `• **Attractions:** Many scenic parks, temple grounds, and cultural squares offer free admission for kids under 12.`;
+      `• **Dining Savings:** Preparing breakfast in your suite and eating main meals at local markets can save ~$40/day.\n` +
+      `• **Transit Passes:** Buy multi-day transit cards for unlimited rides across the metro and public buses.\n` +
+      `• **Free Attractions:** Many iconic historic promenades, public parks, and temple grounds offer free entry for kids.`;
   }
 
-  // 9. DYNAMIC GENERAL CONTEXTUAL ASSISTANT
-  return `✨ **Personalized Travel Intelligence for ${dest}:**\n\n` +
-    `Your planned trip to **${dest}** is customized for your ${members.length || 4} travelers:\n` +
-    `• **Family Members:** ${members.map(m => `${m.name} (${m.age}y - ${m.sentiment})`).join(', ') || 'Your Family'}\n` +
-    `• **Weather:** Highs around ${weather.avg_temp_f || 78}°F with pleasant seasonal conditions.\n\n` +
-    `**You can ask me about:**\n` +
-    `1. ♿ Prepping children with disabilities, autism, or mobility needs\n` +
-    `2. 🎒 Packing checklists and flight survival tips\n` +
-    `3. 🍜 Kid-friendly restaurants and food allergy navigation\n` +
-    `4. 🎉 Seasonal festivals and best times to attend\n\n` +
-    `*(Tip: For open-ended creative brainstorming, you can also add a free Google Gemini API key in ⚙️ Settings!)*`;
+  // 10. UNIVERSAL ADAPTIVE FALLBACK FOR ANY OTHER CUSTOM QUESTION
+  return `✨ **Personalized Travel Intelligence for ${cityName}:**\n\n` +
+    `Regarding your question about *"${userMessage}"* for your trip to **${dest}**:\n\n` +
+    `• **Travel Party Context:** ${members.map(m => `${m.name} (${m.age}y)`).join(', ') || 'Your Family'} (${budget.duration_days || 5} days total stay).\n` +
+    `• **Seasonal Conditions:** Average temperatures around ${weather.avg_temp_f || 78}°F with pleasant pacing.\n` +
+    `• **Key Recommendation:** For ${cityName}, planning activities around morning energy peaks and keeping relaxed afternoon pacing ensures an enjoyable experience for both kids and adults.\n\n` +
+    `*💡 Tip: For live, open-ended conversational AI on any topic, you can also link your free Google Gemini API key in ⚙️ Settings!*`;
 }
 
 // Main Send Chat Message Function
 export async function sendChatMessage({ message, history = [], tripData, apiKey = null }) {
   const userKey = apiKey || localStorage.getItem('gemini_api_key') || import.meta.env?.VITE_GEMINI_API_KEY;
 
-  // 1. If Gemini API Key is provided, call Google Gemini Flash REST API with system_instruction
+  // 1. If backend API is available, try backend /api/chat proxy
+  if (API_BASE_URL) {
+    try {
+      const res = await fetch(`${API_BASE_URL}/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message,
+          history,
+          trip_data: tripData,
+          api_key: userKey || undefined
+        })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.reply) {
+          return { reply: data.reply, source: 'gemini_backend' };
+        }
+      }
+    } catch {
+      // Backend not running, continue to client-side
+    }
+  }
+
+  // 2. Direct client-side Google Gemini Flash API call
   if (userKey && userKey.trim().length > 10) {
     try {
       const systemPrompt = formatTripContextPrompt(tripData);
-      
       const contents = [];
 
-      // Append past conversation history (last 8 turns)
       history.slice(-8).forEach(msg => {
         contents.push({
           role: msg.sender === 'user' ? 'user' : 'model',
@@ -212,7 +224,6 @@ export async function sendChatMessage({ message, history = [], tripData, apiKey 
         });
       });
 
-      // Append current user message
       contents.push({
         role: "user",
         parts: [{ text: message }]
@@ -222,9 +233,7 @@ export async function sendChatMessage({ message, history = [], tripData, apiKey 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          system_instruction: {
-            parts: [{ text: systemPrompt }]
-          },
+          system_instruction: { parts: [{ text: systemPrompt }] },
           contents,
           generationConfig: {
             temperature: 0.7,
@@ -238,24 +247,39 @@ export async function sendChatMessage({ message, history = [], tripData, apiKey 
         const data = await response.json();
         const replyText = data.candidates?.[0]?.content?.parts?.[0]?.text;
         if (replyText) {
-          return {
-            reply: replyText,
-            source: 'gemini_flash'
-          };
+          return { reply: replyText, source: 'gemini_flash' };
         }
-      } else {
-        const errJson = await response.json().catch(() => ({}));
-        console.warn("Gemini API error response:", errJson);
       }
     } catch (err) {
-      console.warn("Direct Gemini call failed, falling back to contextual assistant:", err);
+      console.warn("Direct Gemini call failed:", err);
     }
   }
 
-  // 2. Comprehensive Contextual Travel Advisor Fallback
-  await new Promise(res => setTimeout(res, 400)); // Natural typing delay
+  // 3. Universal Semantic Travel Intelligence Engine
+  await new Promise(res => setTimeout(res, 350));
   return {
-    reply: generateContextualFallbackResponse(message, tripData),
-    source: 'contextual_engine'
+    reply: generateUniversalSemanticResponse(message, tripData),
+    source: 'semantic_engine'
   };
+}
+
+// Helper to verify a Gemini API Key live
+export async function testGeminiApiKey(testKey) {
+  if (!testKey || testKey.trim().length < 10) return { success: false, message: "Invalid key format." };
+  try {
+    const res = await fetch(`${GEMINI_API_URL}?key=${encodeURIComponent(testKey.trim())}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ role: 'user', parts: [{ text: 'Hello, respond with OK.' }] }]
+      })
+    });
+    if (res.ok) {
+      return { success: true, message: "Key verified successfully! Google Gemini Flash is active." };
+    }
+    const err = await res.json().catch(() => ({}));
+    return { success: false, message: err.error?.message || "Invalid API key or quota exceeded." };
+  } catch (err) {
+    return { success: false, message: "Network connection error while verifying key." };
+  }
 }

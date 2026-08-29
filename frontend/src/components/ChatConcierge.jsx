@@ -34,9 +34,11 @@ import {
   ExpandMore,
   VpnKey,
   Accessible,
-  InfoOutlined
+  InfoOutlined,
+  CheckCircle,
+  ErrorOutline
 } from '@mui/icons-material';
-import { sendChatMessage } from '../services/geminiService';
+import { sendChatMessage, testGeminiApiKey } from '../services/geminiService';
 
 const QUICK_PROMPTS = [
   { label: '♿ Prep Children with Disabilities & Sensory Needs', prompt: 'How should we prepare and accommodate our children with disabilities, sensory sensitivities, or special needs on this trip?' },
@@ -125,15 +127,27 @@ export default function ChatConcierge({ tripData }) {
     }
   };
 
-  const handleSaveApiKey = () => {
-    if (apiKeyInput.trim()) {
-      localStorage.setItem('gemini_api_key', apiKeyInput.trim());
-      setHasCustomKey(true);
-    } else {
+  const [keyTestResult, setKeyTestResult] = useState({ testing: false, success: null, message: '' });
+
+  const handleTestAndSaveKey = async () => {
+    if (!apiKeyInput.trim()) {
       localStorage.removeItem('gemini_api_key');
       setHasCustomKey(false);
+      setKeyTestResult({ testing: false, success: true, message: "Cleared API key. Using built-in contextual assistant." });
+      setTimeout(() => setSettingsOpen(false), 800);
+      return;
     }
-    setSettingsOpen(false);
+
+    setKeyTestResult({ testing: true, success: null, message: "Verifying with Google Gemini servers..." });
+    const res = await testGeminiApiKey(apiKeyInput.trim());
+    if (res.success) {
+      localStorage.setItem('gemini_api_key', apiKeyInput.trim());
+      setHasCustomKey(true);
+      setKeyTestResult({ testing: false, success: true, message: "✅ Key verified! Google Gemini Flash is active." });
+      setTimeout(() => setSettingsOpen(false), 1200);
+    } else {
+      setKeyTestResult({ testing: false, success: false, message: `❌ ${res.message}` });
+    }
   };
 
   const clearChat = () => {
@@ -510,23 +524,54 @@ export default function ChatConcierge({ tripData }) {
         </DialogTitle>
         <DialogContent dividers>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            You can optionally enter your own <strong>free Google Gemini API Key</strong> from Google AI Studio to unlock live generative responses with 1,500 free queries/day.
+            Enter your <strong>free Google Gemini API Key</strong> (from <a href="https://aistudio.google.com/" target="_blank" rel="noreferrer" style={{ color: '#0284c7', fontWeight: 700 }}>aistudio.google.com</a>) to unlock unconstrained live generative AI responses on <em>any question</em> with 1,500 free queries/day.
           </Typography>
           <TextField
             fullWidth
             size="small"
-            label="Google Gemini API Key (Optional)"
+            label="Google Gemini API Key"
             placeholder="AIzaSy..."
             value={apiKeyInput}
-            onChange={(e) => setApiKeyInput(e.target.value)}
+            onChange={(e) => {
+              setApiKeyInput(e.target.value);
+              setKeyTestResult({ testing: false, success: null, message: '' });
+            }}
             type="password"
-            helperText="Stored locally in your browser only. Leave blank to use the free built-in contextual assistant."
+            helperText="Stored locally in your browser. Leave empty to use the built-in travel intelligence engine."
           />
+
+          {keyTestResult.message && (
+            <Box
+              sx={{
+                mt: 2,
+                p: 1.5,
+                borderRadius: 2,
+                bgcolor: keyTestResult.success === true ? 'rgba(16, 185, 129, 0.1)' : keyTestResult.success === false ? 'rgba(239, 68, 68, 0.1)' : 'rgba(2, 132, 199, 0.1)',
+                border: `1px solid ${keyTestResult.success === true ? '#10b981' : keyTestResult.success === false ? '#ef4444' : '#0284c7'}`,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1
+              }}
+            >
+              {keyTestResult.testing && <CircularProgress size={16} />}
+              {keyTestResult.success === true && <CheckCircle color="success" fontSize="small" />}
+              {keyTestResult.success === false && <ErrorOutline color="error" fontSize="small" />}
+              <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.primary' }}>
+                {keyTestResult.message}
+              </Typography>
+            </Box>
+          )}
         </DialogContent>
         <DialogActions sx={{ p: 2 }}>
           <Button onClick={() => setSettingsOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleSaveApiKey} sx={{ borderRadius: 2, fontWeight: 700 }}>
-            Save Key
+          <Button
+            variant="contained"
+            onClick={handleTestAndSaveKey}
+            disabled={keyTestResult.testing}
+            startIcon={keyTestResult.testing ? <CircularProgress size={16} color="inherit" /> : <VpnKey />}
+            sx={{ borderRadius: 2, fontWeight: 700 }}
+          >
+            {keyTestResult.testing ? "Verifying..." : "Verify & Save Key"}
           </Button>
         </DialogActions>
       </Dialog>

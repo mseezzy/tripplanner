@@ -9,7 +9,7 @@ from app.core.scoring import calculate_destination_score, filter_and_rank_activi
 from app.services.external_apis import get_weather_forecast, geocode_query, get_wikipedia_summary
 from app.services.flight_service import calculate_flight_estimates
 from app.services.lodging_service import calculate_lodging_estimates
-from app.services.ai_service import generate_ai_itinerary_expansion
+from app.services.ai_service import generate_ai_itinerary_expansion, generate_chat_response
 
 router = APIRouter()
 
@@ -52,6 +52,12 @@ class SendSmsRequest(BaseModel):
     phone_number: str
     message: Optional[str] = None
     trip_url: Optional[str] = None
+
+class ChatRequest(BaseModel):
+    message: str
+    history: List[Dict[str, Any]] = Field(default_factory=list)
+    trip_data: Dict[str, Any] = Field(default_factory=dict)
+    api_key: Optional[str] = None
 
 class TripStop(BaseModel):
     id: Optional[str] = None
@@ -164,6 +170,18 @@ async def send_sms_itinerary(req: SendSmsRequest):
         "recipient": phone,
         "message": sms_text
     }
+
+@router.post("/chat")
+async def chat_with_concierge(req: ChatRequest):
+    reply = await generate_chat_response(
+        message=req.message,
+        history=req.history,
+        trip_data=req.trip_data,
+        api_key=req.api_key
+    )
+    if reply:
+        return {"reply": reply, "source": "gemini_backend"}
+    raise HTTPException(status_code=503, detail="Gemini service unavailable. Please check API key.")
 
 @router.post("/recommendations")
 async def get_recommendations(req: RecommendationRequest):
