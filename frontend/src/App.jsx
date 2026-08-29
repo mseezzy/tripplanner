@@ -29,6 +29,7 @@ import ItineraryView from './components/ItineraryView';
 import MapView from './components/MapView';
 import PrintExport from './components/PrintExport';
 import ShareDialog from './components/ShareDialog';
+import ChatConcierge from './components/ChatConcierge';
 
 export default function App() {
   const [darkMode, setDarkMode] = useState(false);
@@ -292,6 +293,9 @@ export default function App() {
           tripData={tripData}
           rawParams={rawParams}
         />
+
+        {/* Floating Gemini AI Travel Concierge */}
+        <ChatConcierge tripData={tripData} />
 
         {/* Toast Notification */}
         <Snackbar
