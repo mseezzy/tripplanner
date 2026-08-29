@@ -45,7 +45,7 @@ import {
   Spa,
   Public
 } from '@mui/icons-material';
-import { searchGlobalLocations } from '../services/api';
+import { searchGlobalLocations, searchGlobalAirports } from '../services/api';
 
 const AVAILABLE_LIKES = [
   { id: 'theme_parks', label: 'Theme Parks', icon: <SportsEsports fontSize="small" /> },
@@ -138,6 +138,100 @@ function GlobalLocationInput({ value, onChange, label, placeholder }) {
             startAdornment: (
               <>
                 <Place sx={{ mr: 1, color: 'text.secondary' }} fontSize="small" />
+                {params.InputProps.startAdornment}
+              </>
+            ),
+            endAdornment: (
+              <>
+                {loading ? <CircularProgress color="inherit" size={16} sx={{ mr: 1 }} /> : null}
+                {params.InputProps.endAdornment}
+              </>
+            ),
+          }}
+        />
+      )}
+    />
+  );
+}
+
+// Live Global Airport Autocomplete Input for ANY airport in the world
+function GlobalAirportInput({ value, onChange, label, placeholder }) {
+  const [open, setOpen] = useState(false);
+  const [options, setOptions] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [inputValue, setInputValue] = useState(value || '');
+
+  useEffect(() => {
+    setInputValue(value || '');
+  }, [value]);
+
+  useEffect(() => {
+    let active = true;
+    const timer = setTimeout(async () => {
+      setLoading(true);
+      const results = await searchGlobalAirports(inputValue);
+      if (active) {
+        setOptions(results);
+        setLoading(false);
+      }
+    }, 250);
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, [inputValue]);
+
+  return (
+    <Autocomplete
+      fullWidth
+      freeSolo
+      open={open}
+      onOpen={() => setOpen(true)}
+      onClose={() => setOpen(false)}
+      inputValue={inputValue}
+      onInputChange={(_, newInputValue) => {
+        setInputValue(newInputValue);
+        onChange(newInputValue);
+      }}
+      onChange={(_, newValue) => {
+        const val = typeof newValue === 'string' ? newValue : (newValue?.shortLabel || newValue?.label || '');
+        setInputValue(val);
+        onChange(val);
+      }}
+      options={options}
+      getOptionLabel={(option) => (typeof option === 'string' ? option : option.label || '')}
+      loading={loading}
+      renderOption={(props, option) => (
+        <li {...props} key={option.code ? `${option.code}-${option.lat}` : option.label}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, py: 0.5, width: '100%' }}>
+            <Chip
+              label={option.code || 'AIR'}
+              size="small"
+              color="primary"
+              variant="outlined"
+              sx={{ fontWeight: 800, fontSize: '0.7rem', minWidth: 48 }}
+            />
+            <Box sx={{ overflow: 'hidden' }}>
+              <Typography variant="body2" sx={{ fontWeight: 700, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                {option.city} ({option.code})
+              </Typography>
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontSize: '0.72rem' }}>
+                {option.name}, {option.country}
+              </Typography>
+            </Box>
+          </Box>
+        </li>
+      )}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          label={label}
+          placeholder={placeholder}
+          InputProps={{
+            ...params.InputProps,
+            startAdornment: (
+              <>
+                <FlightTakeoff sx={{ mr: 1, color: 'text.secondary' }} fontSize="small" />
                 {params.InputProps.startAdornment}
               </>
             ),
@@ -715,15 +809,11 @@ export default function FamilyForm({ onSubmit, loading, initialValues }) {
 
           {/* SECTION 5: ORIGIN & BUDGET TIER */}
           <Grid item xs={12} sm={6} md={6}>
-            <TextField
-              fullWidth
-              label="Departure City / Airport (Roundtrip Origin)"
-              placeholder="e.g. Chicago (ORD), New York (JFK)"
+            <GlobalAirportInput
+              label="Departure Airport / City (Roundtrip Origin)"
+              placeholder="Search any airport code or city (e.g. JFK, LHR, ICN, HND, ORD, LAX, CDG)..."
               value={originCity}
-              onChange={(e) => setOriginCity(e.target.value)}
-              InputProps={{
-                startAdornment: <FlightTakeoff sx={{ mr: 1, color: 'text.secondary' }} fontSize="small" />
-              }}
+              onChange={(val) => setOriginCity(val)}
             />
           </Grid>
 

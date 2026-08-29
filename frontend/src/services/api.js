@@ -357,6 +357,147 @@ export const fallbackDestinations = [
   }
 ];
 
+// Curated Global Major Airports Dataset for instant autocomplete & IATA resolution
+export const GLOBAL_AIRPORTS = [
+  // North America
+  { code: "ATL", city: "Atlanta", name: "Hartsfield-Jackson Atlanta Int'l", country: "United States", lat: 33.6407, lng: -84.4277 },
+  { code: "ORD", city: "Chicago", name: "O'Hare International Airport", country: "United States", lat: 41.9742, lng: -87.9073 },
+  { code: "MDW", city: "Chicago", name: "Chicago Midway International", country: "United States", lat: 41.7868, lng: -87.7522 },
+  { code: "DFW", city: "Dallas/Fort Worth", name: "Dallas/Fort Worth Int'l", country: "United States", lat: 32.8998, lng: -97.0403 },
+  { code: "DEN", city: "Denver", name: "Denver International Airport", country: "United States", lat: 39.8561, lng: -104.6737 },
+  { code: "LAX", city: "Los Angeles", name: "Los Angeles International Airport", country: "United States", lat: 33.9416, lng: -118.4085 },
+  { code: "JFK", city: "New York", name: "John F. Kennedy International", country: "United States", lat: 40.6413, lng: -73.7781 },
+  { code: "EWR", city: "New York/Newark", name: "Newark Liberty International", country: "United States", lat: 40.6895, lng: -74.1745 },
+  { code: "LGA", city: "New York", name: "LaGuardia Airport", country: "United States", lat: 40.7769, lng: -73.8740 },
+  { code: "SFO", city: "San Francisco", name: "San Francisco International", country: "United States", lat: 37.6213, lng: -122.3790 },
+  { code: "SEA", city: "Seattle", name: "Seattle-Tacoma International", country: "United States", lat: 47.4502, lng: -122.3088 },
+  { code: "LAS", city: "Las Vegas", name: "Harry Reid International Airport", country: "United States", lat: 36.0840, lng: -115.1537 },
+  { code: "MCO", city: "Orlando", name: "Orlando International Airport", country: "United States", lat: 28.4312, lng: -81.3081 },
+  { code: "MIA", city: "Miami", name: "Miami International Airport", country: "United States", lat: 25.7959, lng: -80.2870 },
+  { code: "BOS", city: "Boston", name: "Boston Logan International", country: "United States", lat: 42.3656, lng: -71.0096 },
+  { code: "IAH", city: "Houston", name: "George Bush Intercontinental", country: "United States", lat: 29.9902, lng: -95.3368 },
+  { code: "PHX", city: "Phoenix", name: "Phoenix Sky Harbor International", country: "United States", lat: 33.4373, lng: -112.0078 },
+  { code: "SAN", city: "San Diego", name: "San Diego International Airport", country: "United States", lat: 32.7338, lng: -117.1933 },
+  { code: "HNL", city: "Honolulu", name: "Daniel K. Inouye International", country: "United States", lat: 21.3187, lng: -157.9224 },
+  { code: "YYZ", city: "Toronto", name: "Toronto Pearson International", country: "Canada", lat: 43.6777, lng: -79.6248 },
+  { code: "YVR", city: "Vancouver", name: "Vancouver International Airport", country: "Canada", lat: 49.1967, lng: -123.1815 },
+  { code: "YUL", city: "Montreal", name: "Montréal-Trudeau International", country: "Canada", lat: 45.4706, lng: -73.7408 },
+  { code: "MEX", city: "Mexico City", name: "Benito Juárez International", country: "Mexico", lat: 19.4361, lng: -99.0719 },
+  { code: "CUN", city: "Cancun", name: "Cancún International Airport", country: "Mexico", lat: 21.0365, lng: -86.8771 },
+
+  // Europe
+  { code: "LHR", city: "London", name: "London Heathrow Airport", country: "United Kingdom", lat: 51.4700, lng: -0.4543 },
+  { code: "LGW", city: "London", name: "London Gatwick Airport", country: "United Kingdom", lat: 51.1537, lng: -0.1821 },
+  { code: "CDG", city: "Paris", name: "Paris Charles de Gaulle Airport", country: "France", lat: 49.0097, lng: 2.5479 },
+  { code: "ORY", city: "Paris", name: "Paris Orly Airport", country: "France", lat: 48.7262, lng: 2.3652 },
+  { code: "FRA", city: "Frankfurt", name: "Frankfurt Airport", country: "Germany", lat: 50.0379, lng: 8.5622 },
+  { code: "MUC", city: "Munich", name: "Munich Airport", country: "Germany", lat: 48.3537, lng: 11.7750 },
+  { code: "AMS", city: "Amsterdam", name: "Amsterdam Airport Schiphol", country: "Netherlands", lat: 52.3105, lng: 4.7683 },
+  { code: "MAD", city: "Madrid", name: "Adolfo Suárez Madrid-Barajas", country: "Spain", lat: 40.4839, lng: -3.5680 },
+  { code: "BCN", city: "Barcelona", name: "Josep Tarradellas Barcelona-El Prat", country: "Spain", lat: 41.2974, lng: 2.0833 },
+  { code: "FCO", city: "Rome", name: "Rome Fiumicino Airport", country: "Italy", lat: 41.8003, lng: 12.2389 },
+  { code: "MXP", city: "Milan", name: "Milan Malpensa Airport", country: "Italy", lat: 45.6301, lng: 8.7255 },
+  { code: "ZRH", city: "Zurich", name: "Zurich Airport", country: "Switzerland", lat: 47.4582, lng: 8.5555 },
+  { code: "DUB", city: "Dublin", name: "Dublin Airport", country: "Ireland", lat: 53.4264, lng: -6.2499 },
+  { code: "VIE", city: "Vienna", name: "Vienna International Airport", country: "Austria", lat: 48.1103, lng: 16.5697 },
+  { code: "IST", city: "Istanbul", name: "Istanbul Airport", country: "Turkey", lat: 41.2753, lng: 28.7519 },
+  { code: "ATH", city: "Athens", name: "Athens International Airport", country: "Greece", lat: 37.9364, lng: 23.9445 },
+  { code: "LIS", city: "Lisbon", name: "Humberto Delgado Airport", country: "Portugal", lat: 38.7756, lng: -9.1354 },
+
+  // Asia & Middle East
+  { code: "ICN", city: "Seoul", name: "Incheon International Airport", country: "South Korea", lat: 37.4602, lng: 126.4407 },
+  { code: "GMP", city: "Seoul", name: "Gimpo International Airport", country: "South Korea", lat: 37.5583, lng: 126.7906 },
+  { code: "HND", city: "Tokyo", name: "Tokyo Haneda Airport", country: "Japan", lat: 35.5494, lng: 139.7798 },
+  { code: "NRT", city: "Tokyo", name: "Narita International Airport", country: "Japan", lat: 35.7720, lng: 140.3929 },
+  { code: "KIX", city: "Osaka", name: "Kansai International Airport", country: "Japan", lat: 34.4320, lng: 135.2304 },
+  { code: "SIN", city: "Singapore", name: "Singapore Changi Airport", country: "Singapore", lat: 1.3644, lng: 103.9915 },
+  { code: "HKG", city: "Hong Kong", name: "Hong Kong International Airport", country: "Hong Kong", lat: 22.3080, lng: 113.9185 },
+  { code: "BKK", city: "Bangkok", name: "Suvarnabhumi Airport", country: "Thailand", lat: 13.6900, lng: 100.7501 },
+  { code: "TPE", city: "Taipei", name: "Taiwan Taoyuan International", country: "Taiwan", lat: 25.0797, lng: 121.2342 },
+  { code: "PVG", city: "Shanghai", name: "Shanghai Pudong International", country: "China", lat: 31.1443, lng: 121.8083 },
+  { code: "PEK", city: "Beijing", name: "Beijing Capital International", country: "China", lat: 40.0799, lng: 116.6031 },
+  { code: "DXB", city: "Dubai", name: "Dubai International Airport", country: "United Arab Emirates", lat: 25.2532, lng: 55.3657 },
+  { code: "DOH", city: "Doha", name: "Hamad International Airport", country: "Qatar", lat: 25.2731, lng: 51.6081 },
+  { code: "DEL", city: "New Delhi", name: "Indira Gandhi International", country: "India", lat: 28.5562, lng: 77.1000 },
+  { code: "BOM", city: "Mumbai", name: "Chhatrapati Shivaji Maharaj Int'l", country: "India", lat: 19.0896, lng: 72.8656 },
+
+  // Oceania, Latin America & Africa
+  { code: "SYD", city: "Sydney", name: "Sydney Kingsford Smith Airport", country: "Australia", lat: -33.9399, lng: 151.1753 },
+  { code: "MEL", city: "Melbourne", name: "Melbourne Airport", country: "Australia", lat: -37.6690, lng: 144.8410 },
+  { code: "AKL", city: "Auckland", name: "Auckland Airport", country: "New Zealand", lat: -37.0082, lng: 174.7850 },
+  { code: "GRU", city: "São Paulo", name: "São Paulo/Guarulhos International", country: "Brazil", lat: -23.4356, lng: -46.4731 },
+  { code: "EZE", city: "Buenos Aires", name: "Ezeiza International Airport", country: "Argentina", lat: -34.8222, lng: -58.5358 },
+  { code: "SCL", city: "Santiago", name: "Arturo Merino Benítez International", country: "Chile", lat: -33.3930, lng: -70.7858 },
+  { code: "BOG", city: "Bogotá", name: "El Dorado International Airport", country: "Colombia", lat: 4.7016, lng: -74.1469 },
+  { code: "JNB", city: "Johannesburg", name: "O. R. Tambo International Airport", country: "South Africa", lat: -26.1367, lng: 28.2411 },
+  { code: "CPT", city: "Cape Town", name: "Cape Town International Airport", country: "South Africa", lat: -33.9715, lng: 18.6021 },
+  { code: "CAI", city: "Cairo", name: "Cairo International Airport", country: "Egypt", lat: 30.1219, lng: 31.4056 }
+];
+
+// Live Global Airport Search supporting any IATA code, city, country, or custom airport on Earth
+export async function searchGlobalAirports(query) {
+  if (!query || query.trim().length < 1) return GLOBAL_AIRPORTS.slice(0, 10);
+  const q = query.trim().toLowerCase();
+
+  // 1. Check local airport database
+  const matches = GLOBAL_AIRPORTS.filter((a) =>
+    a.code.toLowerCase().startsWith(q) ||
+    a.city.toLowerCase().includes(q) ||
+    a.name.toLowerCase().includes(q) ||
+    a.country.toLowerCase().includes(q)
+  );
+
+  if (matches.length >= 4) {
+    return matches.slice(0, 8).map(a => ({
+      label: `${a.city} (${a.code}) - ${a.name}, ${a.country}`,
+      shortLabel: `${a.city} (${a.code})`,
+      ...a
+    }));
+  }
+
+  // 2. Query Nominatim for dynamic global airports not in top list
+  try {
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ' airport')}&addressdetails=1&limit=5`;
+    const res = await fetch(url, { headers: { 'Accept-Language': 'en' } });
+    if (res.ok) {
+      const data = await res.json();
+      const dynamicAirports = data.map((item, idx) => {
+        const addr = item.address || {};
+        const city = addr.city || addr.town || addr.municipality || item.name.split(' ')[0];
+        const country = addr.country || 'Global';
+        const code = (item.name.match(/\b([A-Z]{3})\b/) || [null, (city.slice(0, 3).toUpperCase())])[1];
+
+        return {
+          code: code || `AIR${idx}`,
+          city: city,
+          name: item.name || item.display_name.split(',')[0],
+          country: country,
+          lat: parseFloat(item.lat),
+          lng: parseFloat(item.lon),
+          label: `${city} (${code}) - ${item.name.split(',')[0]}, ${country}`,
+          shortLabel: `${city} (${code})`
+        };
+      });
+
+      const combined = [...matches.map(a => ({
+        label: `${a.city} (${a.code}) - ${a.name}, ${a.country}`,
+        shortLabel: `${a.city} (${a.code})`,
+        ...a
+      })), ...dynamicAirports];
+
+      return combined.slice(0, 8);
+    }
+  } catch (err) {
+    console.warn("Dynamic airport lookup error:", err);
+  }
+
+  return matches.slice(0, 8).map(a => ({
+    label: `${a.city} (${a.code}) - ${a.name}, ${a.country}`,
+    shortLabel: `${a.city} (${a.code})`,
+    ...a
+  }));
+}
+
 // Utility to calculate Great-Circle distance between two coordinates in miles
 export function calculateDistanceMiles(lat1, lon1, lat2, lon2) {
   const R = 3958.8; // Earth radius in miles
@@ -895,11 +1036,45 @@ function generateClientRecommendations(req) {
   const numStops = processedStops.length;
   const duration = totalDuration;
 
-  // Flights
-  const flightBase = primaryDest.flight_base_usd;
-  let flightLowTotal = flightBase.low * numPeople;
-  let flightAvgTotal = flightBase.avg * numPeople;
-  let flightPeakTotal = flightBase.peak * numPeople;
+  // Resolve departure airport code and coordinates
+  const originQuery = (req.origin_city || 'Chicago (ORD)').trim();
+  const matchedOriginAirport = GLOBAL_AIRPORTS.find(a =>
+    originQuery.toUpperCase().includes(a.code) ||
+    originQuery.toLowerCase().includes(a.city.toLowerCase()) ||
+    originQuery.toLowerCase().includes(a.name.toLowerCase())
+  ) || { code: (originQuery.match(/\b([A-Z]{3})\b/) || [null, originQuery.slice(0, 3).toUpperCase()])[1] || "ORIGIN", lat: 41.9742, lng: -87.9073, city: originQuery.split('(')[0].trim() };
+
+  const originCode = matchedOriginAirport.code;
+  const destCoords = primaryDest.coordinates || { lat: 28.5383, lng: -81.3792 };
+  const originCoords = { lat: matchedOriginAirport.lat || 41.9742, lng: matchedOriginAirport.lng || -87.9073 };
+  
+  const distMiles = Math.round(calculateDistanceMiles(originCoords.lat, originCoords.lng, destCoords.lat, destCoords.lng));
+  
+  // Calculate realistic flight duration based on distance
+  const estFlightHours = Math.max(1.0, Math.round(((distMiles / 490) + 0.6) * 10) / 10);
+  const durH = Math.floor(estFlightHours);
+  const durM = Math.round((estFlightHours - durH) * 60);
+  const directDurationStr = `${durH}h ${durM > 0 ? durM + 'm' : '00m'}`;
+  const stopoverDurationStr = `${durH + 2}h ${durM + 15}m`;
+
+  // Calculate realistic distance-based base flight pricing per person
+  let ppFlightLow = 220;
+  let ppFlightAvg = 380;
+  let ppFlightPeak = 620;
+
+  if (distMiles < 750) {
+    ppFlightLow = 140; ppFlightAvg = 250; ppFlightPeak = 420;
+  } else if (distMiles < 2200) {
+    ppFlightLow = 240; ppFlightAvg = 420; ppFlightPeak = 690;
+  } else if (distMiles < 5500) {
+    ppFlightLow = 520; ppFlightAvg = 860; ppFlightPeak = 1380;
+  } else {
+    ppFlightLow = 720; ppFlightAvg = 1150; ppFlightPeak = 1720;
+  }
+
+  let flightLowTotal = ppFlightLow * numPeople;
+  let flightAvgTotal = ppFlightAvg * numPeople;
+  let flightPeakTotal = ppFlightPeak * numPeople;
 
   if (numStops > 1) {
     const interCityTransfer = (numStops - 1) * (180 * numPeople);
@@ -908,10 +1083,17 @@ function generateClientRecommendations(req) {
     flightPeakTotal += Math.round(interCityTransfer * 1.3);
   }
 
+  const originDisplay = matchedOriginAirport.city ? `${matchedOriginAirport.city} (${originCode})` : originCode;
+  const routeDisplay = numStops > 1
+    ? [originCode, ...processedStops.map(s => s.destination.airport_code || s.destination.name.split(',')[0].slice(0, 3).toUpperCase()), originCode].join(' ➔ ')
+    : `${originCode} ➔ ${primaryDest.airport_code || 'DEST'}`;
+
   const flights = {
-    origin_code: req.origin_city ? req.origin_city.toUpperCase().slice(0, 3) : "ORD",
+    origin_code: originCode,
     destination_code: primaryDest.airport_code,
-    multi_destination_route: numStops > 1 ? [req.origin_city?.split(' ')[0] || 'Origin', ...processedStops.map(s => s.destination.name.split(',')[0]), req.origin_city?.split(' ')[0] || 'Origin'].join(' ➔ ') : undefined,
+    origin_display: originDisplay,
+    distance_miles: distMiles,
+    multi_destination_route: routeDisplay,
     price_range: {
       low_per_person: Math.round(flightLowTotal / numPeople),
       avg_per_person: Math.round(flightAvgTotal / numPeople),
@@ -923,36 +1105,36 @@ function generateClientRecommendations(req) {
     options: [
       {
         tier: "Budget Carrier / Economy Saver",
-        airline: "Southwest / Economy Saver",
+        airline: "Regional / Economy Saver",
         price_per_person: Math.round(flightLowTotal / numPeople),
         total_family_price: flightLowTotal,
-        type: numStops > 1 ? `${numStops} Multi-City Hops` : "1 Quick stop",
-        duration: numStops > 1 ? "Multi-Hop" : "4h 15m",
+        type: numStops > 1 ? `${numStops} Multi-City Hops` : (distMiles > 2500 ? "1 Stopover Connection" : "Direct / Quick Hop"),
+        duration: numStops > 1 ? "Multi-Hop" : stopoverDurationStr,
         baggage_policy: "Carry-on included, checked bags $35",
         family_seating_tip: "Book family seats together in the same row early."
       },
       {
         tier: "Standard Main Cabin (Recommended)",
-        airline: "Delta / United Main Cabin",
+        airline: "Major Carrier Main Cabin",
         price_per_person: Math.round(flightAvgTotal / numPeople),
         total_family_price: flightAvgTotal,
         type: numStops > 1 ? `${numStops} Multi-City Route` : "Non-stop Direct",
-        duration: numStops > 1 ? "Multi-Hop" : "2h 45m",
+        duration: numStops > 1 ? "Multi-Hop" : directDurationStr,
         baggage_policy: "1 free personal item + 1 carry-on per traveler",
         family_seating_tip: "Includes free adjacent family seating assignments."
       },
       {
         tier: "Premium Family Comfort",
-        airline: "Delta Comfort+ / American Main Select",
+        airline: "Flagship Premium Cabin",
         price_per_person: Math.round(flightPeakTotal / numPeople),
         total_family_price: flightPeakTotal,
         type: "Non-stop Priority",
-        duration: "2h 40m",
+        duration: numStops > 1 ? "Multi-Hop" : directDurationStr,
         baggage_policy: "2 free checked bags + early family boarding",
         family_seating_tip: "Priority family boarding enables smooth stroller gate checks."
       }
     ],
-    family_travel_tip: numStops > 1 ? `Multi-destination itinerary connecting ${numStops} destinations.` : "Booking 6-8 weeks ahead typically unlocks the best family fare tiers."
+    family_travel_tip: `Roundtrip from ${originDisplay} (~${distMiles.toLocaleString()} miles). Booking 6-8 weeks ahead unlocks the best family fare tiers.`
   };
 
   // Lodging
