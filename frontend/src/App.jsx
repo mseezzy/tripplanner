@@ -23,6 +23,7 @@ import DestinationCard from './components/DestinationCard';
 import FlightCard from './components/FlightCard';
 import LodgingCard from './components/LodgingCard';
 import ActivityCard from './components/ActivityCard';
+import EventsCard from './components/EventsCard';
 import BudgetBreakdown from './components/BudgetBreakdown';
 import ItineraryView from './components/ItineraryView';
 import MapView from './components/MapView';
@@ -210,6 +211,14 @@ export default function App() {
                     isMultiDestination={tripData.is_multi_destination}
                     stops={tripData.stops}
                   />
+
+                  {/* Local Events & Seasonal Festivals */}
+                  {tripData.events && tripData.events.length > 0 && (
+                    <EventsCard
+                      events={tripData.events}
+                      destinationName={tripData.destination?.name}
+                    />
+                  )}
 
                   {/* High-Level Budget & Price Ranges */}
                   <BudgetBreakdown

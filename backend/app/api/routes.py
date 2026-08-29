@@ -23,6 +23,13 @@ def load_activities() -> List[Dict[str, Any]]:
     with open(os.path.join(DATA_DIR, "activities.json"), "r", encoding="utf-8") as f:
         return json.load(f)
 
+def load_events() -> List[Dict[str, Any]]:
+    events_path = os.path.join(DATA_DIR, "events.json")
+    if os.path.exists(events_path):
+        with open(events_path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return []
+
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -57,6 +64,8 @@ class RecommendationRequest(BaseModel):
     likes: List[str] = Field(default_factory=list)
     dislikes: List[str] = Field(default_factory=list)
     destinations: Optional[List[TripStop]] = None
+    travel_month: Optional[int] = None
+    month_period: Optional[str] = "all"
     start_date: Optional[str] = None
     end_date: Optional[str] = None
     duration_days: Optional[int] = 5
@@ -403,6 +412,21 @@ async def get_recommendations(req: RecommendationRequest):
     primary_lodging = processed_stops[0]["lodging"]
     primary_activities = processed_stops[0]["activities"]
 
+    all_events = load_events()
+    target_month = req.travel_month
+    if not target_month and req.start_date:
+        try:
+            target_month = datetime.strptime(req.start_date, "%Y-%m-%d").month
+        except Exception:
+            target_month = datetime.utcnow().month
+
+    dest_lower = primary_dest["name"].lower()
+    matched_events = [
+        ev for ev in all_events
+        if any(kw in dest_lower for kw in ev.get("destination_keywords", []))
+        and (target_month is None or target_month in ev.get("months", []))
+    ]
+
     return {
         "is_multi_destination": num_stops > 1,
         "total_stops": num_stops,
@@ -412,6 +436,7 @@ async def get_recommendations(req: RecommendationRequest):
         "flights": flight_data,
         "lodging": primary_lodging,
         "activities": primary_activities,
+        "events": matched_events,
         "weather": primary_weather,
         "budget_summary": budget_summary,
         "itinerary": all_itinerary_days,

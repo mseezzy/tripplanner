@@ -357,6 +357,235 @@ export const fallbackDestinations = [
   }
 ];
 
+// Curated Global Events & Seasonal Festivals
+export const CURATED_EVENTS = [
+  {
+    id: "seoul-lantern",
+    destination_keywords: ["korea", "seoul", "south korea"],
+    name: "Seoul Lantern & Cheonggyecheon Light Festival",
+    category: "Cultural Festival & Light Spectacle",
+    months: [10, 11, 12],
+    display_dates: "November – December (Nightly from 6:00 PM)",
+    price_per_person_usd: 0,
+    price_tier: "Free Public Event",
+    family_tag: "All Ages Spectacle",
+    description: "Hundreds of illuminated giant traditional lanterns and modern 3D light sculptures floating along the scenic Cheonggyecheon Stream in central Seoul.",
+    tips: "Very stroller friendly with paved ramp access; visit around 6:30 PM right as lanterns turn on."
+  },
+  {
+    id: "seoul-cherry-blossom",
+    destination_keywords: ["korea", "seoul", "yeouido"],
+    name: "Yeouido Spring Flower & Cherry Blossom Festival",
+    category: "Nature & Floral Festival",
+    months: [3, 4],
+    display_dates: "Early to Mid April",
+    price_per_person_usd: 0,
+    price_tier: "Free Public Event",
+    family_tag: "Kid & Toddler Friendly",
+    description: "Over 1,800 blooming Yoshino cherry trees lining the Han River with street food carts, live acoustic performances, and face painting.",
+    tips: "Rent a four-person family bicycle at Yeouido Hangang Park for a fun ride under the blossoms."
+  },
+  {
+    id: "tokyo-cherry-blossom",
+    destination_keywords: ["japan", "tokyo", "kyoto"],
+    name: "Tokyo & Kyoto Cherry Blossom (Hanami) Festivities",
+    category: "Cultural Festival & Hanami",
+    months: [3, 4],
+    display_dates: "Late March – Mid April",
+    price_per_person_usd: 0,
+    price_tier: "Free Public Event",
+    family_tag: "Must-See Cultural Event",
+    description: "Iconic cherry blossom picnics beneath blooming sakura trees in Ueno Park, Shinjuku Gyoen, and the illuminated Meguro River.",
+    tips: "Pick up bento boxes from a local depachika (department store basement) for a family hanami picnic."
+  },
+  {
+    id: "tokyo-illumination",
+    destination_keywords: ["japan", "tokyo", "kyoto"],
+    name: "Tokyo Winter Illuminations & Roppongi Hills Light Walk",
+    category: "Holiday Lights & Night Walk",
+    months: [11, 12, 1, 2],
+    display_dates: "Mid November – Mid February",
+    price_per_person_usd: 0,
+    price_tier: "Free Public Event",
+    family_tag: "Magical Evening Event",
+    description: "Millions of sparkling LED lights transforming Roppongi Hills, Shibuya Blue Cave, and Tokyo Midtown into an enchanting winter wonderland.",
+    tips: "Bundle up and visit Shibuya Sky rooftop for breathtaking city views above the illuminations."
+  },
+  {
+    id: "orlando-food-wine",
+    destination_keywords: ["orlando", "florida", "disney"],
+    name: "Epcot International Food & Wine Festival",
+    category: "Food & Culinary Celebration",
+    months: [7, 8, 9, 10, 11],
+    display_dates: "Late July – Mid November",
+    price_per_person_usd: 0,
+    price_tier: "Included with Theme Park Ticket",
+    family_tag: "Family Foodie Favorite",
+    description: "Global culinary marketplace featuring 30+ international food kiosks, Remy's Ratatouille scavenger hunt for kids, and live concerts.",
+    tips: "Kids love the Remy sticker hunt map available at the park entrance."
+  },
+  {
+    id: "orlando-halloween",
+    destination_keywords: ["orlando", "florida"],
+    name: "Mickey's Not-So-Scary Halloween Party",
+    category: "Family Holiday Celebration",
+    months: [8, 9, 10],
+    display_dates: "August – October 31 (Select Evenings)",
+    price_per_person_usd: 125,
+    price_tier: "$$$ Ticketed",
+    family_tag: "Kids & Toddlers Favorite",
+    description: "Trick-or-treating throughout Magic Kingdom, special character costume meet-and-greets, Boo-to-You Parade, and Halloween fireworks.",
+    tips: "Costumes are encouraged for all family members; trick-or-treat bags provided."
+  },
+  {
+    id: "orlando-christmas",
+    destination_keywords: ["orlando", "florida"],
+    name: "Mickey's Very Merry Christmas Party & Epcot Festival of Holidays",
+    category: "Holiday Spectacular & Snowfall",
+    months: [11, 12],
+    display_dates: "November 8 – December 31",
+    price_per_person_usd: 135,
+    price_tier: "$$$ Ticketed",
+    family_tag: "Holiday Spectacle",
+    description: "Magical snowfall on Main Street U.S.A., free holiday cookies and hot cocoa, holiday fireworks, and candlelight processional.",
+    tips: "Arrive at 4:00 PM with the special event ticket to get 3 extra hours in the park before evening shows start."
+  },
+  {
+    id: "london-winter-wonderland",
+    destination_keywords: ["london", "united kingdom", "uk"],
+    name: "Hyde Park Winter Wonderland",
+    category: "Christmas Market & Fairground",
+    months: [11, 12, 1],
+    display_dates: "Mid November – Early January",
+    price_per_person_usd: 0,
+    price_tier: "Free Entry (Off-Peak) / Ticketed Rides",
+    family_tag: "Major Family Holiday Event",
+    description: "London's ultimate Christmas destination with ice skating rink, giant observation wheel, Bavarian village, ice slide, and circus shows.",
+    tips: "Book off-peak weekday daytime entry tickets in advance for free admission."
+  },
+  {
+    id: "paris-bastille-day",
+    destination_keywords: ["paris", "france"],
+    name: "Bastille Day Celebrations & Eiffel Tower Fireworks",
+    category: "National Celebration & Fireworks",
+    months: [7],
+    display_dates: "July 14",
+    price_per_person_usd: 0,
+    price_tier: "Free Public Event",
+    family_tag: "Iconic Fireworks Spectacle",
+    description: "Grand military parade along the Champs-Élysées, free classical concert on Champ de Mars, and breathtaking 30-minute Eiffel Tower fireworks.",
+    tips: "Watch the fireworks with kids from Pont de Bir-Hakeim or Trocadéro gardens for clear views."
+  },
+  {
+    id: "cancun-day-of-dead",
+    destination_keywords: ["cancun", "riviera maya", "mexico"],
+    name: "Xcaret Festival of Life and Death Traditions (Día de los Muertos)",
+    category: "Cultural Heritage & Traditions",
+    months: [10, 11],
+    display_dates: "October 30 – November 3",
+    price_per_person_usd: 45,
+    price_tier: "$$ Special Event",
+    family_tag: "Unforgettable Cultural Magic",
+    description: "Vibrant Mexican Day of the Dead celebration with marigold altars, sugar skull face painting, theatrical plays, Mayan rituals, and artisanal culinary feasts.",
+    tips: "Children get free face painting; evening events feature gentle candlelit parades."
+  }
+];
+
+// Discover Local Events & Seasonal Festivals for ANY destination and timeframe
+export function getSeasonalEvents(destinationName, travelMonth = null, monthPeriod = 'all') {
+  const destStr = (destinationName || '').toLowerCase();
+  const monthNum = travelMonth || (new Date().getMonth() + 1); // 1-12
+  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const currentMonthName = monthNames[monthNum - 1] || "Selected Month";
+
+  // 1. Check curated database for matching events
+  const matched = CURATED_EVENTS.filter((ev) => {
+    const destMatch = ev.destination_keywords.some(k => destStr.includes(k));
+    const monthMatch = !travelMonth || ev.months.includes(monthNum);
+    return destMatch && monthMatch;
+  });
+
+  if (matched.length > 0) {
+    return matched;
+  }
+
+  // 2. Dynamic Seasonal Festival Synthesizer for ANY city on Earth
+  const cityName = destinationName.split(',')[0].trim();
+  const periodLabel = monthPeriod === 'beginning' ? 'Early' : monthPeriod === 'middle' ? 'Mid' : monthPeriod === 'end' ? 'Late' : '';
+  const timeWindow = `${periodLabel} ${currentMonthName}`.trim();
+
+  const seasonalTemplates = [
+    // Spring (Mar, Apr, May)
+    {
+      season: "Spring",
+      months: [3, 4, 5],
+      name: `${cityName} Spring Cultural & Flower Fair`,
+      category: "Floral Arts & Cultural Street Fair",
+      display_dates: `${timeWindow} (Seasonal Annual Celebration)`,
+      price_per_person_usd: 0,
+      price_tier: "Free Public Event",
+      family_tag: "Great for All Ages",
+      description: `Vibrant community celebration welcoming spring in ${cityName} with botanical flower displays, open-air food markets, artisan crafts, and children's activity zones.`,
+      tips: "Great weekend daytime event with shaded lawn seating for family picnics."
+    },
+    // Summer (Jun, Jul, Aug)
+    {
+      season: "Summer",
+      months: [6, 7, 8],
+      name: `${cityName} Summer Waterfront & Night Food Festival`,
+      category: "Food Market & Live Music",
+      display_dates: `${timeWindow} (Evenings from 5:30 PM)`,
+      price_per_person_usd: 0,
+      price_tier: "Free Entry",
+      family_tag: "Kid & Teen Friendly",
+      description: `Lively summer evening street festival in ${cityName} featuring local food trucks, ice cream pop-ups, regional live acoustic bands, and interactive street performers.`,
+      tips: "Arrive around sunset for cooler temperatures and vibrant night ambiance."
+    },
+    // Autumn (Sep, Oct, Nov)
+    {
+      season: "Autumn",
+      months: [9, 10, 11],
+      name: `${cityName} Autumn Harvest & Evening Lantern Walk`,
+      category: "Cultural Festival & Light Spectacle",
+      display_dates: `${timeWindow} (Nightly Illumination)`,
+      price_per_person_usd: 0,
+      price_tier: "Free Public Event",
+      family_tag: "Family Favorite Spectacle",
+      description: `Charming fall seasonal celebration in ${cityName} with illuminated evening light installations, seasonal apple & pumpkin treats, craft workshops, and family music.`,
+      tips: "Kids can participate in free evening lantern decorating workshops."
+    },
+    // Winter (Dec, Jan, Feb)
+    {
+      season: "Winter",
+      months: [12, 1, 2],
+      name: `${cityName} Winter Holiday Village & Light Celebration`,
+      category: "Holiday Village & Artisan Market",
+      display_dates: `${timeWindow} (Daily from 11:00 AM)`,
+      price_per_person_usd: 0,
+      price_tier: "Free Entry",
+      family_tag: "Magical Holiday Event",
+      description: `Enchanting winter holiday market in ${cityName} featuring festive wooden stalls, hot chocolate and warm pastries, decorative light arches, and seasonal photo spots.`,
+      tips: "Bundle up warmly; stroller accessible along main town square promenades."
+    }
+  ];
+
+  const matchedTemplate = seasonalTemplates.find(t => t.months.includes(monthNum)) || seasonalTemplates[0];
+
+  return [
+    matchedTemplate,
+    {
+      name: `${cityName} Heritage Sights & Weekend Artisan Market`,
+      category: "Local Culture & Family Discovery",
+      display_dates: `Every Weekend during ${currentMonthName}`,
+      price_per_person_usd: 0,
+      price_tier: "Free Entry",
+      family_tag: "All Ages",
+      description: `Weekend pedestrian market showcasing local painters, handmade family souvenirs, baked goods, and cultural storytelling.`,
+      tips: "Best visited between 10:00 AM and 1:00 PM for the freshest baked snacks."
+    }
+  ];
+}
+
 // Curated Global Major Airports Dataset for instant autocomplete & IATA resolution
 export const GLOBAL_AIRPORTS = [
   // North America
@@ -1280,6 +1509,30 @@ function generateClientRecommendations(req) {
     ]
   };
 
+  // Local Events & Seasonal Festivals
+  let travelMonth = req.travel_month || null;
+  let monthPeriod = req.month_period || 'all';
+  if (!travelMonth && req.start_date) {
+    try {
+      const parsedDate = new Date(req.start_date);
+      if (!isNaN(parsedDate.getTime())) {
+        travelMonth = parsedDate.getMonth() + 1;
+        const dayOfMonth = parsedDate.getDate();
+        if (dayOfMonth <= 10) monthPeriod = 'beginning';
+        else if (dayOfMonth <= 20) monthPeriod = 'middle';
+        else monthPeriod = 'end';
+      }
+    } catch {
+      travelMonth = new Date().getMonth() + 1;
+    }
+  }
+
+  const primaryEvents = getSeasonalEvents(primaryDest.name, travelMonth, monthPeriod);
+
+  processedStops.forEach(stop => {
+    stop.events = getSeasonalEvents(stop.destination.name, travelMonth, monthPeriod);
+  });
+
   // Multi-Stop Itinerary
   let dayCounter = 1;
   const itinerary = [];
@@ -1305,11 +1558,17 @@ function generateClientRecommendations(req) {
           tag: "Relaxing"
         },
         evening: {
-          activity: `Family Dinner in ${stop.destination.name.split(',')[0]}`,
+          activity: d === 2 && primaryEvents.length > 0
+            ? `Visit ${primaryEvents[0].name}`
+            : `Family Dinner in ${stop.destination.name.split(',')[0]}`,
           time: "6:00 PM - 8:30 PM",
-          description: "Enjoy a memorable dinner at a local family-friendly restaurant.",
-          price: `~$${Math.round((primaryDest.daily_food_per_person_usd * numPeople) / 2)} total`,
-          tag: "All Ages"
+          description: d === 2 && primaryEvents.length > 0
+            ? primaryEvents[0].description
+            : "Enjoy a memorable dinner at a local family-friendly restaurant.",
+          price: d === 2 && primaryEvents.length > 0
+            ? primaryEvents[0].price_tier
+            : `~$${Math.round((primaryDest.daily_food_per_person_usd * numPeople) / 2)} total`,
+          tag: d === 2 && primaryEvents.length > 0 ? (primaryEvents[0].family_tag || "Seasonal Highlight") : "All Ages"
         }
       });
       dayCounter++;
@@ -1325,6 +1584,7 @@ function generateClientRecommendations(req) {
     flights,
     lodging,
     activities,
+    events: primaryEvents,
     weather,
     budget_summary,
     itinerary,

@@ -20,7 +20,9 @@ import {
   CircularProgress,
   useTheme,
   Alert,
-  Autocomplete
+  Autocomplete,
+  ToggleButton,
+  ToggleButtonGroup
 } from '@mui/material';
 import {
   PersonAdd,
@@ -43,7 +45,9 @@ import {
   Pool,
   Terrain,
   Spa,
-  Public
+  Public,
+  CalendarMonth,
+  Celebration
 } from '@mui/icons-material';
 import { searchGlobalLocations, searchGlobalAirports } from '../services/api';
 
@@ -324,6 +328,12 @@ export default function FamilyForm({ onSubmit, loading, initialValues }) {
 
   const [likes, setLikes] = useState(initialValues?.likes || ['beaches']);
   const [dislikes, setDislikes] = useState(initialValues?.dislikes || ['stroller_friendly']);
+  
+  // Timeframe & Season State
+  const currentMonth = new Date().getMonth() + 1;
+  const [timeframeMode, setTimeframeMode] = useState('month'); // 'month' or 'exact'
+  const [travelMonth, setTravelMonth] = useState(initialValues?.travel_month || (currentMonth + 1 > 12 ? 1 : currentMonth + 1));
+  const [monthPeriod, setMonthPeriod] = useState(initialValues?.month_period || 'all');
   const [startDate, setStartDate] = useState(new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0]);
   const [endDate, setEndDate] = useState(new Date(Date.now() + 20 * 86400000).toISOString().split('T')[0]);
   
@@ -448,8 +458,11 @@ export default function FamilyForm({ onSubmit, loading, initialValues }) {
       family_members: familyMembers,
       likes,
       dislikes,
-      start_date: startDate,
-      end_date: endDate,
+      travel_month: travelMonth,
+      month_period: monthPeriod,
+      timeframe_mode: timeframeMode,
+      start_date: timeframeMode === 'exact' ? startDate : undefined,
+      end_date: timeframeMode === 'exact' ? endDate : undefined,
       duration_days: totalDurationDays,
       destinations: validStops.length > 0 ? validStops : null,
       preferred_destination: validStops[0]?.destination || '',
@@ -667,6 +680,116 @@ export default function FamilyForm({ onSubmit, loading, initialValues }) {
                 );
               })}
             </Box>
+          </Grid>
+
+          {/* SECTION 3.5: TRIP TIMEFRAME, SEASON & LOCAL FESTIVALS */}
+          <Grid item xs={12}>
+            <Paper
+              elevation={0}
+              sx={{
+                p: 2.5,
+                bgcolor: theme.palette.mode === 'dark' ? 'rgba(234, 88, 12, 0.06)' : '#fffaf5',
+                borderRadius: 3,
+                border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(234, 88, 12, 0.2)' : '#fed7aa'}`,
+              }}
+            >
+              <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { sm: 'center' }, gap: 1.5, mb: 1.5 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Celebration sx={{ color: '#ea580c' }} />
+                  <Box>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 700, color: 'text.primary' }}>
+                      Trip Timing & Local Festivals (Optional)
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Specify a month or calendar date to discover local events, cultural festivals, and seasonal weather
+                    </Typography>
+                  </Box>
+                </Box>
+                <ToggleButtonGroup
+                  value={timeframeMode}
+                  exclusive
+                  size="small"
+                  onChange={(_, newMode) => newMode && setTimeframeMode(newMode)}
+                  sx={{ bgcolor: 'background.paper' }}
+                >
+                  <ToggleButton value="month" sx={{ textTransform: 'none', px: 1.5, fontWeight: 700, fontSize: '0.8rem' }}>
+                    📅 Rough Month & Season
+                  </ToggleButton>
+                  <ToggleButton value="exact" sx={{ textTransform: 'none', px: 1.5, fontWeight: 700, fontSize: '0.8rem' }}>
+                    📆 Specific Dates
+                  </ToggleButton>
+                </ToggleButtonGroup>
+              </Box>
+
+              {timeframeMode === 'month' ? (
+                <Grid container spacing={2} sx={{ mt: 0.5 }}>
+                  <Grid item xs={12} sm={6} md={6}>
+                    <FormControl fullWidth size="small">
+                      <InputLabel>Travel Month</InputLabel>
+                      <Select
+                        value={travelMonth}
+                        label="Travel Month"
+                        onChange={(e) => setTravelMonth(e.target.value)}
+                      >
+                        <MenuItem value={1}>January (Winter & New Year Celebrations)</MenuItem>
+                        <MenuItem value={2}>February (Winter Festivals & Carnivals)</MenuItem>
+                        <MenuItem value={3}>March (Early Spring & Blossom Bloom)</MenuItem>
+                        <MenuItem value={4}>April (Spring Blossoms & Floral Festivals)</MenuItem>
+                        <MenuItem value={5}>May (Late Spring & Cultural Parades)</MenuItem>
+                        <MenuItem value={6}>June (Early Summer & Solstice Fairs)</MenuItem>
+                        <MenuItem value={7}>July (Mid Summer & Fireworks Spectacles)</MenuItem>
+                        <MenuItem value={8}>August (Late Summer & Cultural Festivals)</MenuItem>
+                        <MenuItem value={9}>September (Early Autumn & Harvest Fairs)</MenuItem>
+                        <MenuItem value={10}>October (Autumn Colors & Halloween / Lantern Fairs)</MenuItem>
+                        <MenuItem value={11}>November (Late Fall & Early Holiday Markets)</MenuItem>
+                        <MenuItem value={12}>December (Winter Holiday Illuminations & Christmas Markets)</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Grid>
+
+                  <Grid item xs={12} sm={6} md={6}>
+                    <FormControl fullWidth size="small">
+                      <InputLabel>Part of Month</InputLabel>
+                      <Select
+                        value={monthPeriod}
+                        label="Part of Month"
+                        onChange={(e) => setMonthPeriod(e.target.value)}
+                      >
+                        <MenuItem value="all">Entire Month (Flexible)</MenuItem>
+                        <MenuItem value="beginning">Beginning of Month (1st – 10th)</MenuItem>
+                        <MenuItem value="middle">Middle of Month (11th – 20th)</MenuItem>
+                        <MenuItem value="end">End of Month (21st – 31st)</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                </Grid>
+              ) : (
+                <Grid container spacing={2} sx={{ mt: 0.5 }}>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      type="date"
+                      label="Start Date"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                      InputLabelProps={{ shrink: true }}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      type="date"
+                      label="End Date"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                      InputLabelProps={{ shrink: true }}
+                    />
+                  </Grid>
+                </Grid>
+              )}
+            </Paper>
           </Grid>
 
           <Grid item xs={12}>
