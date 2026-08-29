@@ -691,14 +691,99 @@ function generateClientRecommendations(req) {
   // Process stops
   let stops = [];
   if (req.destinations && req.destinations.length > 0) {
-    stops = req.destinations.filter(s => s.destination.trim());
+    stops = req.destinations.filter(s => s.destination && s.destination.trim());
   } else if (req.preferred_destination && req.preferred_destination.trim()) {
     stops = [{ destination: req.preferred_destination.trim(), duration_days: req.duration_days || 5 }];
-  } else {
-    stops = [{ destination: fallbackDestinations[0].name, duration_days: req.duration_days || 5 }];
   }
 
-  const totalDuration = stops.reduce((sum, s) => sum + (parseInt(s.duration_days, 10) || 3), 0);
+  // AUTO-RECOMMEND MODE: If no destination specified, score and rank all available destinations for family & budget!
+  let allRankedDestinations = [];
+  const isOpenSearch = stops.length === 0;
+  const tripDuration = req.duration_days || 5;
+
+  if (isOpenSearch) {
+    // Score all destinations against family preferences, age groups, and budget tier
+    const scoredDests = fallbackDestinations.map(d => {
+      let score = 75;
+      const reasons = [];
+
+      const hasToddler = family.some(m => m.age <= 3);
+      const hasTeen = family.some(m => m.age >= 13 && m.age <= 17);
+      const allLikes = Array.from(new Set([...likes, ...family.flatMap(m => m.likes || [])]));
+
+      if (hasToddler) {
+        if (d.stroller_friendly) { score += 10; reasons.push("Stroller-friendly for toddlers"); }
+        else { score -= 10; }
+      }
+      if (hasTeen && d.primary_categories.some(c => ["theme_parks", "adventure", "water_parks"].includes(c))) {
+        score += 8;
+        reasons.push("Thrilling rides & adventure for teens");
+      }
+
+      allLikes.forEach(lk => {
+        if (d.primary_categories.some(c => c.includes(lk.replace(' ', '_')))) {
+          score += 6;
+          reasons.push(`Matches interest in ${lk.replace('_', ' ')}`);
+        }
+      });
+
+      dislikes.forEach(dis => {
+        if (dis.includes("crowd") && d.crowd_level === "high") score -= 8;
+        if (dis.includes("heat") && d.climate_type === "tropical") score -= 6;
+      });
+
+      const memberEnjoyment = family.map((m) => {
+        let mScore = 78;
+        const mAge = m.age || 20;
+        const mLikes = m.likes || [];
+        const mName = m.name || 'Member';
+
+        if (mAge <= 3) {
+          if (d.stroller_friendly) mScore += 14;
+          else mScore -= 10;
+        } else if (mAge <= 12) {
+          mScore += 10;
+        } else if (mAge <= 17) {
+          if (d.primary_categories.some(c => ["theme_parks", "adventure", "water_parks"].includes(c))) mScore += 14;
+        }
+
+        mLikes.forEach(lk => {
+          if (d.primary_categories.some(cat => cat.includes(lk.replace(' ', '_')))) {
+            mScore += 8;
+          }
+        });
+
+        const finalMScore = Math.min(99, Math.max(65, mScore));
+        let highlight = "Great overall experience and easy pacing";
+        if (mAge <= 3) highlight = d.stroller_friendly ? "Stroller-friendly walking and gentle splash zones" : "Uneven paths, best with a carrier";
+        else if (mAge <= 12) highlight = "Excited for interactive discovery zones and character meets";
+        else if (mAge <= 17) highlight = "Loves thrill rides, adventure sports and photo spots";
+        else if (mLikes.length > 0) highlight = `Looking forward to ${mLikes.map(l => l.replace('_', ' ')).slice(0, 2).join(', ')}`;
+        else highlight = "Relaxing atmosphere, scenic dining & family time";
+
+        return {
+          name: mName,
+          age: mAge,
+          enjoyment_score: finalMScore,
+          sentiment: finalMScore >= 90 ? "😍 Super Excited" : finalMScore >= 80 ? "😊 Very Happy" : "👍 Good Time",
+          highlight
+        };
+      });
+
+      return {
+        ...d,
+        match_score: Math.min(99, Math.max(60, score)),
+        score_reasons: reasons.slice(0, 3),
+        member_enjoyment: memberEnjoyment
+      };
+    });
+
+    scoredDests.sort((a, b) => b.match_score - a.match_score);
+    allRankedDestinations = scoredDests;
+    stops = [{ destination: scoredDests[0].name, duration_days: tripDuration }];
+  }
+
+  const totalDuration = stops.reduce((sum, s) => sum + (parseInt(s.duration_days, 10) || tripDuration), 0);
 
   // Score destinations for each stop
   const processedStops = stops.map((stop, stopIdx) => {
@@ -1050,11 +1135,11 @@ function generateClientRecommendations(req) {
   });
 
   return {
-    is_multi_destination: numStops > 1,
+    is_multi_destination: numStops > 1 && !isOpenSearch,
     total_stops: numStops,
     stops: processedStops,
     destination: primaryDest,
-    all_ranked_destinations: processedStops.map(s => s.destination),
+    all_ranked_destinations: allRankedDestinations.length > 0 ? allRankedDestinations : processedStops.map(s => s.destination),
     flights,
     lodging,
     activities,

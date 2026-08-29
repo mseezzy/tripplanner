@@ -156,6 +156,20 @@ function GlobalLocationInput({ value, onChange, label, placeholder }) {
 
 const PRESETS = [
   {
+    name: '✨ Auto-Recommend Best Match (Family & Budget)',
+    members: [
+      { name: 'Parent 1', age: 36, role: 'Adult', likes: ['relaxing', 'food_culinary', 'beaches'] },
+      { name: 'Parent 2', age: 37, role: 'Adult', likes: ['theme_parks', 'food_culinary'] },
+      { name: 'Child', age: 7, role: 'Child', likes: ['theme_parks', 'animals_wildlife', 'water_parks'] },
+      { name: 'Toddler', age: 2, role: 'Toddler', likes: ['water_parks', 'animals_wildlife'] }
+    ],
+    likes: ['beaches'],
+    dislikes: ['stroller_friendly'],
+    destinations: [
+      { id: 'stop-1', destination: '', duration_days: 5 }
+    ]
+  },
+  {
     name: 'Multi-Stop: Florida + Cancun (2 Stops, 7d)',
     members: [
       { name: 'Mom (Sarah)', age: 36, role: 'Adult', likes: ['relaxing', 'food_culinary', 'beaches'] },
@@ -171,7 +185,7 @@ const PRESETS = [
     ]
   },
   {
-    name: 'Family with Teens (Yellowstone)',
+    name: 'Family with Teens (Yellowstone, 5d)',
     members: [
       { name: 'Mom', age: 44, role: 'Adult', likes: ['nature', 'relaxing', 'food_culinary'] },
       { name: 'Dad', age: 46, role: 'Adult', likes: ['adventure', 'nature', 'hiking'] },
@@ -219,13 +233,13 @@ export default function FamilyForm({ onSubmit, loading, initialValues }) {
   const [startDate, setStartDate] = useState(new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0]);
   const [endDate, setEndDate] = useState(new Date(Date.now() + 20 * 86400000).toISOString().split('T')[0]);
   
-  // Multi-destination stops state
+  // Multi-destination stops state (Defaults to empty/optional for auto-recommendation!)
   const [tripStops, setTripStops] = useState(
     initialValues?.destinations?.length > 0
       ? initialValues.destinations
       : initialValues?.preferred_destination
       ? [{ id: 'stop-1', destination: initialValues.preferred_destination, duration_days: initialValues.duration_days || 5 }]
-      : [{ id: 'stop-1', destination: 'Orlando, Florida', duration_days: 4 }]
+      : [{ id: 'stop-1', destination: '', duration_days: 5 }]
   );
 
   const [originCity, setOriginCity] = useState(initialValues?.origin_city || 'Chicago (ORD)');
@@ -335,6 +349,7 @@ export default function FamilyForm({ onSubmit, loading, initialValues }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const validStops = tripStops.filter((s) => s.destination && s.destination.trim());
     onSubmit({
       family_members: familyMembers,
       likes,
@@ -342,8 +357,8 @@ export default function FamilyForm({ onSubmit, loading, initialValues }) {
       start_date: startDate,
       end_date: endDate,
       duration_days: totalDurationDays,
-      destinations: tripStops,
-      preferred_destination: tripStops[0]?.destination || '',
+      destinations: validStops.length > 0 ? validStops : null,
+      preferred_destination: validStops[0]?.destination || '',
       origin_city: originCity,
       budget_tier: budgetTier
     });
@@ -575,16 +590,16 @@ export default function FamilyForm({ onSubmit, loading, initialValues }) {
                 border: `1px solid ${theme.palette.divider}`,
               }}
             >
-              <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { sm: 'center' }, gap: 1, mb: 2 }}>
+              <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { sm: 'center' }, gap: 1, mb: 1 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Place color="primary" />
                   <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-                    Trip Destinations & Route Order
+                    Trip Destinations & Route (Optional)
                   </Typography>
                 </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
                   <Chip
-                    label={`Total: ${totalDurationDays} Days (${tripStops.length} ${tripStops.length === 1 ? 'Stop' : 'Stops'})`}
+                    label={`Total Stay: ${totalDurationDays} Days`}
                     color="primary"
                     size="small"
                     sx={{ fontWeight: 800 }}
@@ -600,6 +615,10 @@ export default function FamilyForm({ onSubmit, loading, initialValues }) {
                   </Button>
                 </Box>
               </Box>
+
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 2 }}>
+                💡 <strong>Optional:</strong> Leave blank to let the app automatically recommend the best destinations based on your family and budget, or search any specific cities/countries worldwide.
+              </Typography>
 
               <Grid container spacing={2}>
                 {tripStops.map((stop, idx) => (
