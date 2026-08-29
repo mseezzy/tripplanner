@@ -1,0 +1,545 @@
+// API service with live backend connection and resilient fallback
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+
+export const fallbackDestinations = [
+  {
+    id: "orlando-fl",
+    name: "Orlando, Florida",
+    country: "United States",
+    region: "North America",
+    coordinates: { lat: 28.5383, lng: -81.3792 },
+    airport_code: "MCO",
+    hero_image: "https://images.unsplash.com/photo-1597466599360-3b9775841aec?auto=format&fit=crop&w=1000&q=80",
+    short_description: "The world's premier family entertainment capital featuring Walt Disney World, Universal Studios, and endless interactive water parks.",
+    primary_categories: ["theme_parks", "entertainment", "water_parks", "relaxing"],
+    target_age_groups: ["toddlers", "kids", "tweens", "teens", "adults"],
+    pacing: "moderate",
+    best_seasons: ["Spring", "Autumn", "Winter"],
+    stroller_friendly: true,
+    crowd_level: "high",
+    climate_type: "subtropical",
+    flight_base_usd: { low: 180, avg: 320, peak: 550 },
+    lodging_daily_usd: { budget_inn: 95, vacation_rental: 185, family_suite: 240, luxury_resort: 480 },
+    daily_food_per_person_usd: 45,
+    local_transport_daily_usd: 40,
+    highlight_features: [
+      "World-class theme parks (Magic Kingdom, Islands of Adventure, Epcot)",
+      "Hundreds of family resort pools and lazy rivers",
+      "Kennedy Space Center day trip proximity",
+      "Stroller-friendly infrastructure everywhere"
+    ]
+  },
+  {
+    id: "san-diego-ca",
+    name: "San Diego, California",
+    country: "United States",
+    region: "North America",
+    coordinates: { lat: 32.7157, lng: -117.1611 },
+    airport_code: "SAN",
+    hero_image: "https://images.unsplash.com/photo-1506146332389-18140dc7b2fb?auto=format&fit=crop&w=1000&q=80",
+    short_description: "Perfect year-round coastal weather, renowned world-class zoo, Balboa Park museums, and family-friendly beaches like La Jolla Shores.",
+    primary_categories: ["animals_wildlife", "beaches", "science_museums", "nature"],
+    target_age_groups: ["toddlers", "kids", "tweens", "teens", "adults"],
+    pacing: "relaxed",
+    best_seasons: ["Spring", "Summer", "Autumn", "Winter"],
+    stroller_friendly: true,
+    crowd_level: "moderate",
+    climate_type: "mediterranean",
+    flight_base_usd: { low: 190, avg: 340, peak: 580 },
+    lodging_daily_usd: { budget_inn: 120, vacation_rental: 220, family_suite: 280, luxury_resort: 520 },
+    daily_food_per_person_usd: 50,
+    local_transport_daily_usd: 35,
+    highlight_features: [
+      "San Diego Zoo and Safari Park",
+      "Gentle wave beaches at Coronado and La Jolla",
+      "USS Midway Aircraft Carrier interactive museum",
+      "Legoland California nearby in Carlsbad"
+    ]
+  },
+  {
+    id: "yellowstone-wy",
+    name: "Yellowstone & Grand Teton, Wyoming",
+    country: "United States",
+    region: "North America",
+    coordinates: { lat: 44.4280, lng: -110.5885 },
+    airport_code: "JAC",
+    hero_image: "https://images.unsplash.com/photo-1533497197925-c64639906669?auto=format&fit=crop&w=1000&q=80",
+    short_description: "America's first national park packed with geysers, grizzly bears, bison herds, thermal hot springs, and dramatic mountain peaks.",
+    primary_categories: ["nature", "hiking", "animals_wildlife", "scenery"],
+    target_age_groups: ["kids", "tweens", "teens", "adults"],
+    pacing: "active",
+    best_seasons: ["Summer", "Autumn"],
+    stroller_friendly: false,
+    crowd_level: "high",
+    climate_type: "alpine",
+    flight_base_usd: { low: 280, avg: 450, peak: 720 },
+    lodging_daily_usd: { budget_inn: 130, vacation_rental: 260, family_suite: 310, luxury_resort: 590 },
+    daily_food_per_person_usd: 40,
+    local_transport_daily_usd: 65,
+    highlight_features: [
+      "Old Faithful and Grand Prismatic Spring boardwalks",
+      "Lamar Valley wildlife safaris (bison, wolves, elk)",
+      "Snake River scenic raft floats for all ages",
+      "Junior Ranger educational badge programs"
+    ]
+  },
+  {
+    id: "london-uk",
+    name: "London, United Kingdom",
+    country: "United Kingdom",
+    region: "Europe",
+    coordinates: { lat: 51.5074, lng: -0.1278 },
+    airport_code: "LHR",
+    hero_image: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=1000&q=80",
+    short_description: "Historic palaces, world-class free national museums, West End family theatre, and Harry Potter wizarding adventures.",
+    primary_categories: ["history_culture", "science_museums", "entertainment", "food_culinary"],
+    target_age_groups: ["kids", "tweens", "teens", "adults"],
+    pacing: "moderate",
+    best_seasons: ["Spring", "Summer", "Autumn"],
+    stroller_friendly: true,
+    crowd_level: "high",
+    climate_type: "temperate",
+    flight_base_usd: { low: 480, avg: 750, peak: 1200 },
+    lodging_daily_usd: { budget_inn: 140, vacation_rental: 240, family_suite: 320, luxury_resort: 600 },
+    daily_food_per_person_usd: 55,
+    local_transport_daily_usd: 25,
+    highlight_features: [
+      "Free entry to Natural History Museum and Science Museum",
+      "Tower of London and Crown Jewels with Beefeater tours",
+      "Warner Bros. Studio Tour London - Harry Potter",
+      "Iconic double-decker buses and Thames River clippers"
+    ]
+  },
+  {
+    id: "tokyo-japan",
+    name: "Tokyo, Japan",
+    country: "Japan",
+    region: "Asia",
+    coordinates: { lat: 35.6762, lng: 139.6503 },
+    airport_code: "HND",
+    hero_image: "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1000&q=80",
+    short_description: "Ultra-modern, incredibly safe, and vibrant city blending cutting-edge tech, anime pop-culture, Tokyo Disney, and ancient shrines.",
+    primary_categories: ["science_museums", "theme_parks", "food_culinary", "history_culture"],
+    target_age_groups: ["kids", "tweens", "teens", "adults"],
+    pacing: "active",
+    best_seasons: ["Spring", "Autumn"],
+    stroller_friendly: true,
+    crowd_level: "high",
+    climate_type: "temperate",
+    flight_base_usd: { low: 650, avg: 980, peak: 1550 },
+    lodging_daily_usd: { budget_inn: 110, vacation_rental: 210, family_suite: 290, luxury_resort: 550 },
+    daily_food_per_person_usd: 40,
+    local_transport_daily_usd: 20,
+    highlight_features: [
+      "Tokyo DisneySea & Disneyland Resort",
+      "teamLab Planets immersive digital art museum",
+      "Ghibli Museum and Akihabara gaming districts",
+      "Immaculately clean, kid-friendly public transport"
+    ]
+  },
+  {
+    id: "costa-rica",
+    name: "Arenal & Manuel Antonio, Costa Rica",
+    country: "Costa Rica",
+    region: "Central America",
+    coordinates: { lat: 9.7489, lng: -83.7534 },
+    airport_code: "SJO",
+    hero_image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1000&q=80",
+    short_description: "Lush rainforests, active volcano thermal springs, wildlife reserves filled with sloths and monkeys, plus family zipline adventures.",
+    primary_categories: ["nature", "animals_wildlife", "adventure", "beaches"],
+    target_age_groups: ["kids", "tweens", "teens", "adults"],
+    pacing: "active",
+    best_seasons: ["Winter", "Spring"],
+    stroller_friendly: false,
+    crowd_level: "moderate",
+    climate_type: "tropical",
+    flight_base_usd: { low: 290, avg: 480, peak: 750 },
+    lodging_daily_usd: { budget_inn: 85, vacation_rental: 170, family_suite: 220, luxury_resort: 420 },
+    daily_food_per_person_usd: 35,
+    local_transport_daily_usd: 50,
+    highlight_features: [
+      "Rainforest hanging bridges and sloth sanctuaries",
+      "Volcanic natural hot spring water parks (Baldi / Tabacon)",
+      "Manuel Antonio National Park beach and monkey trails",
+      "Chocolate making tours and beginner surf schools"
+    ]
+  },
+  {
+    id: "cancun-riviera-maya",
+    name: "Cancun & Riviera Maya, Mexico",
+    country: "Mexico",
+    region: "North America",
+    coordinates: { lat: 20.6296, lng: -87.0739 },
+    airport_code: "CUN",
+    hero_image: "https://images.unsplash.com/photo-1512815046278-8bc611c0dc89?auto=format&fit=crop&w=1000&q=80",
+    short_description: "Turquoise Caribbean beaches, all-inclusive family eco-parks (Xcaret, Xel-Há), underground cenote swimming, and Mayan ruins.",
+    primary_categories: ["beaches", "water_parks", "relaxing", "nature", "history_culture"],
+    target_age_groups: ["toddlers", "kids", "tweens", "teens", "adults"],
+    pacing: "relaxed",
+    best_seasons: ["Winter", "Spring", "Autumn"],
+    stroller_friendly: true,
+    crowd_level: "moderate",
+    climate_type: "tropical",
+    flight_base_usd: { low: 220, avg: 380, peak: 620 },
+    lodging_daily_usd: { budget_inn: 90, vacation_rental: 160, family_suite: 260, luxury_resort: 480 },
+    daily_food_per_person_usd: 35,
+    local_transport_daily_usd: 30,
+    highlight_features: [
+      "Xcaret & Xel-Ha all-inclusive eco-archaeological water parks",
+      "Crystal clear natural cenote swimming for all skill levels",
+      "Calm shallow beach zones in Puerto Morelos and Isla Mujeres",
+      "Tulum cliffside ocean ruins"
+    ]
+  },
+  {
+    id: "maui-hi",
+    name: "Maui & Oahu, Hawaii",
+    country: "United States",
+    region: "North America",
+    coordinates: { lat: 20.7984, lng: -156.3319 },
+    airport_code: "OGG",
+    hero_image: "https://images.unsplash.com/photo-1542259009477-d625272157b7?auto=format&fit=crop&w=1000&q=80",
+    short_description: "Tropical paradise with protected sea turtle snorkeling bays, Haleakalā volcanic sunrise, authentic luaus, and scenic coastal road trips.",
+    primary_categories: ["beaches", "nature", "relaxing", "adventure", "animals_wildlife"],
+    target_age_groups: ["toddlers", "kids", "tweens", "teens", "adults"],
+    pacing: "relaxed",
+    best_seasons: ["Spring", "Summer", "Autumn", "Winter"],
+    stroller_friendly: true,
+    crowd_level: "moderate",
+    climate_type: "tropical",
+    flight_base_usd: { low: 350, avg: 580, peak: 950 },
+    lodging_daily_usd: { budget_inn: 160, vacation_rental: 290, family_suite: 380, luxury_resort: 680 },
+    daily_food_per_person_usd: 55,
+    local_transport_daily_usd: 65,
+    highlight_features: [
+      "Molokini Crater catamaran snorkel trip with green sea turtles",
+      "Road to Hana family waterfall discoveries",
+      "Kaanapali & Baby Beach calm wading waters",
+      "Polynesian Cultural Center and oceanfront luau"
+    ]
+  }
+];
+
+export async function fetchRecommendations(payload) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/recommendations`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (response.ok) {
+      return await response.json();
+    }
+  } catch (err) {
+    console.warn("Backend API request failed or running standalone, generating client recommendations:", err);
+  }
+
+  // Resilient client-side fallback calculation
+  return generateClientRecommendations(payload);
+}
+
+export async function checkBackendHealth() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/health`, { signal: AbortSignal.timeout(2000) });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
+function generateClientRecommendations(req) {
+  const family = req.family_members && req.family_members.length > 0
+    ? req.family_members
+    : [{ name: "Adult", age: 35 }, { name: "Child", age: 8 }];
+  
+  const duration = req.duration_days || 5;
+  const preferred = (req.preferred_destination || '').toLowerCase().trim();
+  const likes = req.likes || [];
+  const dislikes = req.dislikes || [];
+  const numPeople = family.length;
+
+  let destList = fallbackDestinations;
+  if (preferred) {
+    const matched = fallbackDestinations.filter(d => 
+      d.name.toLowerCase().includes(preferred) || 
+      d.country.toLowerCase().includes(preferred) ||
+      d.region.toLowerCase().includes(preferred)
+    );
+    if (matched.length > 0) {
+      destList = matched;
+    }
+  }
+
+  // Score destinations
+  const scored = destList.map(dest => {
+    let score = 75;
+    const reasons = [];
+
+    const hasToddler = family.some(m => m.age <= 3);
+    const hasTeen = family.some(m => m.age >= 13 && m.age <= 17);
+
+    if (hasToddler && dest.stroller_friendly) {
+      score += 10;
+      reasons.push("Stroller-friendly and toddler accessible");
+    }
+    if (hasTeen && dest.primary_categories.some(c => ["theme_parks", "adventure"].includes(c))) {
+      score += 8;
+      reasons.push("Thrilling rides and teen attractions");
+    }
+
+    likes.forEach(like => {
+      const match = dest.primary_categories.some(cat => cat.includes(like.toLowerCase().replace(' ', '_')));
+      if (match) {
+        score += 6;
+        reasons.push(`Matches interest in ${like}`);
+      }
+    });
+
+    dislikes.forEach(dislike => {
+      if (dislike.toLowerCase().includes("crowd") && dest.crowd_level === "high") {
+        score -= 8;
+      }
+    });
+
+    return {
+      ...dest,
+      match_score: Math.min(99, Math.max(60, score)),
+      score_reasons: reasons.slice(0, 3)
+    };
+  });
+
+  scored.sort((a, b) => b.match_score - a.match_score);
+  const primaryDest = scored[0];
+
+  // Flights
+  const flightBase = primaryDest.flight_base_usd;
+  const flightLowTotal = flightBase.low * numPeople;
+  const flightAvgTotal = flightBase.avg * numPeople;
+  const flightPeakTotal = flightBase.peak * numPeople;
+
+  const flights = {
+    origin_code: req.origin_city ? req.origin_city.toUpperCase().slice(0, 3) : "ORD",
+    destination_code: primaryDest.airport_code,
+    price_range: {
+      low_per_person: flightBase.low,
+      avg_per_person: flightBase.avg,
+      peak_per_person: flightBase.peak,
+      total_family_low: flightLowTotal,
+      total_family_avg: flightAvgTotal,
+      total_family_peak: flightPeakTotal,
+    },
+    options: [
+      {
+        tier: "Budget Carrier / Economy Saver",
+        airline: "Southwest / Economy Saver",
+        price_per_person: flightBase.low,
+        total_family_price: flightLowTotal,
+        type: "1 Quick stop",
+        duration: "4h 15m",
+        baggage_policy: "Carry-on included, checked bags $35",
+        family_seating_tip: "Check in 24h early to get adjacent boarding positions."
+      },
+      {
+        tier: "Standard Main Cabin (Recommended)",
+        airline: "Delta / United Main Cabin",
+        price_per_person: flightBase.avg,
+        total_family_price: flightAvgTotal,
+        type: "Direct / Non-stop",
+        duration: "3h 10m",
+        baggage_policy: "Carry-on + free seat selection together",
+        family_seating_tip: "Guaranteed adjacent seating for children under 13."
+      },
+      {
+        tier: "Flexible / Premium Economy",
+        airline: "American Airlines Premium",
+        price_per_person: flightBase.peak,
+        total_family_price: flightPeakTotal,
+        type: "Direct / Priority Boarding",
+        duration: "3h 05m",
+        baggage_policy: "2 free checked bags + early family boarding",
+        family_seating_tip: "Priority family boarding enables smooth stroller gate checks."
+      }
+    ],
+    family_travel_tip: "Booking 6-8 weeks ahead typically unlocks the best family fare tiers."
+  };
+
+  // Lodging
+  const lodgingPrices = primaryDest.lodging_daily_usd;
+  const lodging = {
+    price_range: {
+      low_per_night: lodgingPrices.budget_inn,
+      avg_per_night: lodgingPrices.family_suite,
+      peak_per_night: lodgingPrices.luxury_resort,
+      total_trip_low: lodgingPrices.budget_inn * duration,
+      total_trip_avg: lodgingPrices.family_suite * duration,
+      total_trip_peak: lodgingPrices.luxury_resort * duration,
+    },
+    duration_nights: duration,
+    options: [
+      {
+        id: "opt-vacation-home",
+        name: "Spacious 2-3 Bedroom Family Vacation Home",
+        category: "Vacation Rental (Airbnb / VRBO)",
+        nightly_rate_usd: lodgingPrices.vacation_rental,
+        total_trip_usd: lodgingPrices.vacation_rental * duration,
+        rating: 4.88,
+        reviews_count: 120,
+        family_amenities: ["Full Kitchen", "Washer & Dryer", "Fenced Yard", "Crib on request"],
+        bed_layout: "2 Queen Beds + 2 Twin Bunk Beds",
+        best_for: "Spacious family comfort & home-cooked meals"
+      },
+      {
+        id: "opt-family-suite",
+        name: "Family Resort Suite with Splash Pool & Arcade",
+        category: "Resort / Hotel Suite",
+        nightly_rate_usd: lodgingPrices.family_suite,
+        total_trip_usd: lodgingPrices.family_suite * duration,
+        rating: 4.76,
+        reviews_count: 280,
+        family_amenities: ["Free Hot Breakfast", "Heated Pool & Splash Pad", "Kids Club", "Shuttle"],
+        bed_layout: "2 Queen Beds + Pull-out Sofa",
+        best_for: "Resort amenities & hassle-free breakfast"
+      },
+      {
+        id: "opt-budget-inn",
+        name: "Comfort Suites & Inn",
+        category: "Budget-Friendly Hotel",
+        nightly_rate_usd: lodgingPrices.budget_inn,
+        total_trip_usd: lodgingPrices.budget_inn * duration,
+        rating: 4.40,
+        reviews_count: 215,
+        family_amenities: ["Free Breakfast", "Indoor Pool", "Free Parking", "WiFi"],
+        bed_layout: "2 Double/Queen Beds",
+        best_for: "Maximum budget efficiency"
+      }
+    ]
+  };
+
+  // Activities
+  const activities = [
+    {
+      id: "act-1",
+      name: `${primaryDest.name} Signature Family Highlight Experience`,
+      category: primaryDest.primary_categories[0] || "entertainment",
+      labels: ["Must See", "All Ages", "Top Rated"],
+      family_tag: "Great for All Ages",
+      price_per_person_usd: 45,
+      price_tier: "$$",
+      duration_hours: 5,
+      best_time_of_day: "Morning",
+      description: `Experience the top-rated family attraction in ${primaryDest.name} designed with engaging sights and accessible walking paths.`,
+      tips: "Arrive 15 minutes before opening to avoid entrance queues."
+    },
+    {
+      id: "act-2",
+      name: "Scenic Coastal / Park Exploration & Wildlife Trail",
+      category: "nature",
+      labels: ["Nature & Wildlife", "Stroller Friendly", "Free Entry"],
+      family_tag: "Toddler & Child Friendly",
+      price_per_person_usd: 0,
+      price_tier: "Free",
+      duration_hours: 3,
+      best_time_of_day: "Late Afternoon",
+      description: "Enjoy peaceful nature walks, shaded play zones, and wildlife observation points perfect for children.",
+      tips: "Bring sunscreen, water bottles, and comfortable walking shoes."
+    },
+    {
+      id: "act-3",
+      name: "Interactive Science & Culture Discovery Center",
+      category: "science_museums",
+      labels: ["Interactive", "Hands-on", "Indoor"],
+      family_tag: "Kid & Tween Favorite",
+      price_per_person_usd: 22,
+      price_tier: "$$",
+      duration_hours: 3.5,
+      best_time_of_day: "Morning",
+      description: "Hands-on exhibits, experiential physics fun, and educational discovery stations for curious minds.",
+      tips: "Check out the discovery lab sessions offered every hour."
+    }
+  ];
+
+  // Budget
+  const totalFood = primaryDest.daily_food_per_person_usd * numPeople * duration;
+  const totalTransport = primaryDest.local_transport_daily_usd * duration;
+  const totalAct = 45 * numPeople * Math.min(duration, 3);
+  const realisticTotal = flightAvgTotal + (lodgingPrices.family_suite * duration) + totalFood + totalTransport + totalAct;
+
+  const budget_summary = {
+    duration_days: duration,
+    family_size: numPeople,
+    total_budget_range: {
+      low: Math.round(realisticTotal * 0.75),
+      realistic: Math.round(realisticTotal),
+      peak: Math.round(realisticTotal * 1.35)
+    },
+    per_person_range: {
+      low: Math.round((realisticTotal * 0.75) / numPeople),
+      realistic: Math.round(realisticTotal / numPeople),
+      peak: Math.round((realisticTotal * 1.35) / numPeople)
+    },
+    breakdown_realistic: {
+      flights: flightAvgTotal,
+      lodging: lodgingPrices.family_suite * duration,
+      activities: totalAct,
+      food_and_dining: totalFood,
+      local_transport: totalTransport,
+      emergency_buffer: Math.round(realisticTotal * 0.08)
+    }
+  };
+
+  // Weather
+  const weather = {
+    avg_temp_f: 78,
+    summary: `Warm and pleasant weather expected in ${primaryDest.name}, ideal for family outings.`,
+    forecast: [
+      { date: "Day 1", high_f: 80, low_f: 64, rain_chance: 10, condition: "Sunny" },
+      { date: "Day 2", high_f: 82, low_f: 65, rain_chance: 15, condition: "Partly Cloudy" },
+      { date: "Day 3", high_f: 79, low_f: 63, rain_chance: 5, condition: "Sunny" },
+      { date: "Day 4", high_f: 81, low_f: 66, rain_chance: 20, condition: "Partly Cloudy" }
+    ]
+  };
+
+  // Itinerary
+  const itinerary = Array.from({ length: duration }, (_, i) => ({
+    day: i + 1,
+    title: `Day ${i + 1}: ${activities[i % activities.length].name}`,
+    morning: {
+      activity: activities[i % activities.length].name,
+      time: "9:00 AM - 12:30 PM",
+      description: activities[i % activities.length].description,
+      price: `$${activities[i % activities.length].price_per_person_usd}/person`,
+      tag: activities[i % activities.length].family_tag
+    },
+    afternoon: {
+      activity: "Lunch & Resort Pool Relaxation",
+      time: "1:30 PM - 4:30 PM",
+      description: "Recharge with swimming, snacks, and downtime before evening fun.",
+      price: "Included with Lodging",
+      tag: "Relaxing"
+    },
+    evening: {
+      activity: "Family Dinner & Sunset Promenade Walk",
+      time: "6:00 PM - 8:30 PM",
+      description: "Enjoy a memorable dinner at a local family-friendly restaurant.",
+      price: `~$${Math.round((primaryDest.daily_food_per_person_usd * numPeople) / 2)} total`,
+      tag: "All Ages"
+    }
+  }));
+
+  return {
+    destination: primaryDest,
+    all_ranked_destinations: scored,
+    flights,
+    lodging,
+    activities,
+    weather,
+    budget_summary,
+    itinerary,
+    family_profile_summary: {
+      total_travelers: numPeople,
+      likes,
+      dislikes
+    }
+  };
+}
