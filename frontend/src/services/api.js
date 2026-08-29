@@ -221,6 +221,85 @@ export const fallbackDestinations = [
   }
 ];
 
+export async function sendDirectEmail(payload) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/share/send-email`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (response.ok) {
+      return await response.json();
+    }
+  } catch (err) {
+    console.warn("Backend email endpoint unavailable, using client-side mailto:", err);
+  }
+  return {
+    status: 'client_fallback',
+    message: 'Opened in your email app.'
+  };
+}
+
+export async function sendDirectSms(payload) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/share/send-sms`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (response.ok) {
+      return await response.json();
+    }
+  } catch (err) {
+    console.warn("Backend sms endpoint unavailable:", err);
+  }
+  return { status: 'ready', message: payload.message };
+}
+
+// Utility to encode a trip configuration into a shareable URL
+export function generateShareableUrl(tripParams) {
+  try {
+    const compact = {
+      m: tripParams.family_members?.map(m => ({ n: m.name, a: m.age, r: m.role, l: m.likes || [] })),
+      l: tripParams.likes || [],
+      d: tripParams.dislikes || [],
+      dur: tripParams.duration_days || 5,
+      dest: tripParams.preferred_destination || '',
+      orig: tripParams.origin_city || '',
+      b: tripParams.budget_tier || 'moderate'
+    };
+    const encoded = encodeURIComponent(btoa(JSON.stringify(compact)));
+    const baseUrl = window.location.origin + window.location.pathname;
+    return `${baseUrl}#plan=${encoded}`;
+  } catch (e) {
+    console.error("Error generating shareable URL:", e);
+    return window.location.href;
+  }
+}
+
+// Utility to decode trip configuration from URL hash
+export function parseShareableUrl() {
+  try {
+    const hash = window.location.hash;
+    if (hash && hash.includes('plan=')) {
+      const encoded = hash.split('plan=')[1];
+      const decoded = JSON.parse(atob(decodeURIComponent(encoded)));
+      return {
+        family_members: decoded.m?.map(m => ({ name: m.n, age: m.a, role: m.r, likes: m.l || [] })) || [],
+        likes: decoded.l || [],
+        dislikes: decoded.d || [],
+        duration_days: decoded.dur || 5,
+        preferred_destination: decoded.dest || '',
+        origin_city: decoded.orig || '',
+        budget_tier: decoded.b || 'moderate'
+      };
+    }
+  } catch (e) {
+    console.error("Error parsing shareable URL:", e);
+  }
+  return null;
+}
+
 export async function fetchRecommendations(payload) {
   try {
     const response = await fetch(`${API_BASE_URL}/recommendations`, {
@@ -417,6 +496,9 @@ function generateClientRecommendations(req) {
   };
 
   // Activities
+  const allIndividualLikes = family.flatMap(m => m.likes || []);
+  const combinedLikes = Array.from(new Set([...likes, ...allIndividualLikes]));
+
   const activities = [
     {
       id: "act-1",
@@ -424,6 +506,7 @@ function generateClientRecommendations(req) {
       category: primaryDest.primary_categories[0] || "entertainment",
       labels: ["Must See", "All Ages", "Top Rated"],
       family_tag: "Great for All Ages",
+      matched_members: family.map(m => m.name),
       price_per_person_usd: 45,
       price_tier: "$$",
       duration_hours: 5,
@@ -437,6 +520,7 @@ function generateClientRecommendations(req) {
       category: "nature",
       labels: ["Nature & Wildlife", "Stroller Friendly", "Free Entry"],
       family_tag: "Toddler & Child Friendly",
+      matched_members: family.filter(m => m.age <= 12 || (m.likes && m.likes.includes('nature'))).map(m => m.name),
       price_per_person_usd: 0,
       price_tier: "Free",
       duration_hours: 3,
@@ -450,6 +534,7 @@ function generateClientRecommendations(req) {
       category: "science_museums",
       labels: ["Interactive", "Hands-on", "Indoor"],
       family_tag: "Kid & Tween Favorite",
+      matched_members: family.filter(m => (m.age >= 4 && m.age <= 16) || (m.likes && m.likes.includes('science_museums'))).map(m => m.name),
       price_per_person_usd: 22,
       price_tier: "$$",
       duration_hours: 3.5,

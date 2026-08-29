@@ -23,10 +23,28 @@ def load_activities() -> List[Dict[str, Any]]:
     with open(os.path.join(DATA_DIR, "activities.json"), "r", encoding="utf-8") as f:
         return json.load(f)
 
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from app.core.config import settings
+
 class FamilyMember(BaseModel):
     name: Optional[str] = "Family Member"
     age: int = Field(default=30, ge=0, le=120)
     role: Optional[str] = "Adult"
+    likes: List[str] = Field(default_factory=list)
+
+class SendEmailRequest(BaseModel):
+    to_email: str
+    subject: Optional[str] = None
+    message: Optional[str] = None
+    trip_url: Optional[str] = None
+    trip_summary: Optional[Dict[str, Any]] = None
+
+class SendSmsRequest(BaseModel):
+    phone_number: str
+    message: Optional[str] = None
+    trip_url: Optional[str] = None
 
 class RecommendationRequest(BaseModel):
     family_members: List[FamilyMember] = Field(default_factory=list)
@@ -57,6 +75,79 @@ async def geocode(q: str = Query(..., min_length=2)):
 @router.get("/weather")
 async def get_weather(lat: float, lng: float):
     return await get_weather_forecast(lat, lng)
+
+@router.post("/share/send-email")
+async def send_email_itinerary(req: SendEmailRequest):
+    """
+    Directly sends itinerary email with link to destination.
+    Uses SMTP server if configured, or prepares structured payload.
+    """
+    to_emails = [e.strip() for e in req.to_email.split(",") if e.strip()]
+    if not to_emails:
+        raise HTTPException(status_code=400, detail="Please provide a valid recipient email address.")
+
+    subject = req.subject or "Your Family Vacation Itinerary & Budget"
+    
+    # Construct clean email message
+    content = req.message or ""
+    if req.trip_url:
+        content += f"\n\n🔗 View & interact with the complete family vacation plan here:\n{req.trip_url}\n"
+
+    # If SMTP is configured in environment, send directly via smtplib
+    if settings.SMTP_HOST and settings.SMTP_USER and settings.SMTP_PASSWORD:
+        try:
+            msg = MIMEMultipart()
+            msg["From"] = f"{settings.SMTP_FROM_NAME} <{settings.SMTP_FROM_EMAIL}>"
+            msg["To"] = ", ".join(to_emails)
+            msg["Subject"] = subject
+
+            # Plain text body + link
+            msg.attach(MIMEText(content, "plain"))
+
+            with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT, timeout=10) as server:
+                server.starttls()
+                server.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
+                server.sendmail(settings.SMTP_FROM_EMAIL, to_emails, msg.as_string())
+
+            return {
+                "status": "sent",
+                "message": f"Direct email successfully sent to {', '.join(to_emails)}!",
+                "recipients": to_emails
+            }
+        except Exception as e:
+            return {
+                "status": "smtp_error",
+                "message": f"SMTP attempt failed ({str(e)}). You can also use client dispatch.",
+                "fallback_content": content
+            }
+
+    # If no custom SMTP credentials provided, return formatted payload for direct client mailto / web dispatch
+    return {
+        "status": "ready_for_client_dispatch",
+        "message": f"Email prepared for {', '.join(to_emails)}. Configure SMTP_HOST in .env for automated SMTP delivery.",
+        "subject": subject,
+        "recipients": to_emails,
+        "content": content
+    }
+
+@router.post("/share/send-sms")
+async def send_sms_itinerary(req: SendSmsRequest):
+    """
+    Formats and prepares direct SMS message with direct vacation link.
+    """
+    phone = req.phone_number.strip()
+    if not phone:
+        raise HTTPException(status_code=400, detail="Please provide a valid phone number.")
+
+    sms_text = req.message or ""
+    if req.trip_url and req.trip_url not in sms_text:
+        sms_text += f" Link: {req.trip_url}"
+
+    return {
+        "status": "ready",
+        "recipient": phone,
+        "message": sms_text
+    }
 
 @router.post("/recommendations")
 async def get_recommendations(req: RecommendationRequest):

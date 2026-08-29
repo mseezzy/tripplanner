@@ -15,7 +15,7 @@ import {
 import { Tune, ArrowDownward, Refresh } from '@mui/icons-material';
 
 import { getAppTheme } from './theme/theme';
-import { fetchRecommendations, checkBackendHealth } from './services/api';
+import { fetchRecommendations, checkBackendHealth, parseShareableUrl } from './services/api';
 
 import Navbar from './components/Navbar';
 import FamilyForm from './components/FamilyForm';
@@ -33,6 +33,7 @@ export default function App() {
   const [darkMode, setDarkMode] = useState(false);
   const [loading, setLoading] = useState(false);
   const [tripData, setTripData] = useState(null);
+  const [rawParams, setRawParams] = useState(null);
   const [backendConnected, setBackendConnected] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
@@ -41,15 +42,33 @@ export default function App() {
 
   const theme = getAppTheme(darkMode ? 'dark' : 'light');
 
-  // Check backend health on mount
+  // Check backend health & parse URL shared plan on mount
   useEffect(() => {
     checkBackendHealth().then((isHealthy) => {
       setBackendConnected(isHealthy);
     });
+
+    const shared = parseShareableUrl();
+    if (shared) {
+      setRawParams(shared);
+      setLoading(true);
+      fetchRecommendations(shared)
+        .then((data) => {
+          setTripData(data);
+          setToast({
+            open: true,
+            message: `Loaded shared vacation plan for ${data.destination?.name}!`,
+            severity: 'success'
+          });
+        })
+        .catch((err) => console.error(err))
+        .finally(() => setLoading(false));
+    }
   }, []);
 
   const handleFormSubmit = async (formData) => {
     setLoading(true);
+    setRawParams(formData);
     try {
       const data = await fetchRecommendations(formData);
       setTripData(data);
@@ -132,7 +151,7 @@ export default function App() {
                 </Typography>
               </Box>
 
-              <FamilyForm onSubmit={handleFormSubmit} loading={loading} />
+              <FamilyForm onSubmit={handleFormSubmit} loading={loading} initialValues={rawParams} />
             </Box>
           ) : (
             /* Results State */
@@ -154,7 +173,7 @@ export default function App() {
               </Box>
 
               <Collapse in={showEditForm} sx={{ mb: 3 }} className="no-print">
-                <FamilyForm onSubmit={handleFormSubmit} loading={loading} />
+                <FamilyForm onSubmit={handleFormSubmit} loading={loading} initialValues={rawParams} />
               </Collapse>
 
               {loading ? (
@@ -244,6 +263,7 @@ export default function App() {
           open={shareOpen}
           onClose={() => setShareOpen(false)}
           tripData={tripData}
+          rawParams={rawParams}
         />
 
         {/* Toast Notification */}

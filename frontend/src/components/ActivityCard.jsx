@@ -129,6 +129,25 @@ export default function ActivityCard({ activities = [], familySize = 4 }) {
                       {act.name}
                     </Typography>
 
+                    {/* Matched Family Members Badge */}
+                    {act.matched_members && act.matched_members.length > 0 && (
+                      <Box sx={{ mb: 1.5, display: 'flex', alignItems: 'center', gap: 0.8, flexWrap: 'wrap' }}>
+                        <Typography variant="caption" sx={{ fontWeight: 700, color: 'primary.main', fontSize: '0.72rem' }}>
+                          🎯 Matches:
+                        </Typography>
+                        {act.matched_members.map((memName, mIdx) => (
+                          <Chip
+                            key={mIdx}
+                            label={memName}
+                            size="small"
+                            color="primary"
+                            variant="outlined"
+                            sx={{ height: 20, fontSize: '0.68rem', fontWeight: 700, bgcolor: theme.palette.mode === 'dark' ? 'rgba(2, 132, 199, 0.15)' : '#e0f2fe' }}
+                          />
+                        ))}
+                      </Box>
+                    )}
+
                     {/* Category Labels */}
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.8, mb: 1.5 }}>
                       {act.labels?.map((label, lIdx) => (

@@ -14,9 +14,9 @@ import {
   Chip,
   IconButton,
   Divider,
-  Tooltip,
   Alert,
-  Snackbar,
+  CircularProgress,
+  InputAdornment,
   useTheme
 } from '@mui/material';
 import {
@@ -28,17 +28,21 @@ import {
   Check,
   Share as ShareIcon,
   PhoneAndroid,
-  MarkEmailRead,
-  InfoOutlined
+  Link as LinkIcon,
+  InfoOutlined,
+  OpenInNew
 } from '@mui/icons-material';
+import { sendDirectEmail, sendDirectSms, generateShareableUrl } from '../services/api';
 
-export default function ShareDialog({ open, onClose, tripData }) {
+export default function ShareDialog({ open, onClose, tripData, rawParams }) {
   const theme = useTheme();
-  const [activeTab, setActiveTab] = useState(0); // 0: Email, 1: SMS, 2: Quick Copy
+  const [activeTab, setActiveTab] = useState(0); // 0: Direct Email, 1: Direct SMS, 2: Vacation Link
   const [emailTo, setEmailTo] = useState('');
   const [phoneTo, setPhoneTo] = useState('');
-  const [customNote, setCustomNote] = useState('Hey! Check out our upcoming family trip itinerary and estimated budget:');
+  const [customNote, setCustomNote] = useState('Check out our family trip plan with flights, lodging, and activities!');
   const [copied, setCopied] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [statusMessage, setStatusMessage] = useState(null);
 
   if (!tripData) return null;
 
@@ -49,7 +53,14 @@ export default function ShareDialog({ open, onClose, tripData }) {
   const flightAvg = tripData.flights?.price_range?.total_family_avg || 1200;
   const lodgingAvg = tripData.lodging?.price_range?.total_trip_avg || 950;
 
-  // Generate formatted Email Body
+  // Generate direct shareable URL
+  const vacationLink = generateShareableUrl(rawParams || {
+    family_members: Array(numTravelers).fill({ name: "Traveler", age: 10 }),
+    preferred_destination: dest,
+    duration_days: duration
+  });
+
+  // Formatted Email Body with Direct Vacation Link
   const generateEmailBody = () => {
     let body = `${customNote}\n\n`;
     body += `=========================================\n`;
@@ -59,59 +70,111 @@ export default function ShareDialog({ open, onClose, tripData }) {
     body += `• Duration: ${duration} Days\n`;
     body += `• Estimated Total Budget: $${budgetRealistic.toLocaleString()} (Realistic Standard)\n\n`;
 
+    body += `🔗 DIRECT VACATION LINK:\n`;
+    body += `${vacationLink}\n\n`;
+
     body += `🛫 FLIGHT ESTIMATES:\n`;
     body += `• Route: ${tripData.flights?.origin_code || 'ORIGIN'} ➔ ${tripData.flights?.destination_code || 'DEST'}\n`;
-    body += `• Roundtrip Cost: ~$${tripData.flights?.price_range?.avg_per_person || 300}/person ($${flightAvg.toLocaleString()} total family)\n`;
+    body += `• Estimated: ~$${tripData.flights?.price_range?.avg_per_person || 300}/person ($${flightAvg.toLocaleString()} family)\n`;
     body += `• Recommended: ${tripData.flights?.options?.[1]?.airline || 'Standard Main Cabin'}\n\n`;
 
     body += `🏨 LODGING ESTIMATES:\n`;
-    body += `• Stay Option: ${tripData.lodging?.options?.[0]?.name || 'Family Vacation Home'}\n`;
-    body += `• Estimated Total: $${lodgingAvg.toLocaleString()} (~$${tripData.lodging?.price_range?.avg_per_night || 200}/night)\n`;
-    body += `• Amenities: ${tripData.lodging?.options?.[0]?.family_amenities?.slice(0, 3).join(', ') || 'Kitchen, Pool, Laundry'}\n\n`;
+    body += `• Stay: ${tripData.lodging?.options?.[0]?.name || 'Family Vacation Home'}\n`;
+    body += `• Total: $${lodgingAvg.toLocaleString()} (~$${tripData.lodging?.price_range?.avg_per_night || 200}/night)\n\n`;
 
-    body += `📅 SUGGESTED DAY-BY-DAY ITINERARY:\n`;
-    tripData.itinerary?.forEach((day) => {
-      body += `• Day ${day.day}: ${day.morning?.activity} (Morning) ➔ ${day.afternoon?.activity} (Afternoon)\n`;
+    body += `📅 DAILY HIGHLIGHTS:\n`;
+    tripData.itinerary?.slice(0, 4).forEach((day) => {
+      body += `• Day ${day.day}: ${day.morning?.activity} ➔ ${day.afternoon?.activity}\n`;
     });
 
     body += `\n-----------------------------------------\n`;
-    body += `Planned with Family Travel Planner\n`;
+    body += `Click the vacation link above to view the interactive itinerary and live weather!\n`;
 
     return body;
   };
 
-  // Generate compact SMS text
+  // Compact SMS message with Direct Vacation Link
   const generateSmsBody = () => {
-    let text = `${customNote} Family trip to ${dest} (${duration} days, ${numTravelers} people)! `;
-    text += `Est. budget: ~$${budgetRealistic.toLocaleString()}. `;
-    text += `Flights: ~$${tripData.flights?.price_range?.avg_per_person || 300}/ea. `;
-    text += `Lodging: ~$${tripData.lodging?.price_range?.avg_per_night || 200}/nt. `;
-    if (tripData.activities && tripData.activities.length > 0) {
-      text += `Highlights: ${tripData.activities.slice(0, 2).map((a) => a.name).join(', ')}. `;
-    }
-    text += `Let me know what you think!`;
+    let text = `${customNote} Trip to ${dest} (${duration}d, ${numTravelers} ppl)! Est: ~$${budgetRealistic.toLocaleString()}. `;
+    text += `View full itinerary & budget: ${vacationLink}`;
     return text;
   };
 
-  const handleSendEmail = () => {
-    const subject = encodeURIComponent(`Family Trip Itinerary: ${dest} (${duration} Days)`);
-    const body = encodeURIComponent(generateEmailBody());
-    const recipient = encodeURIComponent(emailTo.trim());
-    window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
+  const handleSendDirectEmail = async () => {
+    if (!emailTo.trim()) {
+      setStatusMessage({ type: 'error', text: 'Please enter at least one recipient email address.' });
+      return;
+    }
+    setSending(true);
+    setStatusMessage(null);
+
+    const emailSubject = `Family Trip Itinerary: ${dest} (${duration} Days)`;
+    const emailBody = generateEmailBody();
+
+    try {
+      const res = await sendDirectEmail({
+        to_email: emailTo.trim(),
+        subject: emailSubject,
+        message: emailBody,
+        trip_url: vacationLink,
+        trip_summary: { destination: dest, budget: budgetRealistic }
+      });
+
+      if (res && res.status === 'sent') {
+        setStatusMessage({ type: 'success', text: res.message });
+      } else {
+        // Fallback to launching user's email client directly
+        const subjectEnc = encodeURIComponent(emailSubject);
+        const bodyEnc = encodeURIComponent(emailBody);
+        const recipientEnc = encodeURIComponent(emailTo.trim());
+        window.location.href = `mailto:${recipientEnc}?subject=${subjectEnc}&body=${bodyEnc}`;
+        setStatusMessage({ type: 'info', text: 'Opened your email app with the pre-filled vacation link.' });
+      }
+    } catch (err) {
+      console.error(err);
+      setStatusMessage({ type: 'error', text: 'Could not send email. Please try again.' });
+    } finally {
+      setSending(false);
+    }
   };
 
-  const handleSendSms = () => {
-    const body = encodeURIComponent(generateSmsBody());
+  const handleSendDirectSms = async () => {
+    if (!phoneTo.trim()) {
+      setStatusMessage({ type: 'error', text: 'Please enter a recipient phone number.' });
+      return;
+    }
+    setSending(true);
+    setStatusMessage(null);
+
+    const smsBody = generateSmsBody();
     const phone = phoneTo.trim().replace(/[^\d+]/g, '');
-    // iOS and Android cross-compatible SMS URI
+
+    // If Web Share API is available (e.g. on mobile/tablets), use it for 1-touch sending
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Family Vacation to ${dest}`,
+          text: smsBody,
+          url: vacationLink
+        });
+        setStatusMessage({ type: 'success', text: 'Shared successfully via your device!' });
+        setSending(false);
+        return;
+      } catch (err) {
+        // User cancelled or share failed, fallback to direct sms URI
+      }
+    }
+
+    // Launch native SMS app
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    const smsUrl = isIOS
-      ? `sms:${phone}&body=${body}`
-      : `sms:${phone}?body=${body}`;
+    const bodyEnc = encodeURIComponent(smsBody);
+    const smsUrl = isIOS ? `sms:${phone}&body=${bodyEnc}` : `sms:${phone}?body=${bodyEnc}`;
     window.location.href = smsUrl;
+    setStatusMessage({ type: 'info', text: 'Opened your messaging app with the vacation link.' });
+    setSending(false);
   };
 
-  const handleCopyText = (text) => {
+  const handleCopy = (text) => {
     navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 3000);
@@ -122,31 +185,37 @@ export default function ShareDialog({ open, onClose, tripData }) {
       <DialogTitle sx={{ fontWeight: 800, display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 1 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <ShareIcon color="primary" />
-          <span>Share Travel Itinerary</span>
+          <span>Share Itinerary & Direct Vacation Link</span>
         </Box>
         <IconButton size="small" onClick={onClose}>
           <Close />
         </IconButton>
       </DialogTitle>
 
-      {/* Share Method Tabs */}
+      {/* Tabs */}
       <Box sx={{ borderBottom: 1, borderColor: 'divider', px: 3 }}>
-        <Tabs value={activeTab} onChange={(_, val) => setActiveTab(val)}>
-          <Tab icon={<Email fontSize="small" />} iconPosition="start" label="Email" sx={{ textTransform: 'none', fontWeight: 700 }} />
-          <Tab icon={<Sms fontSize="small" />} iconPosition="start" label="SMS / Text" sx={{ textTransform: 'none', fontWeight: 700 }} />
-          <Tab icon={<ContentCopy fontSize="small" />} iconPosition="start" label="Copy Summary" sx={{ textTransform: 'none', fontWeight: 700 }} />
+        <Tabs value={activeTab} onChange={(_, val) => { setActiveTab(val); setStatusMessage(null); }}>
+          <Tab icon={<Email fontSize="small" />} iconPosition="start" label="Send Email" sx={{ textTransform: 'none', fontWeight: 700 }} />
+          <Tab icon={<Sms fontSize="small" />} iconPosition="start" label="Send Text / SMS" sx={{ textTransform: 'none', fontWeight: 700 }} />
+          <Tab icon={<LinkIcon fontSize="small" />} iconPosition="start" label="Vacation Link" sx={{ textTransform: 'none', fontWeight: 700 }} />
         </Tabs>
       </Box>
 
       <DialogContent sx={{ pt: 2.5 }}>
-        {/* TAB 0: EMAIL */}
+        {statusMessage && (
+          <Alert severity={statusMessage.type} sx={{ mb: 2, borderRadius: 2 }}>
+            {statusMessage.text}
+          </Alert>
+        )}
+
+        {/* TAB 0: EMAIL DIRECT */}
         {activeTab === 0 && (
           <Box>
             <TextField
               fullWidth
               size="small"
               label="Recipient Email Address(es)"
-              placeholder="e.g. family@example.com, spouse@example.com"
+              placeholder="e.g. partner@example.com, grandparents@example.com"
               value={emailTo}
               onChange={(e) => setEmailTo(e.target.value)}
               sx={{ mb: 2 }}
@@ -155,11 +224,21 @@ export default function ShareDialog({ open, onClose, tripData }) {
             <TextField
               fullWidth
               size="small"
-              label="Personal Note (Optional)"
+              label="Personal Note"
               value={customNote}
               onChange={(e) => setCustomNote(e.target.value)}
               sx={{ mb: 2 }}
             />
+
+            {/* Direct Link Banner */}
+            <Paper elevation={0} sx={{ p: 1.5, mb: 2, bgcolor: theme.palette.mode === 'dark' ? 'rgba(2, 132, 199, 0.12)' : '#f0f9ff', borderRadius: 2, border: '1px solid #bae6fd' }}>
+              <Typography variant="caption" sx={{ fontWeight: 800, color: 'primary.dark', display: 'block', mb: 0.5 }}>
+                🔗 Direct Interactive Vacation Link Included:
+              </Typography>
+              <Typography variant="caption" sx={{ wordBreak: 'break-all', fontFamily: 'monospace', color: 'primary.main', display: 'block' }}>
+                {vacationLink.slice(0, 80)}...
+              </Typography>
+            </Paper>
 
             <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.secondary', display: 'block', mb: 1, textTransform: 'uppercase' }}>
               Email Preview:
@@ -171,32 +250,26 @@ export default function ShareDialog({ open, onClose, tripData }) {
                 bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : '#f8fafc',
                 border: `1px solid ${theme.palette.divider}`,
                 borderRadius: 2,
-                maxHeight: 180,
+                maxHeight: 160,
                 overflowY: 'auto',
                 fontFamily: 'monospace',
-                fontSize: '0.8rem',
+                fontSize: '0.78rem',
                 whiteSpace: 'pre-wrap',
                 color: 'text.secondary',
               }}
             >
               {generateEmailBody()}
             </Paper>
-
-            <Alert severity="info" icon={<InfoOutlined />} sx={{ mt: 2, borderRadius: 2 }}>
-              <Typography variant="caption">
-                Clicking <strong>Send via Email App</strong> will open your default email program (Gmail, Outlook, Apple Mail) with the pre-filled itinerary.
-              </Typography>
-            </Alert>
           </Box>
         )}
 
-        {/* TAB 1: SMS / TEXT */}
+        {/* TAB 1: SMS / TEXT DIRECT */}
         {activeTab === 1 && (
           <Box>
             <TextField
               fullWidth
               size="small"
-              label="Recipient Phone Number"
+              label="Recipient Mobile Phone Number"
               placeholder="e.g. +1 555-019-2834"
               value={phoneTo}
               onChange={(e) => setPhoneTo(e.target.value)}
@@ -211,8 +284,18 @@ export default function ShareDialog({ open, onClose, tripData }) {
               sx={{ mb: 2 }}
             />
 
+            {/* Direct Link Banner */}
+            <Paper elevation={0} sx={{ p: 1.5, mb: 2, bgcolor: theme.palette.mode === 'dark' ? 'rgba(249, 115, 22, 0.12)' : '#fff7ed', borderRadius: 2, border: '1px solid #fed7aa' }}>
+              <Typography variant="caption" sx={{ fontWeight: 800, color: 'secondary.dark', display: 'block', mb: 0.5 }}>
+                📱 Text includes direct interactive vacation link:
+              </Typography>
+              <Typography variant="caption" sx={{ wordBreak: 'break-all', fontFamily: 'monospace', color: 'secondary.main', display: 'block' }}>
+                {vacationLink.slice(0, 80)}...
+              </Typography>
+            </Paper>
+
             <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.secondary', display: 'block', mb: 1, textTransform: 'uppercase' }}>
-              SMS Message Preview ({generateSmsBody().length} chars):
+              SMS Preview:
             </Typography>
             <Paper
               elevation={0}
@@ -222,46 +305,46 @@ export default function ShareDialog({ open, onClose, tripData }) {
                 border: `1px solid ${theme.palette.divider}`,
                 borderRadius: 2,
                 fontFamily: 'monospace',
-                fontSize: '0.85rem',
+                fontSize: '0.8rem',
                 whiteSpace: 'pre-wrap',
                 color: 'text.secondary',
               }}
             >
               {generateSmsBody()}
             </Paper>
-
-            <Alert severity="info" icon={<PhoneAndroid />} sx={{ mt: 2, borderRadius: 2 }}>
-              <Typography variant="caption">
-                On mobile devices or laptops with messaging enabled, clicking <strong>Open in Messages</strong> will launch your SMS app with the text pre-typed.
-              </Typography>
-            </Alert>
           </Box>
         )}
 
-        {/* TAB 2: QUICK COPY */}
+        {/* TAB 2: VACATION LINK */}
         {activeTab === 2 && (
           <Box>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              Copy the full formatted itinerary to your clipboard to paste into WhatsApp, Slack, Messenger, or any notes app.
+              Anyone with this direct link can view and interact with the planned vacation immediately—no login or signup required.
             </Typography>
-            <Paper
-              elevation={0}
-              sx={{
-                p: 2,
-                bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : '#f8fafc',
-                border: `1px solid ${theme.palette.divider}`,
-                borderRadius: 2,
-                maxHeight: 220,
-                overflowY: 'auto',
-                fontFamily: 'monospace',
-                fontSize: '0.8rem',
-                whiteSpace: 'pre-wrap',
-                color: 'text.secondary',
-                mb: 2,
+            <TextField
+              fullWidth
+              size="small"
+              value={vacationLink}
+              InputProps={{
+                readOnly: true,
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton size="small" onClick={() => handleCopy(vacationLink)}>
+                      {copied ? <Check color="success" /> : <ContentCopy />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
               }}
+              sx={{ mb: 2 }}
+            />
+            <Button
+              variant="outlined"
+              size="small"
+              startIcon={<OpenInNew />}
+              onClick={() => window.open(vacationLink, '_blank')}
             >
-              {generateEmailBody()}
-            </Paper>
+              Test Link in New Tab
+            </Button>
           </Box>
         )}
       </DialogContent>
@@ -272,17 +355,18 @@ export default function ShareDialog({ open, onClose, tripData }) {
             <Button
               variant="outlined"
               startIcon={copied ? <Check color="success" /> : <ContentCopy />}
-              onClick={() => handleCopyText(generateEmailBody())}
+              onClick={() => handleCopy(generateEmailBody())}
             >
-              {copied ? "Copied!" : "Copy Email Text"}
+              {copied ? "Copied!" : "Copy Email"}
             </Button>
             <Button
               variant="contained"
-              startIcon={<Send />}
-              onClick={handleSendEmail}
+              startIcon={sending ? <CircularProgress size={18} color="inherit" /> : <Send />}
+              disabled={sending}
+              onClick={handleSendDirectEmail}
               sx={{ fontWeight: 700 }}
             >
-              Open in Email App
+              Send Email
             </Button>
           </>
         )}
@@ -292,17 +376,18 @@ export default function ShareDialog({ open, onClose, tripData }) {
             <Button
               variant="outlined"
               startIcon={copied ? <Check color="success" /> : <ContentCopy />}
-              onClick={() => handleCopyText(generateSmsBody())}
+              onClick={() => handleCopy(generateSmsBody())}
             >
-              {copied ? "Copied!" : "Copy SMS Text"}
+              {copied ? "Copied!" : "Copy SMS"}
             </Button>
             <Button
               variant="contained"
-              startIcon={<PhoneAndroid />}
-              onClick={handleSendSms}
+              startIcon={sending ? <CircularProgress size={18} color="inherit" /> : <PhoneAndroid />}
+              disabled={sending}
+              onClick={handleSendDirectSms}
               sx={{ fontWeight: 700 }}
             >
-              Open in Messages / SMS
+              Send Text / SMS
             </Button>
           </>
         )}
@@ -313,10 +398,10 @@ export default function ShareDialog({ open, onClose, tripData }) {
             variant="contained"
             size="large"
             startIcon={copied ? <Check /> : <ContentCopy />}
-            onClick={() => handleCopyText(generateEmailBody())}
+            onClick={() => handleCopy(vacationLink)}
             sx={{ fontWeight: 700 }}
           >
-            {copied ? "Itinerary Copied to Clipboard! 🎉" : "Copy Full Summary to Clipboard"}
+            {copied ? "Vacation Link Copied! 🎉" : "Copy Direct Vacation Link"}
           </Button>
         )}
       </DialogActions>

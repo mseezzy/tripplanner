@@ -49,14 +49,14 @@ async def test_backend():
         assert data1["budget_summary"]["total_budget_range"]["realistic"] > 0
         print(f"Test 3: Orlando family recommendation PASSED (Match score: {data1['destination']['match_score']}%, Realistic Budget: ${data1['budget_summary']['total_budget_range']['realistic']})")
 
-        # Test 4: Open search (no preferred destination)
+        # Test 4: Open search (no preferred destination) with individualized member interests
         payload_open = {
             "family_members": [
-                {"name": "Dad", "age": 45, "role": "Adult"},
-                {"name": "Teen Jack", "age": 16, "role": "Teen"},
-                {"name": "Tween Maya", "age": 12, "role": "Tween"}
+                {"name": "Dad (David)", "age": 45, "role": "Adult", "likes": ["nature", "hiking"]},
+                {"name": "Teen Jack", "age": 16, "role": "Teen", "likes": ["adventure", "theme_parks"]},
+                {"name": "Tween Maya", "age": 12, "role": "Tween", "likes": ["animals_wildlife", "science_museums"]}
             ],
-            "likes": ["nature", "hiking", "adventure"],
+            "likes": ["adventure"],
             "dislikes": ["avoid_heat", "avoid_crowds"],
             "duration_days": 7,
             "origin_city": "Denver",
@@ -66,6 +66,25 @@ async def test_backend():
         assert res_rec2.status_code == 200
         data2 = res_rec2.json()
         print(f"Test 4: Open search recommendation PASSED (Selected destination: {data2['destination']['name']}, Match score: {data2['destination']['match_score']}%)")
+
+        # Test 5: Direct Email Share endpoint
+        res_email = await client.post("/api/share/send-email", json={
+            "to_email": "family@example.com",
+            "subject": "Our Family Trip to Orlando",
+            "message": "Here is our family trip itinerary!",
+            "trip_url": "http://localhost:5173/#plan=test12345"
+        })
+        assert res_email.status_code == 200
+        print("Test 5: Share Email endpoint PASSED")
+
+        # Test 6: Direct SMS Share endpoint
+        res_sms = await client.post("/api/share/send-sms", json={
+            "phone_number": "+15550192834",
+            "message": "Check out our vacation plan!",
+            "trip_url": "http://localhost:5173/#plan=test12345"
+        })
+        assert res_sms.status_code == 200
+        print("Test 6: Share SMS endpoint PASSED")
 
     print("\nALL BACKEND AUTOMATED TESTS PASSED SUCCESSFULLY!")
 

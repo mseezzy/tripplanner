@@ -22,6 +22,12 @@ def calculate_destination_score(
     score = 70.0  # Base score
     reasons: List[str] = []
 
+    # Aggregate both individual member likes and shared likes
+    all_individual_likes = []
+    for m in family_members:
+        all_individual_likes.extend(m.get("likes", []))
+    combined_likes = list(set(likes + all_individual_likes))
+
     # 1. Age group compatibility
     family_age_groups = [get_age_group(m.get("age", 25)) for m in family_members]
     dest_target_ages = destination.get("target_age_groups", [])
@@ -47,15 +53,15 @@ def calculate_destination_score(
     # 2. Likes / Interests alignment
     dest_categories = destination.get("primary_categories", [])
     like_matches = []
-    for like in likes:
+    for like in combined_likes:
         like_norm = like.lower().replace(" ", "_").replace("&", "").strip()
         for cat in dest_categories:
             if like_norm in cat or cat in like_norm:
                 like_matches.append(like)
-                score += 7
+                score += 5
 
     if like_matches:
-        reasons.append(f"Matches family interests: {', '.join(set(like_matches))}")
+        reasons.append(f"Matches family interests: {', '.join(list(set(like_matches))[:3])}")
 
     # 3. Dislikes & constraints
     for dislike in dislikes:
@@ -101,26 +107,47 @@ def filter_and_rank_activities(
     for act in dest_activities:
         act_score = 70.0
         act_target_ages = act.get("target_ages", [])
-
-        # Check if safe for youngest child
-        if act.get("min_age", 0) <= min_family_age:
-            act_score += 15
-        else:
-            act_score -= 25
-
-        # Check age group overlap
-        overlap = any(ag in act_target_ages for ag in family_age_groups)
-        if overlap:
-            act_score += 10
-
-        # Likes boost
         act_cat = act.get("category", "")
+        act_labels = [lbl.lower() for lbl in act.get("labels", [])]
+
+        # Identify which specific family members match this activity
+        matching_members = []
+        for m in family_members:
+            m_name = m.get("name", "Traveler")
+            m_age = m.get("age", 25)
+            m_ag = get_age_group(m_age)
+            m_likes = m.get("likes", [])
+
+            # Check if member age matches activity
+            age_ok = m_age >= act.get("min_age", 0) and (m_ag in act_target_ages or not act_target_ages)
+
+            # Check if member's individual interest matches activity
+            member_interest_match = any(
+                lk.lower().replace(" ", "_") in act_cat.lower() or 
+                any(lk.lower() in lbl for lbl in act_labels)
+                for lk in m_likes
+            )
+
+            if member_interest_match and age_ok:
+                matching_members.append(f"{m_name}")
+                act_score += 15
+            elif age_ok and m_ag in act_target_ages:
+                act_score += 4
+
+        # Check shared likes boost
         for like in likes:
-            if like.lower() in act_cat.lower() or any(like.lower() in lbl.lower() for lbl in act.get("labels", [])):
+            if like.lower().replace(" ", "_") in act_cat.lower() or any(like.lower() in lbl for lbl in act_labels):
                 act_score += 10
+
+        # Safety for youngest member
+        if act.get("min_age", 0) <= min_family_age:
+            act_score += 10
+        else:
+            act_score -= 20
 
         act_copy = dict(act)
         act_copy["relevance_score"] = int(act_score)
+        act_copy["matched_members"] = matching_members
         
         # Build dynamic age label
         if act.get("min_age", 0) == 0:
