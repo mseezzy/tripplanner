@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   CardContent,
@@ -19,7 +19,8 @@ import {
   Slider,
   CircularProgress,
   useTheme,
-  Alert
+  Alert,
+  Autocomplete
 } from '@mui/material';
 import {
   PersonAdd,
@@ -41,8 +42,10 @@ import {
   Restaurant,
   Pool,
   Terrain,
-  Spa
+  Spa,
+  Public
 } from '@mui/icons-material';
+import { searchGlobalLocations } from '../services/api';
 
 const AVAILABLE_LIKES = [
   { id: 'theme_parks', label: 'Theme Parks', icon: <SportsEsports fontSize="small" /> },
@@ -63,6 +66,93 @@ const AVAILABLE_DISLIKES = [
   { id: 'stroller_friendly', label: 'Must Be Stroller Friendly' },
   { id: 'avoid_expensive_dining', label: 'Avoid High-Cost Dining' },
 ];
+
+// Live Global Autocomplete Input for ANY location on Earth
+function GlobalLocationInput({ value, onChange, label, placeholder }) {
+  const [open, setOpen] = useState(false);
+  const [options, setOptions] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [inputValue, setInputValue] = useState(value || '');
+
+  useEffect(() => {
+    setInputValue(value || '');
+  }, [value]);
+
+  useEffect(() => {
+    if (!inputValue || inputValue.trim().length < 2) {
+      setOptions([]);
+      return;
+    }
+    const timer = setTimeout(async () => {
+      setLoading(true);
+      const results = await searchGlobalLocations(inputValue);
+      setOptions(results);
+      setLoading(false);
+    }, 350);
+    return () => clearTimeout(timer);
+  }, [inputValue]);
+
+  return (
+    <Autocomplete
+      fullWidth
+      freeSolo
+      open={open}
+      onOpen={() => setOpen(true)}
+      onClose={() => setOpen(false)}
+      inputValue={inputValue}
+      onInputChange={(_, newInputValue) => {
+        setInputValue(newInputValue);
+        onChange(newInputValue);
+      }}
+      onChange={(_, newValue) => {
+        const val = typeof newValue === 'string' ? newValue : (newValue?.label || '');
+        setInputValue(val);
+        onChange(val);
+      }}
+      options={options}
+      getOptionLabel={(option) => (typeof option === 'string' ? option : option.label || '')}
+      loading={loading}
+      renderOption={(props, option) => (
+        <li {...props} key={option.lat ? `${option.lat}-${option.lng}` : option.label}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.2, py: 0.5, width: '100%' }}>
+            <Public fontSize="small" color="primary" />
+            <Box sx={{ overflow: 'hidden' }}>
+              <Typography variant="body2" sx={{ fontWeight: 700, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                {option.city || option.label}
+              </Typography>
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontSize: '0.72rem' }}>
+                {option.country !== option.city ? option.country : option.display_name?.slice(0, 45)}
+              </Typography>
+            </Box>
+          </Box>
+        </li>
+      )}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          size="small"
+          label={label}
+          placeholder={placeholder}
+          InputProps={{
+            ...params.InputProps,
+            startAdornment: (
+              <>
+                <Place sx={{ mr: 1, color: 'text.secondary' }} fontSize="small" />
+                {params.InputProps.startAdornment}
+              </>
+            ),
+            endAdornment: (
+              <>
+                {loading ? <CircularProgress color="inherit" size={16} sx={{ mr: 1 }} /> : null}
+                {params.InputProps.endAdornment}
+              </>
+            ),
+          }}
+        />
+      )}
+    />
+  );
+}
 
 const PRESETS = [
   {
@@ -560,18 +650,15 @@ export default function FamilyForm({ onSubmit, loading, initialValues }) {
                         </Box>
                       </Box>
 
-                      {/* Destination Name Input */}
-                      <TextField
-                        fullWidth
-                        size="small"
-                        label={`Destination #${idx + 1}`}
-                        placeholder="e.g. Orlando, FL, Yellowstone, London, Cancun, Tokyo"
-                        value={stop.destination}
-                        onChange={(e) => updateDestinationStop(idx, 'destination', e.target.value)}
-                        InputProps={{
-                          startAdornment: <Place sx={{ mr: 1, color: 'text.secondary' }} fontSize="small" />
-                        }}
-                      />
+                      {/* Destination Name Input with Global Autocomplete Search */}
+                      <Box sx={{ flex: 1, minWidth: 200 }}>
+                        <GlobalLocationInput
+                          label={`Destination #${idx + 1}`}
+                          placeholder="Search any city, island, or country on Earth (e.g. Seoul, Tokyo, Paris, Reykjavik)..."
+                          value={stop.destination}
+                          onChange={(val) => updateDestinationStop(idx, 'destination', val)}
+                        />
+                      </Box>
 
                       {/* Duration Input for this specific stop */}
                       <Box sx={{ minWidth: { md: 170 } }}>

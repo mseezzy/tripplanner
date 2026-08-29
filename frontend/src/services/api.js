@@ -357,9 +357,114 @@ export const fallbackDestinations = [
   }
 ];
 
+// Utility to calculate Great-Circle distance between two coordinates in miles
+export function calculateDistanceMiles(lat1, lon1, lat2, lon2) {
+  const R = 3958.8; // Earth radius in miles
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+// Live Global Autocomplete Search for ANY location on Earth via OpenStreetMap Nominatim
+export async function searchGlobalLocations(query) {
+  if (!query || query.trim().length < 2) return [];
+  try {
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query.trim())}&addressdetails=1&limit=6`;
+    const res = await fetch(url, {
+      headers: {
+        'Accept-Language': 'en',
+      }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      return data.map((item) => {
+        const addr = item.address || {};
+        const city = addr.city || addr.town || addr.village || addr.municipality || addr.county || item.name;
+        const state = addr.state || addr.province || addr.region || '';
+        const country = addr.country || '';
+        
+        let label = city;
+        if (state && state !== city) label += `, ${state}`;
+        if (country && country !== state) label += `, ${country}`;
+
+        return {
+          label: label || item.display_name,
+          city: city,
+          country: country || 'Global',
+          lat: parseFloat(item.lat),
+          lng: parseFloat(item.lon),
+          type: item.type || 'place',
+          display_name: item.display_name
+        };
+      });
+    }
+  } catch (err) {
+    console.warn("Nominatim global search error:", err);
+  }
+  return [];
+}
+
+// Live Weather forecast for ANY coordinates on Earth via Open-Meteo
+export async function fetchLiveWeather(lat, lng) {
+  try {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&temperature_unit=fahrenheit&timezone=auto`;
+    const res = await fetch(url);
+    if (res.ok) {
+      const data = await res.json();
+      const daily = data.daily || {};
+      const maxTemps = daily.temperature_2m_max || [75];
+      const minTemps = daily.temperature_2m_min || [60];
+      const rainChances = daily.precipitation_probability_max || [10];
+      const weatherCodes = daily.weathercode || [0];
+
+      const avgHigh = Math.round(maxTemps.reduce((a, b) => a + b, 0) / maxTemps.length);
+      const avgLow = Math.round(minTemps.reduce((a, b) => a + b, 0) / minTemps.length);
+
+      const getWeatherDesc = (code) => {
+        if (code === 0) return "Sunny & Clear";
+        if (code <= 3) return "Partly Cloudy";
+        if (code <= 48) return "Foggy & Overcast";
+        if (code <= 67) return "Light Rain / Drizzle";
+        if (code <= 77) return "Snow Flurries";
+        if (code <= 82) return "Passing Rain Showers";
+        if (code <= 99) return "Thunderstorms";
+        return "Pleasant Weather";
+      };
+
+      const forecast = (daily.time || []).slice(0, 5).map((dateStr, idx) => ({
+        date: `Day ${idx + 1} (${dateStr.slice(5)})`,
+        high_f: Math.round(maxTemps[idx] || avgHigh),
+        low_f: Math.round(minTemps[idx] || avgLow),
+        rain_chance: rainChances[idx] || 15,
+        condition: getWeatherDesc(weatherCodes[idx] || 0)
+      }));
+
+      return {
+        avg_temp_f: avgHigh,
+        summary: `Live forecast: Highs of ~${avgHigh}°F with ${forecast[0]?.condition || 'pleasant conditions'}.`,
+        forecast: forecast.length > 0 ? forecast : undefined
+      };
+    }
+  } catch (err) {
+    console.warn("Open-Meteo live weather fetch failed, using realistic fallback:", err);
+  }
+  return {
+    avg_temp_f: 76,
+    summary: "Comfortable seasonal temperatures and clear skies expected.",
+    forecast: [
+      { date: "Day 1", high_f: 78, low_f: 62, rain_chance: 10, condition: "Sunny" },
+      { date: "Day 2", high_f: 80, low_f: 64, rain_chance: 15, condition: "Partly Cloudy" },
+      { date: "Day 3", high_f: 77, low_f: 61, rain_chance: 5, condition: "Sunny" }
+    ]
+  };
+}
 // Helper to create a rich custom destination for ANY user input
-function createCustomDestination(queryName, stopIndex = 0) {
-  const cleanName = (queryName || `Stop ${stopIndex + 1}`).trim();
+export function createCustomDestination(queryName, stopIndex = 0) {
+  const cleanName = (queryName || `Destination #${stopIndex + 1}`).trim();
   const lower = cleanName.toLowerCase();
 
   let country = "International Destination";
@@ -368,8 +473,9 @@ function createCustomDestination(queryName, stopIndex = 0) {
   let airport = "INTL";
   let heroImage = "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1000&q=80";
   let flightLow = 650;
-  let flightAvg = 950;
-  let flightPeak = 1450;
+  let flightAvg = 980;
+  let flightPeak = 1480;
+  let categories = ["history_culture", "food_culinary", "nature", "science_museums", "entertainment"];
 
   if (lower.includes("korea") || lower.includes("seoul") || lower.includes("busan") || lower.includes("jeju")) {
     country = "South Korea";
@@ -377,44 +483,73 @@ function createCustomDestination(queryName, stopIndex = 0) {
     lng = 126.9780;
     airport = "ICN";
     heroImage = "https://images.unsplash.com/photo-1538485399081-7191377e8241?auto=format&fit=crop&w=1000&q=80";
+    flightLow = 680; flightAvg = 1050; flightPeak = 1550;
+    categories = ["theme_parks", "history_culture", "food_culinary", "science_museums", "nature"];
   } else if (lower.includes("japan") || lower.includes("tokyo") || lower.includes("kyoto") || lower.includes("osaka")) {
     country = "Japan";
     lat = 35.6762;
     lng = 139.6503;
     airport = "NRT";
     heroImage = "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1000&q=80";
+    flightLow = 720; flightAvg = 1120; flightPeak = 1650;
+    categories = ["theme_parks", "science_museums", "history_culture", "food_culinary", "nature"];
   } else if (lower.includes("uk") || lower.includes("london") || lower.includes("england") || lower.includes("britain")) {
     country = "United Kingdom";
     lat = 51.5074;
     lng = -0.1278;
     airport = "LHR";
     heroImage = "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=1000&q=80";
+    flightLow = 520; flightAvg = 850; flightPeak = 1350;
+    categories = ["history_culture", "science_museums", "entertainment", "food_culinary"];
   } else if (lower.includes("france") || lower.includes("paris")) {
     country = "France";
     lat = 48.8566;
     lng = 2.3522;
     airport = "CDG";
     heroImage = "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1000&q=80";
-  } else if (lower.includes("italy") || lower.includes("rome") || lower.includes("florence")) {
+    flightLow = 540; flightAvg = 880; flightPeak = 1390;
+    categories = ["history_culture", "theme_parks", "food_culinary", "relaxing"];
+  } else if (lower.includes("italy") || lower.includes("rome") || lower.includes("florence") || lower.includes("venice")) {
     country = "Italy";
     lat = 41.9028;
     lng = 12.4964;
     airport = "FCO";
     heroImage = "https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&w=1000&q=80";
+    flightLow = 560; flightAvg = 890; flightPeak = 1400;
+  } else if (lower.includes("australia") || lower.includes("sydney") || lower.includes("melbourne")) {
+    country = "Australia";
+    lat = -33.8688;
+    lng = 151.2093;
+    airport = "SYD";
+    heroImage = "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&w=1000&q=80";
+    flightLow = 890; flightAvg = 1350; flightPeak = 1950;
+    categories = ["beaches", "animals_wildlife", "nature", "adventure", "food_culinary"];
+  } else if (lower.includes("canada") || lower.includes("banff") || lower.includes("vancouver") || lower.includes("toronto")) {
+    country = "Canada";
+    lat = 51.1784;
+    lng = -115.5708;
+    airport = "YYC";
+    heroImage = "https://images.unsplash.com/photo-1503614472-8c93d56e92ce?auto=format&fit=crop&w=1000&q=80";
+    flightLow = 260; flightAvg = 420; flightPeak = 680;
+    categories = ["nature", "animals_wildlife", "adventure", "relaxing"];
+  } else if (lower.includes("beach") || lower.includes("island") || lower.includes("caribbean") || lower.includes("bahamas") || lower.includes("cancun")) {
+    categories = ["beaches", "water_parks", "relaxing", "nature"];
+    flightLow = 290; flightAvg = 480; flightPeak = 750;
   }
 
   const capitalized = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
+  const displayName = capitalized.includes(',') ? capitalized : `${capitalized}, ${country}`;
 
   return {
     id: `custom-${lower.replace(/[^a-z0-9]/g, '-').slice(0, 15)}-${stopIndex}`,
-    name: capitalized.includes(',') ? capitalized : `${capitalized}, ${country}`,
+    name: displayName,
     country: country,
-    region: "Custom Itinerary",
+    region: "Global Destination",
     coordinates: { lat, lng },
     airport_code: airport,
     hero_image: heroImage,
-    short_description: `Custom family destination exploring ${capitalized} featuring tailored cultural sights, regional cuisine, scenic landmarks, and child-friendly activities.`,
-    primary_categories: ["history_culture", "food_culinary", "nature", "science_museums", "entertainment"],
+    short_description: `Custom family destination exploring ${displayName} with tailored cultural discoveries, local cuisine, scenic landmarks, and child-friendly activities.`,
+    primary_categories: categories,
     target_age_groups: ["toddlers", "kids", "tweens", "teens", "adults"],
     pacing: "moderate",
     best_seasons: ["Spring", "Autumn", "Summer"],
@@ -426,9 +561,9 @@ function createCustomDestination(queryName, stopIndex = 0) {
     daily_food_per_person_usd: 40,
     local_transport_daily_usd: 30,
     highlight_features: [
-      `Explore historic landmarks & cultural monuments in ${capitalized}`,
+      `Explore historic landmarks & cultural monuments in ${capitalized.split(',')[0]}`,
       `Authentic regional cuisine & family food markets`,
-      `Scenic city parks, discovery centers and walking promenades`
+      `Scenic city parks, discovery centers, and walking promenades`
     ]
   };
 }
