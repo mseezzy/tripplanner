@@ -1,6 +1,7 @@
 // API service with live backend connection and resilient fallback
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+const isGitHubPages = typeof window !== 'undefined' && (window.location.hostname.endsWith('github.io') || window.location.protocol === 'file:');
+const API_BASE_URL = import.meta.env.VITE_API_URL || (isGitHubPages ? null : '/api');
 
 export const fallbackDestinations = [
   {
@@ -193,33 +194,244 @@ export const fallbackDestinations = [
     ]
   },
   {
-    id: "maui-hi",
-    name: "Maui & Oahu, Hawaii",
-    country: "United States",
-    region: "North America",
-    coordinates: { lat: 20.7984, lng: -156.3319 },
-    airport_code: "OGG",
-    hero_image: "https://images.unsplash.com/photo-1542259009477-d625272157b7?auto=format&fit=crop&w=1000&q=80",
-    short_description: "Tropical paradise with protected sea turtle snorkeling bays, Haleakalā volcanic sunrise, authentic luaus, and scenic coastal road trips.",
-    primary_categories: ["beaches", "nature", "relaxing", "adventure", "animals_wildlife"],
+    id: "south-korea",
+    name: "Seoul & Jeju Island, South Korea",
+    country: "South Korea",
+    region: "Asia",
+    coordinates: { lat: 37.5665, lng: 126.9780 },
+    airport_code: "ICN",
+    hero_image: "https://images.unsplash.com/photo-1538485399081-7191377e8241?auto=format&fit=crop&w=1000&q=80",
+    short_description: "Ultra-safe, high-tech family destination with Lotte World theme park, Gyeongbokgung Palace, interactive science museums, Han River parks, and Jeju's waterfalls.",
+    primary_categories: ["theme_parks", "history_culture", "food_culinary", "science_museums", "nature"],
     target_age_groups: ["toddlers", "kids", "tweens", "teens", "adults"],
-    pacing: "relaxed",
-    best_seasons: ["Spring", "Summer", "Autumn", "Winter"],
+    pacing: "moderate",
+    best_seasons: ["Spring", "Autumn"],
     stroller_friendly: true,
     crowd_level: "moderate",
-    climate_type: "tropical",
-    flight_base_usd: { low: 350, avg: 580, peak: 950 },
-    lodging_daily_usd: { budget_inn: 160, vacation_rental: 290, family_suite: 380, luxury_resort: 680 },
-    daily_food_per_person_usd: 55,
-    local_transport_daily_usd: 65,
+    climate_type: "temperate",
+    flight_base_usd: { low: 680, avg: 1050, peak: 1550 },
+    lodging_daily_usd: { budget_inn: 85, vacation_rental: 150, family_suite: 230, luxury_resort: 450 },
+    daily_food_per_person_usd: 35,
+    local_transport_daily_usd: 25,
     highlight_features: [
-      "Molokini Crater catamaran snorkel trip with green sea turtles",
-      "Road to Hana family waterfall discoveries",
-      "Kaanapali & Baby Beach calm wading waters",
-      "Polynesian Cultural Center and oceanfront luau"
+      "Lotte World indoor & outdoor amusement park & mega aquarium",
+      "Gyeongbokgung Palace hanbok dressing & guard changing ceremony",
+      "Han River family biking, ramen cookers & cruise",
+      "Jeju Island volcanic lava tubes, tea fields & teddy bear museum"
+    ]
+  },
+  {
+    id: "japan-tokyo",
+    name: "Tokyo & Kyoto, Japan",
+    country: "Japan",
+    region: "Asia",
+    coordinates: { lat: 35.6762, lng: 139.6503 },
+    airport_code: "NRT",
+    hero_image: "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1000&q=80",
+    short_description: "World-class family safety, Tokyo Disneyland & DisneySea, teamLab Planets digital art wonderland, Shinkansen bullet trains, and Kyoto bamboo forests.",
+    primary_categories: ["theme_parks", "science_museums", "history_culture", "food_culinary", "nature"],
+    target_age_groups: ["toddlers", "kids", "tweens", "teens", "adults"],
+    pacing: "moderate",
+    best_seasons: ["Spring", "Autumn"],
+    stroller_friendly: true,
+    crowd_level: "high",
+    climate_type: "temperate",
+    flight_base_usd: { low: 720, avg: 1120, peak: 1650 },
+    lodging_daily_usd: { budget_inn: 95, vacation_rental: 175, family_suite: 260, luxury_resort: 520 },
+    daily_food_per_person_usd: 40,
+    local_transport_daily_usd: 30,
+    highlight_features: [
+      "Tokyo Disneyland & Tokyo DisneySea ocean-themed wonderland",
+      "teamLab Planets immersive mirror & water digital art museum",
+      "Shinkansen high-speed bullet train rides across Japan",
+      "Kyoto Arashiyama Monkey Park & magical bamboo forest"
+    ]
+  },
+  {
+    id: "london-uk",
+    name: "London & Cotswolds, United Kingdom",
+    country: "United Kingdom",
+    region: "Europe",
+    coordinates: { lat: 51.5074, lng: -0.1278 },
+    airport_code: "LHR",
+    hero_image: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=1000&q=80",
+    short_description: "Royal palaces, Warner Bros. Harry Potter Studio Tour, world-class free science & natural history museums, and double-decker bus rides.",
+    primary_categories: ["history_culture", "science_museums", "entertainment", "food_culinary"],
+    target_age_groups: ["toddlers", "kids", "tweens", "teens", "adults"],
+    pacing: "moderate",
+    best_seasons: ["Spring", "Summer", "Autumn"],
+    stroller_friendly: true,
+    crowd_level: "high",
+    climate_type: "temperate",
+    flight_base_usd: { low: 520, avg: 850, peak: 1350 },
+    lodging_daily_usd: { budget_inn: 120, vacation_rental: 220, family_suite: 310, luxury_resort: 590 },
+    daily_food_per_person_usd: 50,
+    local_transport_daily_usd: 35,
+    highlight_features: [
+      "Warner Bros. Studio Tour London - The Making of Harry Potter",
+      "Natural History & Science Museums with giant robotic dinosaurs (Free Entry)",
+      "Tower of London, Crown Jewels & iconic Tower Bridge",
+      "Hyde Park Diana Memorial Playground & London Eye ride"
+    ]
+  },
+  {
+    id: "paris-france",
+    name: "Paris & French Riviera, France",
+    country: "France",
+    region: "Europe",
+    coordinates: { lat: 48.8566, lng: 2.3522 },
+    airport_code: "CDG",
+    hero_image: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1000&q=80",
+    short_description: "Iconic Eiffel Tower carousel, Disneyland Paris, Seine river boat cruises, Jardin du Luxembourg toy sailboats, and world-renowned bakeries.",
+    primary_categories: ["history_culture", "theme_parks", "food_culinary", "relaxing"],
+    target_age_groups: ["toddlers", "kids", "tweens", "teens", "adults"],
+    pacing: "relaxed",
+    best_seasons: ["Spring", "Summer", "Autumn"],
+    stroller_friendly: true,
+    crowd_level: "high",
+    climate_type: "temperate",
+    flight_base_usd: { low: 540, avg: 880, peak: 1390 },
+    lodging_daily_usd: { budget_inn: 130, vacation_rental: 230, family_suite: 320, luxury_resort: 610 },
+    daily_food_per_person_usd: 50,
+    local_transport_daily_usd: 30,
+    highlight_features: [
+      "Disneyland Paris & Walt Disney Studios Park",
+      "Eiffel Tower summit views and antique carousel rides",
+      "Jardin du Luxembourg pony rides and vintage wooden sailboats",
+      "Seine River glass-canopy family sightseeing cruise"
+    ]
+  },
+  {
+    id: "rome-italy",
+    name: "Rome & Florence, Italy",
+    country: "Italy",
+    region: "Europe",
+    coordinates: { lat: 41.9028, lng: 12.4964 },
+    airport_code: "FCO",
+    hero_image: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&w=1000&q=80",
+    short_description: "Living history museum featuring the Colosseum, family pizza & gelato masterclasses, Trevi Fountain wishing, and Vatican wonders.",
+    primary_categories: ["history_culture", "food_culinary", "relaxing", "nature"],
+    target_age_groups: ["kids", "tweens", "teens", "adults"],
+    pacing: "moderate",
+    best_seasons: ["Spring", "Autumn"],
+    stroller_friendly: false,
+    crowd_level: "high",
+    climate_type: "mediterranean",
+    flight_base_usd: { low: 560, avg: 890, peak: 1400 },
+    lodging_daily_usd: { budget_inn: 110, vacation_rental: 195, family_suite: 275, luxury_resort: 550 },
+    daily_food_per_person_usd: 45,
+    local_transport_daily_usd: 25,
+    highlight_features: [
+      "Colosseum & Gladiator school interactive family experience",
+      "Authentic family pizza-making and artisan gelato workshop",
+      "Trevi Fountain coin tossing and Piazza Navona artists",
+      "Borghese Gardens four-person tandem bike rental"
+    ]
+  },
+  {
+    id: "costa-rica",
+    name: "Arenal Volcano & Manuel Antonio, Costa Rica",
+    country: "Costa Rica",
+    region: "Central America",
+    coordinates: { lat: 10.4678, lng: -84.7032 },
+    airport_code: "SJO",
+    hero_image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1000&q=80",
+    short_description: "Rainforest canopy bridges, wild sloth and monkey spotting, gentle hot springs, and white sand Pacific beaches.",
+    primary_categories: ["nature", "animals_wildlife", "adventure", "beaches", "relaxing"],
+    target_age_groups: ["toddlers", "kids", "tweens", "teens", "adults"],
+    pacing: "relaxed",
+    best_seasons: ["Winter", "Spring"],
+    stroller_friendly: false,
+    crowd_level: "low",
+    climate_type: "tropical",
+    flight_base_usd: { low: 320, avg: 490, peak: 780 },
+    lodging_daily_usd: { budget_inn: 85, vacation_rental: 155, family_suite: 240, luxury_resort: 490 },
+    daily_food_per_person_usd: 35,
+    local_transport_daily_usd: 45,
+    highlight_features: [
+      "Mistico Arenal Hanging Bridges guided sloth and toucan tour",
+      "Eco Termales family-friendly natural hot springs",
+      "Manuel Antonio National Park beach with wild monkeys",
+      "La Fortuna waterfall and chocolate making plantation tour"
     ]
   }
 ];
+
+// Helper to create a rich custom destination for ANY user input
+function createCustomDestination(queryName, stopIndex = 0) {
+  const cleanName = (queryName || `Stop ${stopIndex + 1}`).trim();
+  const lower = cleanName.toLowerCase();
+
+  let country = "International Destination";
+  let lat = 35.0 + (stopIndex * 2);
+  let lng = 120.0 + (stopIndex * 5);
+  let airport = "INTL";
+  let heroImage = "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1000&q=80";
+  let flightLow = 650;
+  let flightAvg = 950;
+  let flightPeak = 1450;
+
+  if (lower.includes("korea") || lower.includes("seoul") || lower.includes("busan") || lower.includes("jeju")) {
+    country = "South Korea";
+    lat = 37.5665;
+    lng = 126.9780;
+    airport = "ICN";
+    heroImage = "https://images.unsplash.com/photo-1538485399081-7191377e8241?auto=format&fit=crop&w=1000&q=80";
+  } else if (lower.includes("japan") || lower.includes("tokyo") || lower.includes("kyoto") || lower.includes("osaka")) {
+    country = "Japan";
+    lat = 35.6762;
+    lng = 139.6503;
+    airport = "NRT";
+    heroImage = "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1000&q=80";
+  } else if (lower.includes("uk") || lower.includes("london") || lower.includes("england") || lower.includes("britain")) {
+    country = "United Kingdom";
+    lat = 51.5074;
+    lng = -0.1278;
+    airport = "LHR";
+    heroImage = "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=1000&q=80";
+  } else if (lower.includes("france") || lower.includes("paris")) {
+    country = "France";
+    lat = 48.8566;
+    lng = 2.3522;
+    airport = "CDG";
+    heroImage = "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1000&q=80";
+  } else if (lower.includes("italy") || lower.includes("rome") || lower.includes("florence")) {
+    country = "Italy";
+    lat = 41.9028;
+    lng = 12.4964;
+    airport = "FCO";
+    heroImage = "https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&w=1000&q=80";
+  }
+
+  const capitalized = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
+
+  return {
+    id: `custom-${lower.replace(/[^a-z0-9]/g, '-').slice(0, 15)}-${stopIndex}`,
+    name: capitalized.includes(',') ? capitalized : `${capitalized}, ${country}`,
+    country: country,
+    region: "Custom Itinerary",
+    coordinates: { lat, lng },
+    airport_code: airport,
+    hero_image: heroImage,
+    short_description: `Custom family destination exploring ${capitalized} featuring tailored cultural sights, regional cuisine, scenic landmarks, and child-friendly activities.`,
+    primary_categories: ["history_culture", "food_culinary", "nature", "science_museums", "entertainment"],
+    target_age_groups: ["toddlers", "kids", "tweens", "teens", "adults"],
+    pacing: "moderate",
+    best_seasons: ["Spring", "Autumn", "Summer"],
+    stroller_friendly: true,
+    crowd_level: "moderate",
+    climate_type: "temperate",
+    flight_base_usd: { low: flightLow, avg: flightAvg, peak: flightPeak },
+    lodging_daily_usd: { budget_inn: 90, vacation_rental: 165, family_suite: 245, luxury_resort: 490 },
+    daily_food_per_person_usd: 40,
+    local_transport_daily_usd: 30,
+    highlight_features: [
+      `Explore historic landmarks & cultural monuments in ${capitalized}`,
+      `Authentic regional cuisine & family food markets`,
+      `Scenic city parks, discovery centers and walking promenades`
+    ]
+  };
+}
 
 export async function sendDirectEmail(payload) {
   try {
@@ -303,24 +515,27 @@ export function parseShareableUrl() {
 }
 
 export async function fetchRecommendations(payload) {
-  try {
-    const response = await fetch(`${API_BASE_URL}/recommendations`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    if (response.ok) {
-      return await response.json();
+  if (API_BASE_URL) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/recommendations`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (response.ok) {
+        return await response.json();
+      }
+    } catch (err) {
+      console.warn("Backend API request failed or running standalone, generating client recommendations:", err);
     }
-  } catch (err) {
-    console.warn("Backend API request failed or running standalone, generating client recommendations:", err);
   }
 
-  // Resilient client-side fallback calculation
+  // Resilient client-side calculation (with full international & multi-stop support)
   return generateClientRecommendations(payload);
 }
 
 export async function checkBackendHealth() {
+  if (!API_BASE_URL) return false;
   try {
     const response = await fetch(`${API_BASE_URL}/health`, { signal: AbortSignal.timeout(2000) });
     return response.ok;
@@ -353,11 +568,18 @@ function generateClientRecommendations(req) {
   // Score destinations for each stop
   const processedStops = stops.map((stop, stopIdx) => {
     const q = (stop.destination || '').toLowerCase().trim();
-    const matched = fallbackDestinations.find(d => 
+    let matched = fallbackDestinations.find(d => 
       d.name.toLowerCase().includes(q) || 
       d.country.toLowerCase().includes(q) ||
-      d.region.toLowerCase().includes(q)
-    ) || fallbackDestinations[stopIdx % fallbackDestinations.length];
+      d.region.toLowerCase().includes(q) ||
+      q.includes(d.name.toLowerCase().split(',')[0]) ||
+      q.includes(d.country.toLowerCase())
+    );
+
+    // If no direct match in dataset, dynamically create custom international destination!
+    if (!matched) {
+      matched = createCustomDestination(stop.destination, stopIdx);
+    }
 
     const memberEnjoyment = family.map((m) => {
       let mScore = 78;

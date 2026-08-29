@@ -382,5 +382,69 @@
       "Evening illuminated National Mall monument walking tour",
       "International Spy Museum interactive undercover agent missions"
     ]
+  },
+  {
+    "id": "south-korea",
+    "name": "Seoul & Jeju Island, South Korea",
+    "country": "South Korea",
+    "region": "Asia",
+    "coordinates": {"lat": 37.5665, "lng": 126.9780},
+    "airport_code": "ICN",
+    "hero_image": "https://images.unsplash.com/photo-1538485399081-7191377e8241?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Ultra-safe, high-tech family destination with Lotte World theme park, Gyeongbokgung Palace, interactive science museums, Han River parks, and Jeju's waterfalls.",
+    "primary_categories": ["theme_parks", "history_culture", "food_culinary", "science_museums", "nature"],
+    "target_age_groups": ["toddlers", "kids", "tweens", "teens", "adults"],
+    "pacing": "moderate",
+    "best_seasons": ["Spring", "Autumn"],
+    "stroller_friendly": true,
+    "crowd_level": "moderate",
+    "climate_type": "temperate",
+    "flight_base_usd": {"low": 680, "avg": 1050, "peak": 1550},
+    "lodging_daily_usd": {
+      "budget_inn": 85,
+      "vacation_rental": 150,
+      "family_suite": 230,
+      "luxury_resort": 450
+    },
+    "daily_food_per_person_usd": 35,
+    "local_transport_daily_usd": 25,
+    "highlight_features": [
+      "Lotte World indoor & outdoor amusement park & mega aquarium",
+      "Gyeongbokgung Palace hanbok dressing & guard changing ceremony",
+      "Han River family biking, ramen cookers & cruise",
+      "Jeju Island volcanic lava tubes, tea fields & teddy bear museum"
+    ]
+  },
+  {
+    "id": "japan-tokyo",
+    "name": "Tokyo & Kyoto, Japan",
+    "country": "Japan",
+    "region": "Asia",
+    "coordinates": {"lat": 35.6762, "lng": 139.6503},
+    "airport_code": "NRT",
+    "hero_image": "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "World-class family safety, Tokyo Disneyland & DisneySea, teamLab Planets digital art wonderland, Shinkansen bullet trains, and Kyoto bamboo forests.",
+    "primary_categories": ["theme_parks", "science_museums", "history_culture", "food_culinary", "nature"],
+    "target_age_groups": ["toddlers", "kids", "tweens", "teens", "adults"],
+    "pacing": "moderate",
+    "best_seasons": ["Spring", "Autumn"],
+    "stroller_friendly": true,
+    "crowd_level": "high",
+    "climate_type": "temperate",
+    "flight_base_usd": {"low": 720, "avg": 1120, "peak": 1650},
+    "lodging_daily_usd": {
+      "budget_inn": 95,
+      "vacation_rental": 175,
+      "family_suite": 260,
+      "luxury_resort": 520
+    },
+    "daily_food_per_person_usd": 40,
+    "local_transport_daily_usd": 30,
+    "highlight_features": [
+      "Tokyo Disneyland & Tokyo DisneySea ocean-themed wonderland",
+      "teamLab Planets immersive mirror & water digital art museum",
+      "Shinkansen high-speed bullet train rides across Japan",
+      "Kyoto Arashiyama Monkey Park & magical bamboo forest"
+    ]
   }
 ]

@@ -92,15 +92,31 @@ export default function App() {
     }
   };
 
-  const handleSelectAlternativeDestination = (selectedDest) => {
+  const handleSelectAlternativeDestination = (selectedDest, stopIdx) => {
     if (!tripData) return;
+
+    // In a multi-destination trip, switch view to the clicked stop while keeping the entire trip state intact
+    if (tripData.is_multi_destination && tripData.stops && tripData.stops.length > 1) {
+      const targetStop = (typeof stopIdx === 'number' && tripData.stops[stopIdx])
+        ? tripData.stops[stopIdx]
+        : tripData.stops.find(s => s.destination?.id === selectedDest.id) || tripData.stops[0];
+
+      setTripData(prev => ({
+        ...prev,
+        destination: targetStop.destination,
+        lodging: targetStop.lodging,
+        activities: targetStop.activities,
+        weather: targetStop.weather,
+      }));
+      return;
+    }
+
     setLoading(true);
-    // Re-run with the newly selected destination
+    // Re-run for single destination mode
     fetchRecommendations({
-      ...tripData.family_profile_summary,
-      family_members: Array(tripData.family_profile_summary.total_travelers).fill({ name: "Member", age: 10 }),
+      ...rawParams,
       preferred_destination: selectedDest.name,
-      duration_days: tripData.budget_summary?.duration_days || 5
+      destinations: [{ destination: selectedDest.name, duration_days: tripData.budget_summary?.duration_days || 5 }]
     }).then((newData) => {
       setTripData(newData);
       setLoading(false);

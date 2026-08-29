@@ -63,8 +63,9 @@ export default function DestinationCard({
                   fontWeight: 800,
                   fontSize: '0.72rem',
                   cursor: 'pointer',
+                  border: destination.id === s.destination?.id ? '2px solid rgba(2, 132, 199, 0.4)' : 'none',
                 }}
-                onClick={() => onSelectDestination && onSelectDestination(s.destination)}
+                onClick={() => onSelectDestination && onSelectDestination(s.destination, idx)}
               />
               {idx < stops.length - 1 && <span style={{ fontWeight: 800 }}>➔</span>}
             </React.Fragment>
