@@ -451,20 +451,29 @@ function generateClientRecommendations(req) {
 
   const primaryDest = processedStops[0].destination;
   const numStops = processedStops.length;
+  const duration = totalDuration;
 
   // Flights
   const flightBase = primaryDest.flight_base_usd;
-  const flightLowTotal = flightBase.low * numPeople;
-  const flightAvgTotal = flightBase.avg * numPeople;
-  const flightPeakTotal = flightBase.peak * numPeople;
+  let flightLowTotal = flightBase.low * numPeople;
+  let flightAvgTotal = flightBase.avg * numPeople;
+  let flightPeakTotal = flightBase.peak * numPeople;
+
+  if (numStops > 1) {
+    const interCityTransfer = (numStops - 1) * (180 * numPeople);
+    flightLowTotal += Math.round(interCityTransfer * 0.7);
+    flightAvgTotal += interCityTransfer;
+    flightPeakTotal += Math.round(interCityTransfer * 1.3);
+  }
 
   const flights = {
     origin_code: req.origin_city ? req.origin_city.toUpperCase().slice(0, 3) : "ORD",
     destination_code: primaryDest.airport_code,
+    multi_destination_route: numStops > 1 ? [req.origin_city?.split(' ')[0] || 'Origin', ...processedStops.map(s => s.destination.name.split(',')[0]), req.origin_city?.split(' ')[0] || 'Origin'].join(' ➔ ') : undefined,
     price_range: {
-      low_per_person: flightBase.low,
-      avg_per_person: flightBase.avg,
-      peak_per_person: flightBase.peak,
+      low_per_person: Math.round(flightLowTotal / numPeople),
+      avg_per_person: Math.round(flightAvgTotal / numPeople),
+      peak_per_person: Math.round(flightPeakTotal / numPeople),
       total_family_low: flightLowTotal,
       total_family_avg: flightAvgTotal,
       total_family_peak: flightPeakTotal,
@@ -473,35 +482,35 @@ function generateClientRecommendations(req) {
       {
         tier: "Budget Carrier / Economy Saver",
         airline: "Southwest / Economy Saver",
-        price_per_person: flightBase.low,
+        price_per_person: Math.round(flightLowTotal / numPeople),
         total_family_price: flightLowTotal,
-        type: "1 Quick stop",
-        duration: "4h 15m",
+        type: numStops > 1 ? `${numStops} Multi-City Hops` : "1 Quick stop",
+        duration: numStops > 1 ? "Multi-Hop" : "4h 15m",
         baggage_policy: "Carry-on included, checked bags $35",
-        family_seating_tip: "Check in 24h early to get adjacent boarding positions."
+        family_seating_tip: "Book family seats together in the same row early."
       },
       {
         tier: "Standard Main Cabin (Recommended)",
         airline: "Delta / United Main Cabin",
-        price_per_person: flightBase.avg,
+        price_per_person: Math.round(flightAvgTotal / numPeople),
         total_family_price: flightAvgTotal,
-        type: "Direct / Non-stop",
-        duration: "3h 10m",
-        baggage_policy: "Carry-on + free seat selection together",
-        family_seating_tip: "Guaranteed adjacent seating for children under 13."
+        type: numStops > 1 ? `${numStops} Multi-City Route` : "Non-stop Direct",
+        duration: numStops > 1 ? "Multi-Hop" : "2h 45m",
+        baggage_policy: "1 free personal item + 1 carry-on per traveler",
+        family_seating_tip: "Includes free adjacent family seating assignments."
       },
       {
-        tier: "Flexible / Premium Economy",
-        airline: "American Airlines Premium",
-        price_per_person: flightBase.peak,
+        tier: "Premium Family Comfort",
+        airline: "Delta Comfort+ / American Main Select",
+        price_per_person: Math.round(flightPeakTotal / numPeople),
         total_family_price: flightPeakTotal,
-        type: "Direct / Priority Boarding",
-        duration: "3h 05m",
+        type: "Non-stop Priority",
+        duration: "2h 40m",
         baggage_policy: "2 free checked bags + early family boarding",
         family_seating_tip: "Priority family boarding enables smooth stroller gate checks."
       }
     ],
-    family_travel_tip: "Booking 6-8 weeks ahead typically unlocks the best family fare tiers."
+    family_travel_tip: numStops > 1 ? `Multi-destination itinerary connecting ${numStops} destinations.` : "Booking 6-8 weeks ahead typically unlocks the best family fare tiers."
   };
 
   // Lodging
@@ -519,7 +528,7 @@ function generateClientRecommendations(req) {
     options: [
       {
         id: "opt-vacation-home",
-        name: "Spacious 2-3 Bedroom Family Vacation Home",
+        name: `Spacious Family Vacation Home in ${primaryDest.name.split(',')[0]}`,
         category: "Vacation Rental (Airbnb / VRBO)",
         nightly_rate_usd: lodgingPrices.vacation_rental,
         total_trip_usd: lodgingPrices.vacation_rental * duration,
@@ -531,7 +540,7 @@ function generateClientRecommendations(req) {
       },
       {
         id: "opt-family-suite",
-        name: "Family Resort Suite with Splash Pool & Arcade",
+        name: `Family Resort Suite with Splash Pool (${primaryDest.name.split(',')[0]})`,
         category: "Resort / Hotel Suite",
         nightly_rate_usd: lodgingPrices.family_suite,
         total_trip_usd: lodgingPrices.family_suite * duration,
@@ -613,6 +622,7 @@ function generateClientRecommendations(req) {
 
   const budget_summary = {
     duration_days: duration,
+    total_stops: numStops,
     family_size: numPeople,
     total_budget_range: {
       low: Math.round(realisticTotal * 0.75),
@@ -646,36 +656,48 @@ function generateClientRecommendations(req) {
     ]
   };
 
-  // Itinerary
-  const itinerary = Array.from({ length: duration }, (_, i) => ({
-    day: i + 1,
-    title: `Day ${i + 1}: ${activities[i % activities.length].name}`,
-    morning: {
-      activity: activities[i % activities.length].name,
-      time: "9:00 AM - 12:30 PM",
-      description: activities[i % activities.length].description,
-      price: `$${activities[i % activities.length].price_per_person_usd}/person`,
-      tag: activities[i % activities.length].family_tag
-    },
-    afternoon: {
-      activity: "Lunch & Resort Pool Relaxation",
-      time: "1:30 PM - 4:30 PM",
-      description: "Recharge with swimming, snacks, and downtime before evening fun.",
-      price: "Included with Lodging",
-      tag: "Relaxing"
-    },
-    evening: {
-      activity: "Family Dinner & Sunset Promenade Walk",
-      time: "6:00 PM - 8:30 PM",
-      description: "Enjoy a memorable dinner at a local family-friendly restaurant.",
-      price: `~$${Math.round((primaryDest.daily_food_per_person_usd * numPeople) / 2)} total`,
-      tag: "All Ages"
+  // Multi-Stop Itinerary
+  let dayCounter = 1;
+  const itinerary = [];
+  processedStops.forEach((stop, sIdx) => {
+    for (let d = 1; d <= stop.duration_days; d++) {
+      itinerary.push({
+        day: dayCounter,
+        stop_number: sIdx + 1,
+        destination_name: stop.destination.name,
+        title: `Day ${dayCounter} (${stop.destination.name.split(',')[0]}): ${activities[(dayCounter - 1) % activities.length].name}`,
+        morning: {
+          activity: activities[(dayCounter - 1) % activities.length].name,
+          time: "9:00 AM - 12:30 PM",
+          description: activities[(dayCounter - 1) % activities.length].description,
+          price: `$${activities[(dayCounter - 1) % activities.length].price_per_person_usd}/person`,
+          tag: activities[(dayCounter - 1) % activities.length].family_tag
+        },
+        afternoon: {
+          activity: "Lunch & Resort Exploration",
+          time: "1:30 PM - 4:30 PM",
+          description: `Explore local family attractions in ${stop.destination.name.split(',')[0]}.`,
+          price: "Included with Lodging",
+          tag: "Relaxing"
+        },
+        evening: {
+          activity: `Family Dinner in ${stop.destination.name.split(',')[0]}`,
+          time: "6:00 PM - 8:30 PM",
+          description: "Enjoy a memorable dinner at a local family-friendly restaurant.",
+          price: `~$${Math.round((primaryDest.daily_food_per_person_usd * numPeople) / 2)} total`,
+          tag: "All Ages"
+        }
+      });
+      dayCounter++;
     }
-  }));
+  });
 
   return {
+    is_multi_destination: numStops > 1,
+    total_stops: numStops,
+    stops: processedStops,
     destination: primaryDest,
-    all_ranked_destinations: scored,
+    all_ranked_destinations: processedStops.map(s => s.destination),
     flights,
     lodging,
     activities,
@@ -684,6 +706,7 @@ function generateClientRecommendations(req) {
     itinerary,
     family_profile_summary: {
       total_travelers: numPeople,
+      age_groups: Array.from(new Set(family.map(m => m.age <= 3 ? "toddlers" : m.age <= 12 ? "kids" : m.age <= 17 ? "teens" : "adults"))),
       likes,
       dislikes
     }
