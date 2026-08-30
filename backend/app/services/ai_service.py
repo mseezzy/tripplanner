@@ -50,6 +50,79 @@ Return strictly valid JSON only.
         print(f"AI Service fallback: {e}")
     return None
 
+async def discover_dynamic_destinations_ai(
+    family_members: List[Dict[str, Any]],
+    likes: List[str],
+    dislikes: List[str],
+    origin_airport: str = "ORD",
+    budget_tier: str = "moderate",
+    travel_month: Optional[int] = None,
+    api_key: Optional[str] = None
+) -> Optional[List[Dict[str, Any]]]:
+    """
+    Dynamically discovers and synthesizes 8-12 worldwide destination candidates on the fly
+    tailored specifically to the family travelers, interests, month, and budget tier.
+    """
+    active_key = api_key or settings.GEMINI_API_KEY
+    if not active_key:
+        return None
+
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={active_key}"
+
+    prompt = f"""
+You are an expert global travel discovery algorithm.
+Analyze this family travel profile and dynamically discover 8 to 12 diverse, exciting travel destinations ANYWHERE across the world (spanning different continents, including famous capitals and scenic gems).
+
+FAMILY TRAVEL PROFILE:
+- Travelers: {family_members}
+- Interests/Likes: {likes}
+- Constraints/Dislikes: {dislikes}
+- Departure Origin: {origin_airport}
+- Budget Tier: {budget_tier}
+- Travel Month: {travel_month or 'Flexible'}
+
+Return a JSON ARRAY of 8 to 12 destination objects with these exact fields:
+- "id": unique string slug (e.g. "azores-portugal", "kyushu-japan")
+- "name": Full name (e.g. "Azores & São Miguel, Portugal")
+- "country": Country name
+- "continent": One of ["Asia & Pacific", "Europe", "North America", "Latin America & Caribbean", "Middle East & Africa"]
+- "region": Regional area
+- "coordinates": {{"lat": float, "lng": float}}
+- "airport_code": 3-letter IATA code
+- "hero_image": Unsplash travel photo URL
+- "short_description": 1-2 sentence compelling summary for this family
+- "primary_categories": array of matching categories from ["theme_parks", "beaches", "nature", "animals_wildlife", "science_museums", "food_culinary", "history_culture", "adventure", "relaxing"]
+- "target_age_groups": array from ["toddlers", "kids", "tweens", "teens", "adults"]
+- "pacing": "relaxed" or "moderate" or "active"
+- "best_seasons": ["Spring", "Summer", "Autumn", "Winter"]
+- "stroller_friendly": boolean
+- "crowd_level": "low" or "moderate" or "high"
+- "climate_type": "mediterranean", "tropical", "temperate", "alpine", or "subtropical"
+- "flight_base_usd": {{"low": int, "avg": int, "peak": int}}
+- "lodging_daily_usd": {{"budget_inn": int, "vacation_rental": int, "family_suite": int, "luxury_resort": int}}
+- "daily_food_per_person_usd": int
+- "local_transport_daily_usd": int
+- "highlight_features": array of 4 bullet points
+
+Return strictly valid JSON array only.
+"""
+    try:
+        payload = {
+            "contents": [{"parts": [{"text": prompt}]}],
+            "generationConfig": {"response_mime_type": "application/json"}
+        }
+        async with httpx.AsyncClient(timeout=14.0) as client:
+            resp = await client.post(url, json=payload)
+            if resp.status_code == 200:
+                data = resp.json()
+                text = data["candidates"][0]["content"]["parts"][0]["text"]
+                results = json.loads(text)
+                if isinstance(results, list) and len(results) > 0:
+                    return results
+    except Exception as e:
+        print(f"Dynamic Discovery AI Error: {e}")
+    return None
+
 async def generate_chat_response(
     message: str,
     history: List[Dict[str, Any]],

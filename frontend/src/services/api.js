@@ -3395,6 +3395,79 @@ export function parseShareableUrl() {
   return null;
 }
 
+export async function discoverDynamicWorldwideDestinations(req) {
+  const userKey = localStorage.getItem('gemini_api_key') || import.meta.env?.VITE_GEMINI_API_KEY;
+  const family = req.family_members || [];
+  const likes = req.likes || [];
+  const dislikes = req.dislikes || [];
+  const origin = req.origin_city || 'ORD';
+  const budget = req.budget_tier || 'moderate';
+
+  // 1. If Gemini AI is active, dynamically discover 8-12 unique worldwide destinations tailored to this exact family!
+  if (userKey && userKey.trim().length > 10) {
+    try {
+      const prompt = `You are an expert global travel discovery algorithm.
+Analyze this family travel profile and dynamically discover 8 to 12 diverse, exciting travel destinations ANYWHERE across the world (spanning different continents, including famous capitals and scenic gems).
+
+FAMILY TRAVEL PROFILE:
+- Travelers: ${JSON.stringify(family)}
+- Interests/Likes: ${likes.join(', ')}
+- Constraints/Dislikes: ${dislikes.join(', ')}
+- Departure Origin: ${origin}
+- Budget Tier: ${budget}
+- Travel Month: ${req.travel_month || 'Flexible'}
+
+Return a JSON ARRAY of 8 to 12 destination objects with these exact fields:
+- "id": unique string slug (e.g. "azores-portugal", "kyushu-japan")
+- "name": Full name (e.g. "Azores & São Miguel, Portugal")
+- "country": Country name
+- "continent": One of ["Asia & Pacific", "Europe", "North America", "Latin America & Caribbean", "Middle East & Africa"]
+- "region": Regional area
+- "coordinates": {"lat": float, "lng": float}
+- "airport_code": 3-letter IATA code
+- "hero_image": Unsplash travel photo URL
+- "short_description": 1-2 sentence compelling summary for this family
+- "primary_categories": array of matching categories from ["theme_parks", "beaches", "nature", "animals_wildlife", "science_museums", "food_culinary", "history_culture", "adventure", "relaxing"]
+- "target_age_groups": array from ["toddlers", "kids", "tweens", "teens", "adults"]
+- "pacing": "relaxed" or "moderate" or "active"
+- "best_seasons": ["Spring", "Summer", "Autumn", "Winter"]
+- "stroller_friendly": boolean
+- "crowd_level": "low" or "moderate" or "high"
+- "climate_type": "mediterranean", "tropical", "temperate", "alpine", or "subtropical"
+- "flight_base_usd": {"low": int, "avg": int, "peak": int}
+- "lodging_daily_usd": {"budget_inn": int, "vacation_rental": int, "family_suite": int, "luxury_resort": int}
+- "daily_food_per_person_usd": int
+- "local_transport_daily_usd": int
+- "highlight_features": array of 4 bullet points
+
+Return strictly valid JSON array only.`;
+
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(userKey.trim())}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          generationConfig: { response_mime_type: 'application/json' }
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (text) {
+          const parsed = JSON.parse(text);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            return parsed;
+          }
+        }
+      }
+    } catch (e) {
+      console.warn("Dynamic AI discovery fallback:", e);
+    }
+  }
+  return null;
+}
+
 export async function fetchRecommendations(payload) {
   if (API_BASE_URL) {
     try {
@@ -3412,7 +3485,7 @@ export async function fetchRecommendations(payload) {
   }
 
   // Resilient client-side calculation (with full international & multi-stop support)
-  return generateClientRecommendations(payload);
+  return await generateClientRecommendations(payload);
 }
 
 export async function checkBackendHealth() {
@@ -3425,7 +3498,7 @@ export async function checkBackendHealth() {
   }
 }
 
-function generateClientRecommendations(req) {
+async function generateClientRecommendations(req) {
   const family = req.family_members && req.family_members.length > 0
     ? req.family_members
     : [{ name: "Adult", age: 35 }, { name: "Child", age: 8 }];
@@ -3442,14 +3515,24 @@ function generateClientRecommendations(req) {
     stops = [{ destination: req.preferred_destination.trim(), duration_days: req.duration_days || 5 }];
   }
 
-  // AUTO-RECOMMEND MODE: If no destination specified, score and rank all available destinations for family & budget!
+  // AUTO-RECOMMEND MODE: If no destination specified, discover candidates dynamically!
   let allRankedDestinations = [];
   const isOpenSearch = stops.length === 0;
   const tripDuration = req.duration_days || 5;
 
   if (isOpenSearch) {
+    // Attempt dynamic AI discovery first
+    const dynamicCandidates = await discoverDynamicWorldwideDestinations(req);
+    
+    // Combine dynamic candidates with worldwide atlas
+    let candidatePool = fallbackDestinations;
+    if (dynamicCandidates && Array.isArray(dynamicCandidates) && dynamicCandidates.length > 0) {
+      const dynamicIds = new Set(dynamicCandidates.map(d => d.id || d.name));
+      candidatePool = [...dynamicCandidates, ...fallbackDestinations.filter(d => !dynamicIds.has(d.id) && !dynamicIds.has(d.name))];
+    }
+
     // Score all destinations against family preferences, age groups, and budget tier
-    const scoredDests = fallbackDestinations.map(d => {
+    const scoredDests = candidatePool.map(d => {
       let score = 75;
       const reasons = [];
 
@@ -3461,13 +3544,13 @@ function generateClientRecommendations(req) {
         if (d.stroller_friendly) { score += 10; reasons.push("Stroller-friendly for toddlers"); }
         else { score -= 10; }
       }
-      if (hasTeen && d.primary_categories.some(c => ["theme_parks", "adventure", "water_parks"].includes(c))) {
+      if (hasTeen && (d.primary_categories || []).some(c => ["theme_parks", "adventure", "water_parks"].includes(c))) {
         score += 8;
         reasons.push("Thrilling rides & adventure for teens");
       }
 
       allLikes.forEach(lk => {
-        if (d.primary_categories.some(c => c.includes(lk.replace(' ', '_')))) {
+        if ((d.primary_categories || []).some(c => c.includes(lk.replace(' ', '_')))) {
           score += 6;
           reasons.push(`Matches interest in ${lk.replace('_', ' ')}`);
         }
@@ -3490,11 +3573,11 @@ function generateClientRecommendations(req) {
         } else if (mAge <= 12) {
           mScore += 10;
         } else if (mAge <= 17) {
-          if (d.primary_categories.some(c => ["theme_parks", "adventure", "water_parks"].includes(c))) mScore += 14;
+          if ((d.primary_categories || []).some(c => ["theme_parks", "adventure", "water_parks"].includes(c))) mScore += 14;
         }
 
         mLikes.forEach(lk => {
-          if (d.primary_categories.some(cat => cat.includes(lk.replace(' ', '_')))) {
+          if ((d.primary_categories || []).some(cat => cat.includes(lk.replace(' ', '_')))) {
             mScore += 8;
           }
         });
