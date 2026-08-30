@@ -39,6 +39,7 @@ import {
   ErrorOutline
 } from '@mui/icons-material';
 import { sendChatMessage, testGeminiApiKey } from '../services/geminiService';
+import MarkdownMessage from './MarkdownMessage';
 
 const QUICK_PROMPTS = [
   { label: '♿ Prep Children with Disabilities & Sensory Needs', prompt: 'How should we prepare and accommodate our children with disabilities, sensory sensitivities, or special needs on this trip?' },
@@ -428,11 +429,10 @@ export default function ChatConcierge({ tripData }) {
                         fontSize: '0.88rem',
                         lineHeight: 1.55,
                         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
-                        wordBreak: 'break-word',
-                        whiteSpace: 'pre-line'
+                        wordBreak: 'break-word'
                       }}
                     >
-                      {msg.text}
+                      <MarkdownMessage content={msg.text} isUser={msg.sender === 'user'} />
                     </Box>
                     <Typography
                       variant="caption"
