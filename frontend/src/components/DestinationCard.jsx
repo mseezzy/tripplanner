@@ -23,6 +23,8 @@ import {
   SwapHoriz
 } from '@mui/icons-material';
 
+import { getDestinationImage, getCategoryFallbackImage } from '../utils/imageUtils';
+
 export default function DestinationCard({
   destination,
   allDestinations = [],
@@ -63,6 +65,7 @@ export default function DestinationCard({
           {stops.map((s, idx) => (
             <React.Fragment key={idx}>
               <Chip
+                avatar={<Avatar src={getDestinationImage(s.destination)} imgProps={{ referrerPolicy: 'no-referrer' }} />}
                 label={`Stop ${idx + 1}: ${s.destination?.name?.split(',')[0]} (${s.duration_days} Days)`}
                 size="small"
                 sx={{
@@ -123,11 +126,17 @@ export default function DestinationCard({
             scrollButtons="auto"
             sx={{ minHeight: 44 }}
           >
-            {filteredDestinations.slice(0, 15).map((dest, idx) => (
+            {filteredDestinations.slice(0, 20).map((dest, idx) => (
               <Tab
                 key={dest.id}
                 label={
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8 }}>
+                    <Avatar
+                      src={getDestinationImage(dest)}
+                      alt={dest.name}
+                      sx={{ width: 22, height: 22, borderRadius: 1 }}
+                      imgProps={{ referrerPolicy: 'no-referrer', onError: (e) => { e.currentTarget.src = getCategoryFallbackImage(dest); } }}
+                    />
                     <span>{dest.name.split(',')[0]}</span>
                     <Chip
                       label={`${dest.match_score || 85}%`}
@@ -148,8 +157,12 @@ export default function DestinationCard({
       <Box sx={{ position: 'relative', height: { xs: 240, md: 320 } }}>
         <CardMedia
           component="img"
-          image={destination.hero_image}
+          image={getDestinationImage(destination)}
           alt={destination.name}
+          referrerPolicy="no-referrer"
+          onError={(e) => {
+            e.currentTarget.src = getCategoryFallbackImage(destination);
+          }}
           sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
         />
         {/* Gradient Overlay */}
