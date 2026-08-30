@@ -191,6 +191,13 @@ async def get_recommendations(req: RecommendationRequest):
     family_dicts = [m.model_dump() for m in req.family_members] or [{"name": "Adult", "age": 35}, {"name": "Child", "age": 8}]
     num_family_members = len(family_dicts)
 
+    # Resolve origin coordinates for distance-aware budget scoring
+    origin_name = req.origin_city or "Chicago (ORD)"
+    origin_coords = {"lat": 41.9742, "lng": -87.9073}
+    origin_geo = await geocode_query(origin_name)
+    if origin_geo:
+        origin_coords = {"lat": origin_geo["lat"], "lng": origin_geo["lng"]}
+
     # 1. Normalize trip stops
     raw_stops = []
     if req.destinations and len(req.destinations) > 0:
@@ -198,15 +205,18 @@ async def get_recommendations(req: RecommendationRequest):
     elif req.preferred_destination and req.preferred_destination.strip():
         raw_stops = [{"destination": req.preferred_destination.strip(), "duration_days": req.duration_days or 5, "order": 0}]
 
-    # If no destination given (open search), pick top matching destination
+    # If no destination given (open search), score all destinations with origin distance and pick top match
+    scored_all = []
+    for d in all_destinations:
+        sc = calculate_destination_score(
+            d, family_dicts, req.likes, req.dislikes, req.budget_tier or "moderate", origin_coords=origin_coords
+        )
+        d_copy = dict(d)
+        d_copy.update(sc)
+        scored_all.append(d_copy)
+    scored_all.sort(key=lambda x: x["match_score"], reverse=True)
+
     if not raw_stops:
-        scored_all = []
-        for d in all_destinations:
-            sc = calculate_destination_score(d, family_dicts, req.likes, req.dislikes, req.budget_tier or "moderate")
-            d_copy = dict(d)
-            d_copy.update(sc)
-            scored_all.append(d_copy)
-        scored_all.sort(key=lambda x: x["match_score"], reverse=True)
         raw_stops = [{"destination": scored_all[0]["name"], "duration_days": req.duration_days or 5, "order": 0}]
 
     total_trip_duration = sum(s.get("duration_days", 3) for s in raw_stops)
@@ -450,7 +460,7 @@ async def get_recommendations(req: RecommendationRequest):
         "total_stops": num_stops,
         "stops": processed_stops,
         "destination": primary_dest,
-        "all_ranked_destinations": [s["destination"] for s in processed_stops] if num_stops > 1 else all_destinations,
+        "all_ranked_destinations": scored_all if not (req.destinations and len(req.destinations) > 1) else [s["destination"] for s in processed_stops],
         "flights": flight_data,
         "lodging": primary_lodging,
         "activities": primary_activities,

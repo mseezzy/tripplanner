@@ -5,6 +5,399 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || (isGitHubPages ? null : '/a
 
 export const fallbackDestinations = [
   {
+    "id": "kansas-city-mo",
+    "name": "Kansas City, Missouri",
+    "country": "United States",
+    "continent": "North America",
+    "region": "Midwest USA",
+    "coordinates": {
+      "lat": 39.0997,
+      "lng": -94.5786
+    },
+    "airport_code": "MCI",
+    "hero_image": "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Worlds of Fun theme park, Science City at historic Union Station, Crown Center Lego discovery, world-famous sweet Kansas City BBQ, and the vibrant zoo.",
+    "primary_categories": [
+      "theme_parks",
+      "science_museums",
+      "food_culinary",
+      "entertainment",
+      "animals_wildlife"
+    ],
+    "target_age_groups": [
+      "toddlers",
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "relaxed",
+    "best_seasons": [
+      "Spring",
+      "Summer",
+      "Autumn"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "low",
+    "climate_type": "continental",
+    "flight_base_usd": {
+      "low": 90,
+      "avg": 180,
+      "peak": 320
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 80,
+      "vacation_rental": 145,
+      "family_suite": 195,
+      "luxury_resort": 380
+    },
+    "daily_food_per_person_usd": 32,
+    "local_transport_daily_usd": 25,
+    "highlight_features": [
+      "Worlds of Fun theme park & Oceans of Fun water park",
+      "Science City at Union Station (hands-on maker studios & planetarium)",
+      "Deanna Rose Children's Farmstead & Kansas City Zoo elephant expedition",
+      "Crown Center (LEGOLAND Discovery Center & SEA LIFE Aquarium)"
+    ]
+  },
+  {
+    "id": "st-louis-mo",
+    "name": "St. Louis, Missouri",
+    "country": "United States",
+    "continent": "North America",
+    "region": "Midwest USA",
+    "coordinates": {
+      "lat": 38.627,
+      "lng": -90.1994
+    },
+    "airport_code": "STL",
+    "hero_image": "https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Gateway Arch tram ride 630ft to the top, world-famous Saint Louis Zoo (100% FREE admission), City Museum giant architectural jungle gym, and Forest Park.",
+    "primary_categories": [
+      "science_museums",
+      "animals_wildlife",
+      "history_culture",
+      "entertainment",
+      "relaxing"
+    ],
+    "target_age_groups": [
+      "toddlers",
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "relaxed",
+    "best_seasons": [
+      "Spring",
+      "Summer",
+      "Autumn"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "low",
+    "climate_type": "continental",
+    "flight_base_usd": {
+      "low": 95,
+      "avg": 190,
+      "peak": 330
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 80,
+      "vacation_rental": 145,
+      "family_suite": 190,
+      "luxury_resort": 375
+    },
+    "daily_food_per_person_usd": 30,
+    "local_transport_daily_usd": 22,
+    "highlight_features": [
+      "Saint Louis Zoo (world-renowned with FREE general admission)",
+      "City Museum (10-story whimsical indoor playground with caves and slides)",
+      "Gateway Arch National Park tram ride to the observation deck",
+      "The Magic House & Saint Louis Science Center (interactive science)"
+    ]
+  },
+  {
+    "id": "denver-co",
+    "name": "Denver & Rocky Mountains, Colorado",
+    "country": "United States",
+    "continent": "North America",
+    "region": "Mountain West USA",
+    "coordinates": {
+      "lat": 39.7392,
+      "lng": -104.9903
+    },
+    "airport_code": "DEN",
+    "hero_image": "https://images.unsplash.com/photo-1546587348-d12660c30c50?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Denver Museum of Nature & Science, Denver Zoo, Red Rocks Amphitheatre, Downtown Aquarium, and scenic mountain drives into Rocky Mountain National Park.",
+    "primary_categories": [
+      "nature",
+      "animals_wildlife",
+      "science_museums",
+      "adventure",
+      "food_culinary"
+    ],
+    "target_age_groups": [
+      "toddlers",
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "moderate",
+    "best_seasons": [
+      "Summer",
+      "Autumn",
+      "Winter",
+      "Spring"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "moderate",
+    "climate_type": "alpine",
+    "flight_base_usd": {
+      "low": 110,
+      "avg": 210,
+      "peak": 360
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 95,
+      "vacation_rental": 175,
+      "family_suite": 240,
+      "luxury_resort": 460
+    },
+    "daily_food_per_person_usd": 38,
+    "local_transport_daily_usd": 30,
+    "highlight_features": [
+      "Rocky Mountain National Park wildlife watching (elk, moose & Trail Ridge Road)",
+      "Denver Museum of Nature & Science (dinosaur discovery labs & IMAX)",
+      "Red Rocks Park & Amphitheatre scenic red sandstone trails",
+      "Denver Zoo elephant passage & Children's Museum of Denver"
+    ]
+  },
+  {
+    "id": "minneapolis-mn",
+    "name": "Minneapolis & Mall of America, Minnesota",
+    "country": "United States",
+    "continent": "North America",
+    "region": "Midwest USA",
+    "coordinates": {
+      "lat": 44.9778,
+      "lng": -93.265
+    },
+    "airport_code": "MSP",
+    "hero_image": "https://images.unsplash.com/photo-1563298723-dcfebaa392e3?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Mall of America with Nickelodeon Universe indoor theme park, SEA LIFE 300ft ocean tunnel, Science Museum of Minnesota, and Minnehaha Falls.",
+    "primary_categories": [
+      "theme_parks",
+      "science_museums",
+      "animals_wildlife",
+      "water_parks",
+      "nature"
+    ],
+    "target_age_groups": [
+      "toddlers",
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "relaxed",
+    "best_seasons": [
+      "Summer",
+      "Autumn",
+      "Spring",
+      "Winter"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "low",
+    "climate_type": "continental",
+    "flight_base_usd": {
+      "low": 95,
+      "avg": 185,
+      "peak": 320
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 85,
+      "vacation_rental": 150,
+      "family_suite": 205,
+      "luxury_resort": 395
+    },
+    "daily_food_per_person_usd": 34,
+    "local_transport_daily_usd": 24,
+    "highlight_features": [
+      "Mall of America: Nickelodeon Universe 7-acre indoor theme park",
+      "SEA LIFE Minnesota Aquarium (300ft underwater glass ocean tunnel)",
+      "Science Museum of Minnesota with real fossil digging and Mississippi river deck",
+      "Minnehaha Regional Park 53ft waterfall and surrey bicycle rentals"
+    ]
+  },
+  {
+    "id": "black-hills-sd",
+    "name": "Black Hills & Mount Rushmore, South Dakota",
+    "country": "United States",
+    "continent": "North America",
+    "region": "Midwest USA",
+    "coordinates": {
+      "lat": 43.8791,
+      "lng": -103.4591
+    },
+    "airport_code": "RAP",
+    "hero_image": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Mount Rushmore National Memorial, Custer State Park wild buffalo herds, Badlands alien rock canyons, and Bear Country USA drive-through safari.",
+    "primary_categories": [
+      "nature",
+      "animals_wildlife",
+      "history_culture",
+      "adventure"
+    ],
+    "target_age_groups": [
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "active",
+    "best_seasons": [
+      "Summer",
+      "Autumn",
+      "Spring"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "low",
+    "climate_type": "continental",
+    "flight_base_usd": {
+      "low": 130,
+      "avg": 240,
+      "peak": 390
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 85,
+      "vacation_rental": 160,
+      "family_suite": 220,
+      "luxury_resort": 420
+    },
+    "daily_food_per_person_usd": 32,
+    "local_transport_daily_usd": 35,
+    "highlight_features": [
+      "Mount Rushmore National Memorial evening lighting ceremony",
+      "Custer State Park Wildlife Loop (drive next to 1,400 wild bison)",
+      "Bear Country USA drive-through wildlife park (black bears & wolves)",
+      "Badlands National Park lunar landscape boardwalk walks"
+    ]
+  },
+  {
+    "id": "branson-ozarks-mo",
+    "name": "Branson & Ozark Mountains, Missouri",
+    "country": "United States",
+    "continent": "North America",
+    "region": "Midwest USA",
+    "coordinates": {
+      "lat": 36.6437,
+      "lng": -93.2185
+    },
+    "airport_code": "SGF",
+    "hero_image": "https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Silver Dollar City 1880s award-winning theme park, Table Rock Lake pontoon boating, Fritz's Adventure indoor ropes, and live family musical shows.",
+    "primary_categories": [
+      "theme_parks",
+      "entertainment",
+      "nature",
+      "water_parks",
+      "relaxing"
+    ],
+    "target_age_groups": [
+      "toddlers",
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "relaxed",
+    "best_seasons": [
+      "Spring",
+      "Summer",
+      "Autumn",
+      "Winter"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "low",
+    "climate_type": "continental",
+    "flight_base_usd": {
+      "low": 110,
+      "avg": 210,
+      "peak": 350
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 75,
+      "vacation_rental": 140,
+      "family_suite": 190,
+      "luxury_resort": 370
+    },
+    "daily_food_per_person_usd": 28,
+    "local_transport_daily_usd": 25,
+    "highlight_features": [
+      "Silver Dollar City (world-class wooden rollercoasters & master craftsmen)",
+      "Table Rock Lake pontoon boat rentals & lakeside state park beaches",
+      "Titanic Museum Attraction with real iceberg walk and kid scavenger hunts",
+      "Fritz's Adventure 3-story indoor ropes course and climbing tunnels"
+    ]
+  },
+  {
+    "id": "chicago-il",
+    "name": "Chicago & Lake Michigan, Illinois",
+    "country": "United States",
+    "continent": "North America",
+    "region": "Midwest USA",
+    "coordinates": {
+      "lat": 41.8781,
+      "lng": -87.6298
+    },
+    "airport_code": "ORD",
+    "hero_image": "https://images.unsplash.com/photo-1494522855154-9297ac14b55f?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Navy Pier giant Centennial Wheel, Shedd Aquarium beluga whales, Museum of Science & Industry U-boat, deep dish pizza, and Millennium Park.",
+    "primary_categories": [
+      "science_museums",
+      "animals_wildlife",
+      "food_culinary",
+      "entertainment",
+      "history_culture"
+    ],
+    "target_age_groups": [
+      "toddlers",
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "moderate",
+    "best_seasons": [
+      "Spring",
+      "Summer",
+      "Autumn"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "moderate",
+    "climate_type": "continental",
+    "flight_base_usd": {
+      "low": 90,
+      "avg": 170,
+      "peak": 300
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 110,
+      "vacation_rental": 200,
+      "family_suite": 270,
+      "luxury_resort": 540
+    },
+    "daily_food_per_person_usd": 42,
+    "local_transport_daily_usd": 18,
+    "highlight_features": [
+      "Shedd Aquarium (beluga whales, sea otters & touch pools)",
+      "Museum of Science and Industry (walk-in WWII submarine & giant Tesla coils)",
+      "Navy Pier Centennial Wheel & Chicago Architecture Boat Tour",
+      "Millennium Park 'The Bean' sculpture and Maggie Daley playground"
+    ]
+  },
+  {
     "id": "tokyo-japan",
     "name": "Tokyo & Mt. Fuji, Japan",
     "country": "Japan",
@@ -2965,11 +3358,15 @@ export function getSeasonalEvents(destinationName, travelMonth = null, monthPeri
 // Curated Global Major Airports Dataset for instant autocomplete & IATA resolution
 export const GLOBAL_AIRPORTS = [
   // North America
-  { code: "ATL", city: "Atlanta", name: "Hartsfield-Jackson Atlanta Int'l", country: "United States", lat: 33.6407, lng: -84.4277 },
+  { code: "OMA", city: "Omaha", name: "Eppley Airfield", country: "United States", lat: 41.3032, lng: -95.8941 },
+  { code: "MCI", city: "Kansas City", name: "Kansas City International", country: "United States", lat: 39.2976, lng: -94.7139 },
+  { code: "STL", city: "St. Louis", name: "St. Louis Lambert International", country: "United States", lat: 38.7487, lng: -90.3700 },
+  { code: "MSP", city: "Minneapolis", name: "Minneapolis-Saint Paul Int'l", country: "United States", lat: 44.8848, lng: -93.2223 },
   { code: "ORD", city: "Chicago", name: "O'Hare International Airport", country: "United States", lat: 41.9742, lng: -87.9073 },
   { code: "MDW", city: "Chicago", name: "Chicago Midway International", country: "United States", lat: 41.7868, lng: -87.7522 },
-  { code: "DFW", city: "Dallas/Fort Worth", name: "Dallas/Fort Worth Int'l", country: "United States", lat: 32.8998, lng: -97.0403 },
   { code: "DEN", city: "Denver", name: "Denver International Airport", country: "United States", lat: 39.8561, lng: -104.6737 },
+  { code: "DFW", city: "Dallas/Fort Worth", name: "Dallas/Fort Worth Int'l", country: "United States", lat: 32.8998, lng: -97.0403 },
+  { code: "ATL", city: "Atlanta", name: "Hartsfield-Jackson Atlanta Int'l", country: "United States", lat: 33.6407, lng: -84.4277 },
   { code: "LAX", city: "Los Angeles", name: "Los Angeles International Airport", country: "United States", lat: 33.9416, lng: -118.4085 },
   { code: "JFK", city: "New York", name: "John F. Kennedy International", country: "United States", lat: 40.6413, lng: -73.7781 },
   { code: "EWR", city: "New York/Newark", name: "Newark Liberty International", country: "United States", lat: 40.6895, lng: -74.1745 },
@@ -2984,6 +3381,7 @@ export const GLOBAL_AIRPORTS = [
   { code: "PHX", city: "Phoenix", name: "Phoenix Sky Harbor International", country: "United States", lat: 33.4373, lng: -112.0078 },
   { code: "SAN", city: "San Diego", name: "San Diego International Airport", country: "United States", lat: 32.7338, lng: -117.1933 },
   { code: "HNL", city: "Honolulu", name: "Daniel K. Inouye International", country: "United States", lat: 21.3187, lng: -157.9224 },
+  { code: "BNA", city: "Nashville", name: "Nashville International Airport", country: "United States", lat: 36.1263, lng: -86.6774 },
   { code: "YYZ", city: "Toronto", name: "Toronto Pearson International", country: "Canada", lat: 43.6777, lng: -79.6248 },
   { code: "YVR", city: "Vancouver", name: "Vancouver International Airport", country: "Canada", lat: 49.1967, lng: -123.1815 },
   { code: "YUL", city: "Montreal", name: "Montréal-Trudeau International", country: "Canada", lat: 45.4706, lng: -73.7408 },
@@ -3520,6 +3918,13 @@ async function generateClientRecommendations(req) {
   const isOpenSearch = stops.length === 0;
   const tripDuration = req.duration_days || 5;
 
+  const originStr = (req.origin_city || req.origin_airport || 'Chicago (ORD)').toLowerCase();
+  const originAirport = GLOBAL_AIRPORTS.find(a => 
+    originStr.includes(a.code.toLowerCase()) || 
+    originStr.includes(a.city.toLowerCase())
+  ) || { code: "ORD", city: "Chicago", lat: 41.9742, lng: -87.9073 };
+  const budgetTier = (req.budget_tier || 'moderate').toLowerCase();
+
   if (isOpenSearch) {
     // Attempt dynamic AI discovery first
     const dynamicCandidates = await discoverDynamicWorldwideDestinations(req);
@@ -3531,7 +3936,7 @@ async function generateClientRecommendations(req) {
       candidatePool = [...dynamicCandidates, ...fallbackDestinations.filter(d => !dynamicIds.has(d.id) && !dynamicIds.has(d.name))];
     }
 
-    // Score all destinations against family preferences, age groups, and budget tier
+    // Score all destinations against family preferences, age groups, and origin distance + budget tier
     const scoredDests = candidatePool.map(d => {
       let score = 75;
       const reasons = [];
@@ -3561,6 +3966,26 @@ async function generateClientRecommendations(req) {
         if (dis.includes("heat") && d.climate_type === "tropical") score -= 6;
       });
 
+      // Distance & Budget Tier Alignment
+      const dCoords = d.coordinates || { lat: 0, lng: 0 };
+      const distMiles = calculateDistanceMiles(originAirport.lat, originAirport.lng, dCoords.lat, dCoords.lng);
+      
+      if (budgetTier.includes('budget') || budgetTier.includes('economy')) {
+        if (distMiles <= 550) {
+          score += 26;
+          reasons.unshift(`Short-haul / budget distance from ${originAirport.city} (~${Math.round(distMiles)} mi)`);
+        } else if (distMiles <= 1200) {
+          score += 10;
+        } else if (distMiles > 2800) {
+          score -= 30; // Heavy penalty for long flights on economy budget
+          reasons.push(`Long-haul flight costs exceed budget tier`);
+        }
+      } else if (budgetTier.includes('luxury')) {
+        if (distMiles > 2500 || d.lodging_daily_usd?.family_suite > 280) {
+          score += 10;
+        }
+      }
+
       const memberEnjoyment = family.map((m) => {
         let mScore = 78;
         const mAge = m.age || 20;
@@ -3582,6 +4007,11 @@ async function generateClientRecommendations(req) {
           }
         });
 
+        // Boost member enjoyment for nearby budget destinations when in economy mode
+        if (budgetTier.includes('budget') && distMiles <= 550) {
+          mScore += 4;
+        }
+
         const finalMScore = Math.min(99, Math.max(65, mScore));
         let highlight = "Great overall experience and easy pacing";
         if (mAge <= 3) highlight = d.stroller_friendly ? "Stroller-friendly walking and gentle splash zones" : "Uneven paths, best with a carrier";
@@ -3601,7 +4031,7 @@ async function generateClientRecommendations(req) {
 
       return {
         ...d,
-        match_score: Math.min(99, Math.max(60, score)),
+        match_score: Math.min(99, Math.max(50, score)),
         score_reasons: reasons.slice(0, 3),
         member_enjoyment: memberEnjoyment
       };

@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 
 def get_age_group(age: int) -> str:
     if age <= 3:
@@ -85,12 +85,23 @@ def calculate_member_enjoyment(
         "matched_interests": matched_likes
     }
 
+import math
+
+def calculate_haversine_miles(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    r = 3958.8  # Earth radius in miles
+    d_lat = math.radians(lat2 - lat1)
+    d_lon = math.radians(lon2 - lon1)
+    a = math.sin(d_lat / 2) ** 2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(d_lon / 2) ** 2
+    c = 2 * math.asin(math.sqrt(max(0.0, min(1.0, a))))
+    return r * c
+
 def calculate_destination_score(
     destination: Dict[str, Any],
     family_members: List[Dict[str, Any]],
     likes: List[str],
     dislikes: List[str],
-    budget_tier: str = "moderate"
+    budget_tier: str = "moderate",
+    origin_coords: Optional[Dict[str, float]] = None
 ) -> Dict[str, Any]:
     score = 70.0  # Base score
     reasons: List[str] = []
@@ -137,7 +148,7 @@ def calculate_destination_score(
         for cat in dest_categories:
             if like_norm in cat or cat in like_norm:
                 like_matches.append(like)
-                score += 5
+                score += 6
 
     if like_matches:
         reasons.append(f"Matches family interests: {', '.join(list(set(like_matches))[:3])}")
@@ -154,12 +165,32 @@ def calculate_destination_score(
         if "hiking" in dis_norm and "hiking" in dest_categories:
             score -= 6
 
-    # 4. Budget alignment
+    # 4. Origin Distance & Budget Tier Alignment
+    dest_coords = destination.get("coordinates", {})
     dest_avg_lodging = destination.get("lodging_daily_usd", {}).get("family_suite", 250)
-    if budget_tier == "budget" and dest_avg_lodging > 300:
-        score -= 10
-    elif budget_tier == "luxury" and dest_avg_lodging > 300:
-        score += 5
+    
+    if origin_coords and dest_coords and "lat" in dest_coords and "lat" in origin_coords:
+        dist_miles = calculate_haversine_miles(
+            origin_coords["lat"], origin_coords["lng"],
+            dest_coords["lat"], dest_coords["lng"]
+        )
+        if budget_tier in ["budget", "economy"]:
+            if dist_miles <= 550:
+                score += 24
+                reasons.insert(0, f"Regional / short-haul distance (~{int(dist_miles)} miles) - optimal for economy budget")
+            elif dist_miles <= 1200:
+                score += 10
+            elif dist_miles > 2800:
+                score -= 28  # Heavy penalty for intercontinental flights on a budget
+                reasons.append("Long-haul international flight cost exceeds budget tier")
+        elif budget_tier == "luxury":
+            if dist_miles > 2500 or dest_avg_lodging > 300:
+                score += 10
+    else:
+        if budget_tier in ["budget", "economy"] and dest_avg_lodging > 300:
+            score -= 15
+        elif budget_tier == "luxury" and dest_avg_lodging > 300:
+            score += 8
 
     # Normalize between 50 and 99
     final_score = int(max(55, min(99, score)))
