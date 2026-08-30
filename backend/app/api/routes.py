@@ -183,6 +183,17 @@ async def chat_with_concierge(req: ChatRequest):
         return {"reply": reply, "source": "gemini_backend"}
     raise HTTPException(status_code=503, detail="Gemini service unavailable. Please check API key.")
 
+@router.get("/health")
+def health_check():
+    return {
+        "status": "healthy",
+        "gemini_active": bool(settings.GEMINI_API_KEY),
+        "version": settings.VERSION
+    }
+
+from app.services.ai_service import discover_dynamic_destinations_ai
+from app.services.wiki_service import enrich_destination_with_wiki, fetch_wikipedia_summary
+
 @router.post("/recommendations")
 async def get_recommendations(req: RecommendationRequest):
     all_destinations = load_destinations()
@@ -205,9 +216,25 @@ async def get_recommendations(req: RecommendationRequest):
     elif req.preferred_destination and req.preferred_destination.strip():
         raw_stops = [{"destination": req.preferred_destination.strip(), "duration_days": req.duration_days or 5, "order": 0}]
 
-    # If no destination given (open search), score all destinations with origin distance and pick top match
+    candidate_pool = all_destinations
+
+    # If open search, attempt dynamic AI discovery first
+    if not raw_stops:
+        dynamic_ai = await discover_dynamic_destinations_ai(
+            family_members=family_dicts,
+            likes=req.likes,
+            dislikes=req.dislikes,
+            origin_airport=origin_name,
+            budget_tier=req.budget_tier or "moderate",
+            travel_month=req.travel_month
+        )
+        if dynamic_ai and isinstance(dynamic_ai, list) and len(dynamic_ai) > 0:
+            dyn_ids = set(d.get("id") or d.get("name") for d in dynamic_ai)
+            candidate_pool = dynamic_ai + [d for d in all_destinations if d.get("id") not in dyn_ids and d.get("name") not in dyn_ids]
+
+    # Score all candidates with origin distance & budget weighting
     scored_all = []
-    for d in all_destinations:
+    for d in candidate_pool:
         sc = calculate_destination_score(
             d, family_dicts, req.likes, req.dislikes, req.budget_tier or "moderate", origin_coords=origin_coords
         )
@@ -215,6 +242,10 @@ async def get_recommendations(req: RecommendationRequest):
         d_copy.update(sc)
         scored_all.append(d_copy)
     scored_all.sort(key=lambda x: x["match_score"], reverse=True)
+
+    # Enrich top candidates with live Wikipedia photography if missing
+    for top_d in scored_all[:5]:
+        await enrich_destination_with_wiki(top_d)
 
     if not raw_stops:
         raw_stops = [{"destination": scored_all[0]["name"], "duration_days": req.duration_days or 5, "order": 0}]

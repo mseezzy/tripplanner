@@ -1,7 +1,27 @@
-// API service with live backend connection and resilient fallback
-
 const isGitHubPages = typeof window !== 'undefined' && (window.location.hostname.endsWith('github.io') || window.location.protocol === 'file:');
-const API_BASE_URL = import.meta.env.VITE_API_URL || (isGitHubPages ? null : '/api');
+const API_BASE_URL = import.meta.env?.VITE_API_BASE_URL || import.meta.env?.VITE_API_URL || (isGitHubPages ? null : '/api');
+
+export async function fetchWikipediaSummary(query) {
+  if (!query || !query.trim()) return null;
+  const cleaned = query.split('(')[0].trim().replace(/ /g, '_');
+  try {
+    const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(cleaned)}`, {
+      headers: { 'Accept': 'application/json' }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      return {
+        title: data.title,
+        extract: data.extract,
+        thumbnail: data.thumbnail?.source || data.originalimage?.source,
+        coordinates: data.coordinates
+      };
+    }
+  } catch (e) {
+    console.warn("Wikipedia client lookup fallback:", e);
+  }
+  return null;
+}
 
 export const fallbackDestinations = [
   {

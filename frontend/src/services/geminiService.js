@@ -1,7 +1,7 @@
 // Gemini AI Travel Concierge Service with Universal Semantic Response Intelligence
 
-const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
-const API_BASE_URL = window.location.hostname.endsWith('github.io') ? null : (import.meta.env?.VITE_API_URL || 'http://localhost:8000/api');
+const isGitHubPages = typeof window !== 'undefined' && (window.location.hostname.endsWith('github.io') || window.location.protocol === 'file:');
+const API_BASE_URL = import.meta.env?.VITE_API_BASE_URL || import.meta.env?.VITE_API_URL || (isGitHubPages ? null : '/api');
 
 export function formatTripContextPrompt(tripData) {
   if (!tripData || !tripData.destination) {
