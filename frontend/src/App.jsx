@@ -113,16 +113,23 @@ export default function App() {
       return;
     }
 
+    const currentRanked = tripData.all_ranked_destinations || [];
     setLoading(true);
-    // Re-run for single destination mode
+    // Re-run for single destination mode while keeping the candidate bar intact
     fetchRecommendations({
       ...rawParams,
       preferred_destination: selectedDest.name,
-      destinations: [{ destination: selectedDest.name, duration_days: tripData.budget_summary?.duration_days || 5 }]
+      destinations: [{ destination: selectedDest.name, duration_days: tripData.budget_summary?.duration_days || 5 }],
+      all_ranked_destinations: currentRanked
     }).then((newData) => {
-      setTripData(newData);
+      setTripData({
+        ...newData,
+        all_ranked_destinations: (newData.all_ranked_destinations && newData.all_ranked_destinations.length > 1)
+          ? newData.all_ranked_destinations
+          : currentRanked
+      });
       setLoading(false);
-    });
+    }).catch(() => setLoading(false));
   };
 
   const handleReset = () => {

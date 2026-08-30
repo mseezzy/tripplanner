@@ -3933,7 +3933,7 @@ async function generateClientRecommendations(req) {
     stops = [{ destination: req.preferred_destination.trim(), duration_days: req.duration_days || 5 }];
   }
 
-  // AUTO-RECOMMEND MODE: If no destination specified, discover candidates dynamically!
+  // AUTO-RECOMMEND & ALTERNATIVE EXPLORER MODE: Keep ranked candidate list populated
   let allRankedDestinations = [];
   const isOpenSearch = stops.length === 0;
   const tripDuration = req.duration_days || 5;
@@ -3945,9 +3945,11 @@ async function generateClientRecommendations(req) {
   ) || { code: "ORD", city: "Chicago", lat: 41.9742, lng: -87.9073 };
   const budgetTier = (req.budget_tier || 'moderate').toLowerCase();
 
-  if (isOpenSearch) {
-    // Attempt dynamic AI discovery first
-    const dynamicCandidates = await discoverDynamicWorldwideDestinations(req);
+  if (req.all_ranked_destinations && req.all_ranked_destinations.length > 1) {
+    allRankedDestinations = req.all_ranked_destinations;
+  } else {
+    // Attempt dynamic AI discovery first if open search
+    const dynamicCandidates = isOpenSearch ? await discoverDynamicWorldwideDestinations(req) : null;
     
     // Combine dynamic candidates with worldwide atlas
     let candidatePool = fallbackDestinations;
@@ -4059,7 +4061,10 @@ async function generateClientRecommendations(req) {
 
     scoredDests.sort((a, b) => b.match_score - a.match_score);
     allRankedDestinations = scoredDests;
-    stops = [{ destination: scoredDests[0].name, duration_days: tripDuration }];
+  }
+
+  if (isOpenSearch) {
+    stops = [{ destination: allRankedDestinations[0].name, duration_days: tripDuration }];
   }
 
   const totalDuration = stops.reduce((sum, s) => sum + (parseInt(s.duration_days, 10) || tripDuration), 0);
