@@ -11,6 +11,7 @@ import {
   Rating,
   Tabs,
   Tab,
+  Avatar,
   useTheme
 } from '@mui/material';
 import {
