@@ -32,6 +32,14 @@ export default function DestinationCard({
   stops = []
 }) {
   const theme = useTheme();
+  const [selectedRegion, setSelectedRegion] = React.useState('All');
+
+  const REGIONS = ['All', 'Asia & Pacific', 'Europe', 'North America', 'Latin America & Caribbean', 'Middle East & Africa'];
+
+  const filteredDestinations = React.useMemo(() => {
+    if (selectedRegion === 'All') return allDestinations;
+    return allDestinations.filter((d) => d.continent === selectedRegion || d.region?.includes(selectedRegion));
+  }, [allDestinations, selectedRegion]);
 
   return (
     <Card sx={{ overflow: 'hidden', mb: 3 }}>
@@ -73,17 +81,49 @@ export default function DestinationCard({
         </Box>
       )}
 
-      {/* Top Alternative Destination Switcher if multiple are returned in single-destination mode */}
+      {/* Worldwide Destination Candidate Explorer with Global Region Filters */}
       {!isMultiDestination && allDestinations.length > 1 && (
-        <Box sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: 'background.subtle', px: 2 }}>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: 'background.subtle', px: 2, pt: 1.5, pb: 0.5 }}>
+          {/* Global Continent / Region Filter Chips */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, overflowX: 'auto', mb: 1, pb: 0.5, '&::-webkit-scrollbar': { display: 'none' } }}>
+            <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', textTransform: 'uppercase', flexShrink: 0, mr: 0.5 }}>
+              🌐 Region:
+            </Typography>
+            {REGIONS.map((region) => {
+              const count = region === 'All' ? allDestinations.length : allDestinations.filter((d) => d.continent === region || d.region?.includes(region)).length;
+              if (count === 0 && region !== 'All') return null;
+              return (
+                <Chip
+                  key={region}
+                  label={`${region} (${count})`}
+                  size="small"
+                  onClick={() => setSelectedRegion(region)}
+                  color={selectedRegion === region ? 'primary' : 'default'}
+                  variant={selectedRegion === region ? 'filled' : 'outlined'}
+                  sx={{
+                    fontWeight: selectedRegion === region ? 800 : 600,
+                    fontSize: '0.72rem',
+                    cursor: 'pointer',
+                    flexShrink: 0
+                  }}
+                />
+              );
+            })}
+          </Box>
+
+          {/* Destination Candidates Tabs */}
           <Tabs
-            value={allDestinations.findIndex((d) => d.id === destination.id)}
-            onChange={(_, newIdx) => onSelectDestination(allDestinations[newIdx])}
+            value={Math.max(0, filteredDestinations.findIndex((d) => d.id === destination.id))}
+            onChange={(_, newIdx) => {
+              if (filteredDestinations[newIdx]) {
+                onSelectDestination(filteredDestinations[newIdx]);
+              }
+            }}
             variant="scrollable"
             scrollButtons="auto"
-            sx={{ minHeight: 48 }}
+            sx={{ minHeight: 44 }}
           >
-            {allDestinations.slice(0, 5).map((dest, idx) => (
+            {filteredDestinations.slice(0, 15).map((dest, idx) => (
               <Tab
                 key={dest.id}
                 label={
@@ -97,7 +137,7 @@ export default function DestinationCard({
                     />
                   </Box>
                 }
-                sx={{ textTransform: 'none', fontWeight: 600 }}
+                sx={{ textTransform: 'none', fontWeight: 600, py: 1 }}
               />
             ))}
           </Tabs>

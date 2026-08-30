@@ -5,26 +5,1639 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || (isGitHubPages ? null : '/a
 
 export const fallbackDestinations = [
   {
-    id: "orlando-fl",
-    name: "Orlando, Florida",
-    country: "United States",
-    region: "North America",
-    coordinates: { lat: 28.5383, lng: -81.3792 },
-    airport_code: "MCO",
-    hero_image: "https://images.unsplash.com/photo-1597466599360-3b9775841aec?auto=format&fit=crop&w=1000&q=80",
-    short_description: "The world's premier family entertainment capital featuring Walt Disney World, Universal Studios, and endless interactive water parks.",
-    primary_categories: ["theme_parks", "entertainment", "water_parks", "relaxing"],
-    target_age_groups: ["toddlers", "kids", "tweens", "teens", "adults"],
-    pacing: "moderate",
-    best_seasons: ["Spring", "Autumn", "Winter"],
-    stroller_friendly: true,
-    crowd_level: "high",
-    climate_type: "subtropical",
-    flight_base_usd: { low: 180, avg: 320, peak: 550 },
-    lodging_daily_usd: { budget_inn: 95, vacation_rental: 185, family_suite: 240, luxury_resort: 480 },
-    daily_food_per_person_usd: 45,
-    local_transport_daily_usd: 40,
-    highlight_features: [
+    "id": "tokyo-japan",
+    "name": "Tokyo & Mt. Fuji, Japan",
+    "country": "Japan",
+    "continent": "Asia & Pacific",
+    "region": "East Asia",
+    "coordinates": {
+      "lat": 35.6762,
+      "lng": 139.6503
+    },
+    "airport_code": "HND",
+    "hero_image": "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Futuristic technology, teamLab digital art museums, Tokyo Disney Resort, Ghibli magic, and scenic Shinkansen bullet trains to Mt. Fuji.",
+    "primary_categories": [
+      "theme_parks",
+      "science_museums",
+      "food_culinary",
+      "history_culture",
+      "nature"
+    ],
+    "target_age_groups": [
+      "toddlers",
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "moderate",
+    "best_seasons": [
+      "Spring",
+      "Autumn"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "moderate",
+    "climate_type": "temperate",
+    "flight_base_usd": {
+      "low": 680,
+      "avg": 1050,
+      "peak": 1550
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 110,
+      "vacation_rental": 195,
+      "family_suite": 280,
+      "luxury_resort": 580
+    },
+    "daily_food_per_person_usd": 42,
+    "local_transport_daily_usd": 25,
+    "highlight_features": [
+      "Tokyo Disney Resort & DisneySea",
+      "teamLab Planets interactive digital water and light museum",
+      "Ghibli Museum and Harajuku character street",
+      "Scenic Mt. Fuji bullet train day trips"
+    ]
+  },
+  {
+    "id": "kyoto-osaka-japan",
+    "name": "Kyoto & Osaka, Japan",
+    "country": "Japan",
+    "continent": "Asia & Pacific",
+    "region": "East Asia",
+    "coordinates": {
+      "lat": 35.0116,
+      "lng": 135.7681
+    },
+    "airport_code": "KIX",
+    "hero_image": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Ancient golden shrines, bowing deer in Nara Park, Fushimi Inari torii gates, Universal Studios Super Nintendo World, and Dotonbori street food.",
+    "primary_categories": [
+      "history_culture",
+      "theme_parks",
+      "animals_wildlife",
+      "food_culinary",
+      "nature"
+    ],
+    "target_age_groups": [
+      "toddlers",
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "moderate",
+    "best_seasons": [
+      "Spring",
+      "Autumn"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "moderate",
+    "climate_type": "temperate",
+    "flight_base_usd": {
+      "low": 690,
+      "avg": 1080,
+      "peak": 1580
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 100,
+      "vacation_rental": 180,
+      "family_suite": 260,
+      "luxury_resort": 540
+    },
+    "daily_food_per_person_usd": 38,
+    "local_transport_daily_usd": 20,
+    "highlight_features": [
+      "Universal Studios Japan (Super Nintendo World)",
+      "Bowing tame deer in historic Nara Park",
+      "Fushimi Inari thousand vermillion torii gates walk",
+      "Arashiyama Bamboo Forest and monkey park"
+    ]
+  },
+  {
+    "id": "seoul-jeju-korea",
+    "name": "Seoul & Jeju Island, South Korea",
+    "country": "South Korea",
+    "continent": "Asia & Pacific",
+    "region": "East Asia",
+    "coordinates": {
+      "lat": 37.5665,
+      "lng": 126.978
+    },
+    "airport_code": "ICN",
+    "hero_image": "https://images.unsplash.com/photo-1538485399081-7191377e8241?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Centuries-old royal palaces, Lotte World indoor theme park, K-pop discovery centers, bustling night markets, and Jeju's volcanic waterfalls.",
+    "primary_categories": [
+      "history_culture",
+      "theme_parks",
+      "food_culinary",
+      "nature",
+      "science_museums"
+    ],
+    "target_age_groups": [
+      "toddlers",
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "moderate",
+    "best_seasons": [
+      "Spring",
+      "Autumn"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "moderate",
+    "climate_type": "temperate",
+    "flight_base_usd": {
+      "low": 650,
+      "avg": 1020,
+      "peak": 1520
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 90,
+      "vacation_rental": 165,
+      "family_suite": 240,
+      "luxury_resort": 480
+    },
+    "daily_food_per_person_usd": 35,
+    "local_transport_daily_usd": 20,
+    "highlight_features": [
+      "Gyeongbokgung Palace royal changing of the guard in hanbok",
+      "Lotte World theme park & Seoul Sky 123-story observatory",
+      "Jeju Island volcanic lava tubes, orange groves & waterfalls",
+      "Cheonggyecheon Stream evening light promenades"
+    ]
+  },
+  {
+    "id": "singapore",
+    "name": "Singapore & Sentosa Island",
+    "country": "Singapore",
+    "continent": "Asia & Pacific",
+    "region": "Southeast Asia",
+    "coordinates": {
+      "lat": 1.3521,
+      "lng": 103.8198
+    },
+    "airport_code": "SIN",
+    "hero_image": "https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Futuristic Supertree Grove at Gardens by the Bay, Universal Studios Sentosa, Night Safari tram rides, and world-class clean, stroller-friendly infrastructure.",
+    "primary_categories": [
+      "theme_parks",
+      "animals_wildlife",
+      "science_museums",
+      "nature",
+      "food_culinary"
+    ],
+    "target_age_groups": [
+      "toddlers",
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "relaxed",
+    "best_seasons": [
+      "Year-round"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "moderate",
+    "climate_type": "tropical",
+    "flight_base_usd": {
+      "low": 720,
+      "avg": 1150,
+      "peak": 1650
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 130,
+      "vacation_rental": 230,
+      "family_suite": 310,
+      "luxury_resort": 620
+    },
+    "daily_food_per_person_usd": 40,
+    "local_transport_daily_usd": 22,
+    "highlight_features": [
+      "Gardens by the Bay Supertree Grove and Cloud Forest dome",
+      "Singapore Zoo and Open-Air Night Safari",
+      "Sentosa Island beaches and Universal Studios",
+      "Jewel Changi Airport giant indoor rain vortex"
+    ]
+  },
+  {
+    "id": "bali-indonesia",
+    "name": "Bali & Ubud, Indonesia",
+    "country": "Indonesia",
+    "continent": "Asia & Pacific",
+    "region": "Southeast Asia",
+    "coordinates": {
+      "lat": -8.3405,
+      "lng": 115.092
+    },
+    "airport_code": "DPS",
+    "hero_image": "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Emerald rice terraces in Ubud, playful monkey forests, gentle surf beaches, private family pool villas, and rich Hindu temple culture.",
+    "primary_categories": [
+      "beaches",
+      "nature",
+      "animals_wildlife",
+      "relaxing",
+      "history_culture"
+    ],
+    "target_age_groups": [
+      "toddlers",
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "relaxed",
+    "best_seasons": [
+      "Spring",
+      "Summer",
+      "Autumn"
+    ],
+    "stroller_friendly": false,
+    "crowd_level": "moderate",
+    "climate_type": "tropical",
+    "flight_base_usd": {
+      "low": 780,
+      "avg": 1200,
+      "peak": 1750
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 60,
+      "vacation_rental": 140,
+      "family_suite": 190,
+      "luxury_resort": 420
+    },
+    "daily_food_per_person_usd": 25,
+    "local_transport_daily_usd": 25,
+    "highlight_features": [
+      "Affordable private family pool villas with lush tropical gardens",
+      "Ubud Sacred Monkey Forest Sanctuary",
+      "Tegallalang emerald green rice terraces",
+      "Sanur calm shallow beach waters perfect for young swimmers"
+    ]
+  },
+  {
+    "id": "bangkok-chiangmai-thailand",
+    "name": "Bangkok & Chiang Mai, Thailand",
+    "country": "Thailand",
+    "continent": "Asia & Pacific",
+    "region": "Southeast Asia",
+    "coordinates": {
+      "lat": 13.7563,
+      "lng": 100.5018
+    },
+    "airport_code": "BKK",
+    "hero_image": "https://images.unsplash.com/photo-1508009603885-50cf7c579365?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Gilded Grand Palace temples, ethical elephant care sanctuaries in Chiang Mai, floating markets, and famous Thai culinary night bazaars.",
+    "primary_categories": [
+      "history_culture",
+      "animals_wildlife",
+      "food_culinary",
+      "nature"
+    ],
+    "target_age_groups": [
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "moderate",
+    "best_seasons": [
+      "Winter",
+      "Spring"
+    ],
+    "stroller_friendly": false,
+    "crowd_level": "moderate",
+    "climate_type": "tropical",
+    "flight_base_usd": {
+      "low": 720,
+      "avg": 1120,
+      "peak": 1650
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 55,
+      "vacation_rental": 120,
+      "family_suite": 175,
+      "luxury_resort": 380
+    },
+    "daily_food_per_person_usd": 22,
+    "local_transport_daily_usd": 20,
+    "highlight_features": [
+      "Ethical elephant rescue and feeding sanctuaries in Chiang Mai",
+      "Chao Phraya longtail river boat rides & floating markets",
+      "Grand Palace and Wat Arun temple towers",
+      "Vibrant family night bazaars with mango sticky rice"
+    ]
+  },
+  {
+    "id": "phuket-krabi-thailand",
+    "name": "Phuket & Krabi, Thailand",
+    "country": "Thailand",
+    "continent": "Asia & Pacific",
+    "region": "Southeast Asia",
+    "coordinates": {
+      "lat": 7.8804,
+      "lng": 98.3923
+    },
+    "airport_code": "HKT",
+    "hero_image": "https://images.unsplash.com/photo-1589394815804-964ed0be2eb5?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Towering limestone karsts rising out of turquoise Andaman waters, island boat adventures, sea caves, and beachfront family resorts.",
+    "primary_categories": [
+      "beaches",
+      "nature",
+      "water_parks",
+      "relaxing",
+      "adventure"
+    ],
+    "target_age_groups": [
+      "toddlers",
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "relaxed",
+    "best_seasons": [
+      "Winter",
+      "Spring"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "moderate",
+    "climate_type": "tropical",
+    "flight_base_usd": {
+      "low": 750,
+      "avg": 1180,
+      "peak": 1690
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 65,
+      "vacation_rental": 135,
+      "family_suite": 195,
+      "luxury_resort": 410
+    },
+    "daily_food_per_person_usd": 26,
+    "local_transport_daily_usd": 22,
+    "highlight_features": [
+      "Phi Phi Islands and Phang Nga Bay catamaran cruises",
+      "Gentle warm swimming beaches at Kata and Karon",
+      "Sea kayaking through hidden limestone mangrove lagoons",
+      "Family resorts with kids clubs and lagoon water parks"
+    ]
+  },
+  {
+    "id": "da-nang-hoi-an-vietnam",
+    "name": "Da Nang & Hoi An, Vietnam",
+    "country": "Vietnam",
+    "continent": "Asia & Pacific",
+    "region": "Southeast Asia",
+    "coordinates": {
+      "lat": 16.0544,
+      "lng": 108.2022
+    },
+    "airport_code": "DAD",
+    "hero_image": "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Fairytale silk lantern streets in pedestrian-friendly Hoi An, Golden Hand Bridge at Ba Na Hills, coconut boat basket rides, and white sandy beaches.",
+    "primary_categories": [
+      "history_culture",
+      "beaches",
+      "food_culinary",
+      "theme_parks",
+      "relaxing"
+    ],
+    "target_age_groups": [
+      "toddlers",
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "relaxed",
+    "best_seasons": [
+      "Spring",
+      "Summer"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "low",
+    "climate_type": "tropical",
+    "flight_base_usd": {
+      "low": 710,
+      "avg": 1100,
+      "peak": 1620
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 50,
+      "vacation_rental": 110,
+      "family_suite": 160,
+      "luxury_resort": 350
+    },
+    "daily_food_per_person_usd": 20,
+    "local_transport_daily_usd": 18,
+    "highlight_features": [
+      "Hoi An Ancient Town evening silk lantern boat rides (car-free)",
+      "Sun World Ba Na Hills Golden Bridge in the clouds",
+      "Traditional round bamboo basket boat spinning tours in Cam Thanh",
+      "My Khe Beach soft sands and warm waters"
+    ]
+  },
+  {
+    "id": "taipei-taiwan",
+    "name": "Taipei & Taroko Gorge, Taiwan",
+    "country": "Taiwan",
+    "continent": "Asia & Pacific",
+    "region": "East Asia",
+    "coordinates": {
+      "lat": 25.033,
+      "lng": 121.5654
+    },
+    "airport_code": "TPE",
+    "hero_image": "https://images.unsplash.com/photo-1508247967583-7d982ea01526?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Taipei 101 tower, world-renowned night market street food, scenic Maokong gondola tea plantations, Jiufen lantern village, and Taroko marble canyons.",
+    "primary_categories": [
+      "food_culinary",
+      "history_culture",
+      "nature",
+      "science_museums"
+    ],
+    "target_age_groups": [
+      "toddlers",
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "moderate",
+    "best_seasons": [
+      "Autumn",
+      "Spring",
+      "Winter"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "moderate",
+    "climate_type": "subtropical",
+    "flight_base_usd": {
+      "low": 660,
+      "avg": 1040,
+      "peak": 1540
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 80,
+      "vacation_rental": 150,
+      "family_suite": 220,
+      "luxury_resort": 460
+    },
+    "daily_food_per_person_usd": 30,
+    "local_transport_daily_usd": 15,
+    "highlight_features": [
+      "Ultra-clean, elevator-rich metro and stroller-friendly sidewalks",
+      "Din Tai Fung original soup dumplings and Raohe Night Market",
+      "Maokong glass-bottom crystal gondola ride",
+      "National Palace Museum ancient treasures"
+    ]
+  },
+  {
+    "id": "sydney-australia",
+    "name": "Sydney & Blue Mountains, Australia",
+    "country": "Australia",
+    "continent": "Asia & Pacific",
+    "region": "Oceania",
+    "coordinates": {
+      "lat": -33.8688,
+      "lng": 151.2093
+    },
+    "airport_code": "SYD",
+    "hero_image": "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Iconic Opera House harbor cruises, Taronga Zoo with panoramic skyline views, Bondi Beach coastal walks, and eucalyptus rainforests in Blue Mountains.",
+    "primary_categories": [
+      "animals_wildlife",
+      "beaches",
+      "nature",
+      "history_culture",
+      "adventure"
+    ],
+    "target_age_groups": [
+      "toddlers",
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "relaxed",
+    "best_seasons": [
+      "Spring",
+      "Summer",
+      "Autumn"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "moderate",
+    "climate_type": "mediterranean",
+    "flight_base_usd": {
+      "low": 890,
+      "avg": 1350,
+      "peak": 1950
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 135,
+      "vacation_rental": 240,
+      "family_suite": 320,
+      "luxury_resort": 640
+    },
+    "daily_food_per_person_usd": 48,
+    "local_transport_daily_usd": 28,
+    "highlight_features": [
+      "Taronga Zoo with wild koalas, kangaroos & harbor ferry ride",
+      "Sydney Opera House and Harbour Bridge Walk",
+      "Bondi to Coogee scenic coastal stroller walk",
+      "Blue Mountains Scenic World railway and rainforest cableway"
+    ]
+  },
+  {
+    "id": "melbourne-australia",
+    "name": "Melbourne & Great Ocean Road, Australia",
+    "country": "Australia",
+    "continent": "Asia & Pacific",
+    "region": "Oceania",
+    "coordinates": {
+      "lat": -37.8136,
+      "lng": 144.9631
+    },
+    "airport_code": "MEL",
+    "hero_image": "https://images.unsplash.com/photo-1514395462725-fb4566210144?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Phillip Island wild little penguin sunset parade, iconic Twelve Apostles coastal drive, historic steam train rides in Dandenong, and vibrant laneway cafes.",
+    "primary_categories": [
+      "animals_wildlife",
+      "nature",
+      "food_culinary",
+      "science_museums"
+    ],
+    "target_age_groups": [
+      "toddlers",
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "moderate",
+    "best_seasons": [
+      "Spring",
+      "Summer",
+      "Autumn"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "moderate",
+    "climate_type": "temperate",
+    "flight_base_usd": {
+      "low": 910,
+      "avg": 1380,
+      "peak": 1980
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 125,
+      "vacation_rental": 225,
+      "family_suite": 300,
+      "luxury_resort": 590
+    },
+    "daily_food_per_person_usd": 46,
+    "local_transport_daily_usd": 26,
+    "highlight_features": [
+      "Phillip Island Penguin Parade (hundreds of wild penguins waddling ashore)",
+      "Great Ocean Road scenic coastal drive to Twelve Apostles",
+      "Puffing Billy historic open-sided forest steam train",
+      "Free city circle tram and Melbourne Museum children's gallery"
+    ]
+  },
+  {
+    "id": "cairns-reef-australia",
+    "name": "Cairns & Great Barrier Reef, Australia",
+    "country": "Australia",
+    "continent": "Asia & Pacific",
+    "region": "Oceania",
+    "coordinates": {
+      "lat": -16.9186,
+      "lng": 145.7781
+    },
+    "airport_code": "CNS",
+    "hero_image": "https://images.unsplash.com/photo-1582967788606-a171c1080cb0?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Snorkeling the world's greatest coral reef, Kuranda rainforest scenic railway, Daintree ancient jungle, and the Esplanade swimming lagoon.",
+    "primary_categories": [
+      "beaches",
+      "nature",
+      "animals_wildlife",
+      "water_parks",
+      "adventure"
+    ],
+    "target_age_groups": [
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "active",
+    "best_seasons": [
+      "Winter",
+      "Spring",
+      "Autumn"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "moderate",
+    "climate_type": "tropical",
+    "flight_base_usd": {
+      "low": 940,
+      "avg": 1420,
+      "peak": 2050
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 110,
+      "vacation_rental": 210,
+      "family_suite": 280,
+      "luxury_resort": 560
+    },
+    "daily_food_per_person_usd": 44,
+    "local_transport_daily_usd": 30,
+    "highlight_features": [
+      "Great Barrier Reef family pontoon snorkeling and glass-bottom boats",
+      "Skyrail Rainforest Cableway gliding over pristine canopy",
+      "Cairns Esplanade free public saltwater swimming lagoon",
+      "Hartley's Crocodile Adventures crocodile feeding boat tours"
+    ]
+  },
+  {
+    "id": "auckland-rotorua-nz",
+    "name": "Auckland & Rotorua, New Zealand",
+    "country": "New Zealand",
+    "continent": "Asia & Pacific",
+    "region": "Oceania",
+    "coordinates": {
+      "lat": -36.8485,
+      "lng": 174.7633
+    },
+    "airport_code": "AKL",
+    "hero_image": "https://images.unsplash.com/photo-1507699622108-4be3abd695ad?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Hobbiton Movie Set rolling green hills, bubbling geothermal geysers and Maori cultural performances in Rotorua, and Auckland harbor sailing.",
+    "primary_categories": [
+      "nature",
+      "history_culture",
+      "animals_wildlife",
+      "adventure"
+    ],
+    "target_age_groups": [
+      "toddlers",
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "relaxed",
+    "best_seasons": [
+      "Spring",
+      "Summer",
+      "Autumn"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "low",
+    "climate_type": "temperate",
+    "flight_base_usd": {
+      "low": 920,
+      "avg": 1390,
+      "peak": 1990
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 115,
+      "vacation_rental": 215,
+      "family_suite": 290,
+      "luxury_resort": 570
+    },
+    "daily_food_per_person_usd": 45,
+    "local_transport_daily_usd": 32,
+    "highlight_features": [
+      "Hobbiton Movie Set tour with hobbit holes and Green Dragon Inn",
+      "Te Puia geothermal geysers and live kiwi bird conservation center",
+      "Redwoods Treewalk suspension bridge canopy in Rotorua",
+      "Waiheke Island ferry trip and sandy family beaches"
+    ]
+  },
+  {
+    "id": "queenstown-nz",
+    "name": "Queenstown & Fiordland, New Zealand",
+    "country": "New Zealand",
+    "continent": "Asia & Pacific",
+    "region": "Oceania",
+    "coordinates": {
+      "lat": -45.0312,
+      "lng": 168.6626
+    },
+    "airport_code": "ZQN",
+    "hero_image": "https://images.unsplash.com/photo-1589802829985-817e51171b92?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Majestic Remarkables mountain peaks over Lake Wakatipu, Milford Sound waterfall fiord cruises, Skyline luge carts, and Kiwi bird parks.",
+    "primary_categories": [
+      "nature",
+      "adventure",
+      "animals_wildlife",
+      "relaxing"
+    ],
+    "target_age_groups": [
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "active",
+    "best_seasons": [
+      "Summer",
+      "Autumn",
+      "Winter"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "moderate",
+    "climate_type": "alpine",
+    "flight_base_usd": {
+      "low": 960,
+      "avg": 1450,
+      "peak": 2080
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 130,
+      "vacation_rental": 235,
+      "family_suite": 315,
+      "luxury_resort": 630
+    },
+    "daily_food_per_person_usd": 48,
+    "local_transport_daily_usd": 35,
+    "highlight_features": [
+      "Milford Sound day cruise under towering sheer waterfalls",
+      "Skyline Gondola & gravity-fueled downhill Luge carts for kids",
+      "TSS Earnslaw historic steamship lake cruise to Walter Peak Farm",
+      "Arrowtown gold mining historic village and sweet shops"
+    ]
+  },
+  {
+    "id": "fiji-islands",
+    "name": "Fiji Coral Coast & Mamanuca Islands",
+    "country": "Fiji",
+    "continent": "Asia & Pacific",
+    "region": "Oceania",
+    "coordinates": {
+      "lat": -17.7134,
+      "lng": 178.065
+    },
+    "airport_code": "NAN",
+    "hero_image": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Crystal-clear South Pacific turquoise lagoons, world-renowned Fijian hospitality, Bula kids clubs, sea turtle sanctuaries, and coral reefs.",
+    "primary_categories": [
+      "beaches",
+      "relaxing",
+      "water_parks",
+      "animals_wildlife",
+      "nature"
+    ],
+    "target_age_groups": [
+      "toddlers",
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "relaxed",
+    "best_seasons": [
+      "Spring",
+      "Summer",
+      "Autumn"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "low",
+    "climate_type": "tropical",
+    "flight_base_usd": {
+      "low": 850,
+      "avg": 1280,
+      "peak": 1850
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 90,
+      "vacation_rental": 180,
+      "family_suite": 260,
+      "luxury_resort": 550
+    },
+    "daily_food_per_person_usd": 38,
+    "local_transport_daily_usd": 25,
+    "highlight_features": [
+      "World-famous Bula Kids Clubs with dedicated nanny care for toddlers",
+      "Snorkeling directly off calm shallow white sand beaches",
+      "Traditional Fijian village cultural visits and Kava ceremonies",
+      "Glass-bottom boat coral garden reef safaris"
+    ]
+  },
+  {
+    "id": "london-uk",
+    "name": "London & Cotswolds, United Kingdom",
+    "country": "United Kingdom",
+    "continent": "Europe",
+    "region": "Western Europe",
+    "coordinates": {
+      "lat": 51.5074,
+      "lng": -0.1278
+    },
+    "airport_code": "LHR",
+    "hero_image": "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Tower of London crown jewels, free world-class science & natural history museums, West End musicals (Lion King), double-decker buses, and Cotswolds cottages.",
+    "primary_categories": [
+      "history_culture",
+      "science_museums",
+      "entertainment",
+      "food_culinary"
+    ],
+    "target_age_groups": [
+      "toddlers",
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "moderate",
+    "best_seasons": [
+      "Spring",
+      "Summer",
+      "Autumn"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "moderate",
+    "climate_type": "temperate",
+    "flight_base_usd": {
+      "low": 520,
+      "avg": 850,
+      "peak": 1350
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 130,
+      "vacation_rental": 230,
+      "family_suite": 310,
+      "luxury_resort": 620
+    },
+    "daily_food_per_person_usd": 48,
+    "local_transport_daily_usd": 25,
+    "highlight_features": [
+      "Free entry to Natural History Museum (dino exhibits) & Science Museum",
+      "Tower of London Yeoman Warder tours and Crown Jewels",
+      "Harry Potter Warner Bros. Studio Tour London",
+      "Iconic open-top double-decker bus rides and London Eye"
+    ]
+  },
+  {
+    "id": "edinburgh-uk",
+    "name": "Edinburgh & Scottish Highlands, UK",
+    "country": "United Kingdom",
+    "continent": "Europe",
+    "region": "Western Europe",
+    "coordinates": {
+      "lat": 55.9533,
+      "lng": -3.1883
+    },
+    "airport_code": "EDI",
+    "hero_image": "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Edinburgh Castle perched atop an extinct volcano, Royal Mile ghost & folklore tours, Camera Obscura illusions, and Loch Ness monster boat trips.",
+    "primary_categories": [
+      "history_culture",
+      "nature",
+      "science_museums",
+      "adventure"
+    ],
+    "target_age_groups": [
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "moderate",
+    "best_seasons": [
+      "Summer",
+      "Spring",
+      "Autumn"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "moderate",
+    "climate_type": "temperate",
+    "flight_base_usd": {
+      "low": 560,
+      "avg": 890,
+      "peak": 1400
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 115,
+      "vacation_rental": 205,
+      "family_suite": 280,
+      "luxury_resort": 560
+    },
+    "daily_food_per_person_usd": 45,
+    "local_transport_daily_usd": 22,
+    "highlight_features": [
+      "Edinburgh Castle firing of the One O'Clock Gun",
+      "Camera Obscura & World of Illusions (hands-on optical fun)",
+      "Highland steam train across Glenfinnan Viaduct (Hogwarts Express)",
+      "Loch Ness boat cruises and Urquhart Castle ruins"
+    ]
+  },
+  {
+    "id": "paris-france",
+    "name": "Paris & Disneyland Paris, France",
+    "country": "France",
+    "continent": "Europe",
+    "region": "Western Europe",
+    "coordinates": {
+      "lat": 48.8566,
+      "lng": 2.3522
+    },
+    "airport_code": "CDG",
+    "hero_image": "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Eiffel Tower sparkling night lights, Seine River cruises, Louvre Mona Lisa discovery trails, Luxembourg Garden carousel, and Disneyland Paris.",
+    "primary_categories": [
+      "history_culture",
+      "theme_parks",
+      "food_culinary",
+      "relaxing"
+    ],
+    "target_age_groups": [
+      "toddlers",
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "moderate",
+    "best_seasons": [
+      "Spring",
+      "Autumn",
+      "Summer"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "high",
+    "climate_type": "temperate",
+    "flight_base_usd": {
+      "low": 540,
+      "avg": 880,
+      "peak": 1390
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 125,
+      "vacation_rental": 220,
+      "family_suite": 300,
+      "luxury_resort": 600
+    },
+    "daily_food_per_person_usd": 46,
+    "local_transport_daily_usd": 24,
+    "highlight_features": [
+      "Eiffel Tower elevator summit ascent & sparkling evening illumination",
+      "Disneyland Paris & Walt Disney Studios Park (Ratatouille ride)",
+      "Seine River sightseeing boat cruise with audio guides",
+      "Luxembourg Gardens vintage wooden toy sailboat pond"
+    ]
+  },
+  {
+    "id": "rome-italy",
+    "name": "Rome & Vatican City, Italy",
+    "country": "Italy",
+    "continent": "Europe",
+    "region": "Southern Europe",
+    "coordinates": {
+      "lat": 41.9028,
+      "lng": 12.4964
+    },
+    "airport_code": "FCO",
+    "hero_image": "https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Colosseum gladiator arenas, Trevi Fountain coin tossing, authentic handmade gelato on every piazza, Roman Forum ruins, and Vatican Sistine Chapel.",
+    "primary_categories": [
+      "history_culture",
+      "food_culinary",
+      "science_museums"
+    ],
+    "target_age_groups": [
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "active",
+    "best_seasons": [
+      "Spring",
+      "Autumn"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "high",
+    "climate_type": "mediterranean",
+    "flight_base_usd": {
+      "low": 560,
+      "avg": 890,
+      "peak": 1400
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 110,
+      "vacation_rental": 195,
+      "family_suite": 270,
+      "luxury_resort": 550
+    },
+    "daily_food_per_person_usd": 42,
+    "local_transport_daily_usd": 20,
+    "highlight_features": [
+      "Colosseum and Roman Forum gladiator history walk",
+      "Trevi Fountain coin tossing & Pantheon dome",
+      "Hands-on family pizza-making and gelato workshops",
+      "Villa Borghese park surrey bicycle rentals"
+    ]
+  },
+  {
+    "id": "florence-tuscany-italy",
+    "name": "Florence & Tuscany, Italy",
+    "country": "Italy",
+    "continent": "Europe",
+    "region": "Southern Europe",
+    "coordinates": {
+      "lat": 43.7696,
+      "lng": 11.2558
+    },
+    "airport_code": "FLR",
+    "hero_image": "https://images.unsplash.com/photo-1543429776-2782fc8e1acd?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Renaissance art masterpieces in the Uffizi, Duomo dome climbing, Ponte Vecchio gold shops, rolling Tuscan vineyard estates, and Leaning Tower of Pisa.",
+    "primary_categories": [
+      "history_culture",
+      "food_culinary",
+      "nature",
+      "relaxing"
+    ],
+    "target_age_groups": [
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "relaxed",
+    "best_seasons": [
+      "Spring",
+      "Autumn"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "moderate",
+    "climate_type": "mediterranean",
+    "flight_base_usd": {
+      "low": 580,
+      "avg": 920,
+      "peak": 1420
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 105,
+      "vacation_rental": 190,
+      "family_suite": 260,
+      "luxury_resort": 520
+    },
+    "daily_food_per_person_usd": 40,
+    "local_transport_daily_usd": 22,
+    "highlight_features": [
+      "Leaning Tower of Pisa funny family photo day trip",
+      "Florence Duomo rooftop climb and Piazza della Signoria",
+      "Tuscan agriturismo farm stays with swimming pools",
+      "Leonardo da Vinci Interactive Museum (working wooden machines)"
+    ]
+  },
+  {
+    "id": "barcelona-spain",
+    "name": "Barcelona & Costa Brava, Spain",
+    "country": "Spain",
+    "continent": "Europe",
+    "region": "Southern Europe",
+    "coordinates": {
+      "lat": 41.3879,
+      "lng": 2.1699
+    },
+    "airport_code": "BCN",
+    "hero_image": "https://images.unsplash.com/photo-1583422409516-2895a77efded?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Gaudí’s colorful mosaic Park Güell, Sagrada Família stained glass light show, Barceloneta city beach, PortAventura theme park, and tapas markets.",
+    "primary_categories": [
+      "history_culture",
+      "beaches",
+      "theme_parks",
+      "food_culinary"
+    ],
+    "target_age_groups": [
+      "toddlers",
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "relaxed",
+    "best_seasons": [
+      "Spring",
+      "Summer",
+      "Autumn"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "moderate",
+    "climate_type": "mediterranean",
+    "flight_base_usd": {
+      "low": 530,
+      "avg": 860,
+      "peak": 1360
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 100,
+      "vacation_rental": 185,
+      "family_suite": 255,
+      "luxury_resort": 510
+    },
+    "daily_food_per_person_usd": 38,
+    "local_transport_daily_usd": 20,
+    "highlight_features": [
+      "Park Güell gingerbread-like mosaic houses & panoramic city view",
+      "Sagrada Família kaleidoscope rainbow stained glass interior",
+      "PortAventura World theme park and Ferrari Land",
+      "Barceloneta Mediterranean family beach and cable car ride"
+    ]
+  },
+  {
+    "id": "mallorca-spain",
+    "name": "Mallorca & Balearic Islands, Spain",
+    "country": "Spain",
+    "continent": "Europe",
+    "region": "Southern Europe",
+    "coordinates": {
+      "lat": 39.6953,
+      "lng": 3.0176
+    },
+    "airport_code": "PMI",
+    "hero_image": "https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Crystal-clear turquoise cove beaches (calas), vintage Sóller wooden tram, underground Dragon Caves with classical music on boats, and family beach resorts.",
+    "primary_categories": [
+      "beaches",
+      "relaxing",
+      "nature",
+      "water_parks"
+    ],
+    "target_age_groups": [
+      "toddlers",
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "relaxed",
+    "best_seasons": [
+      "Spring",
+      "Summer",
+      "Autumn"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "moderate",
+    "climate_type": "mediterranean",
+    "flight_base_usd": {
+      "low": 550,
+      "avg": 890,
+      "peak": 1390
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 95,
+      "vacation_rental": 180,
+      "family_suite": 250,
+      "luxury_resort": 490
+    },
+    "daily_food_per_person_usd": 36,
+    "local_transport_daily_usd": 25,
+    "highlight_features": [
+      "Cuevas del Drach (Caves of Drach) subterranean lake boat concert",
+      "Sóller vintage wooden train and mountain tram",
+      "Shallow calm waters at Alcudia and Cala Millor family beaches",
+      "Palma Aquarium with giant shark tunnel and touch pools"
+    ]
+  },
+  {
+    "id": "lisbon-portugal",
+    "name": "Lisbon & Sintra, Portugal",
+    "country": "Portugal",
+    "continent": "Europe",
+    "region": "Southern Europe",
+    "coordinates": {
+      "lat": 38.7223,
+      "lng": -9.1393
+    },
+    "airport_code": "LIS",
+    "hero_image": "https://images.unsplash.com/photo-1509840841025-9088ba78a826?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Vibrant yellow Tram 28, colorful fairytale Pena Palace in Sintra, Lisbon Oceanarium (one of the world's best), pastéis de nata tarts, and Cascais beaches.",
+    "primary_categories": [
+      "history_culture",
+      "animals_wildlife",
+      "beaches",
+      "food_culinary"
+    ],
+    "target_age_groups": [
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "moderate",
+    "best_seasons": [
+      "Spring",
+      "Summer",
+      "Autumn"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "moderate",
+    "climate_type": "mediterranean",
+    "flight_base_usd": {
+      "low": 510,
+      "avg": 840,
+      "peak": 1340
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 90,
+      "vacation_rental": 170,
+      "family_suite": 240,
+      "luxury_resort": 480
+    },
+    "daily_food_per_person_usd": 34,
+    "local_transport_daily_usd": 18,
+    "highlight_features": [
+      "Oceanário de Lisboa (spectacular central open-ocean tank)",
+      "Pena Palace in Sintra (bright yellow & red fairytale castle)",
+      "Riding vintage yellow tram cars up Lisbon's historic hills",
+      "Pastéis de Belém original warm custard tarts"
+    ]
+  },
+  {
+    "id": "amsterdam-netherlands",
+    "name": "Amsterdam & Windmills, Netherlands",
+    "country": "Netherlands",
+    "continent": "Europe",
+    "region": "Western Europe",
+    "coordinates": {
+      "lat": 52.3676,
+      "lng": 4.9041
+    },
+    "airport_code": "AMS",
+    "hero_image": "https://images.unsplash.com/photo-1534351590666-13e3e96b5017?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Scenic canal boat cruises, hands-on NEMO Science Museum, Zaanse Schans historic working windmills, pancake houses, and Keukenhof tulip gardens.",
+    "primary_categories": [
+      "science_museums",
+      "history_culture",
+      "food_culinary",
+      "nature"
+    ],
+    "target_age_groups": [
+      "toddlers",
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "relaxed",
+    "best_seasons": [
+      "Spring",
+      "Summer",
+      "Autumn"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "moderate",
+    "climate_type": "temperate",
+    "flight_base_usd": {
+      "low": 530,
+      "avg": 860,
+      "peak": 1360
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 120,
+      "vacation_rental": 215,
+      "family_suite": 295,
+      "luxury_resort": 590
+    },
+    "daily_food_per_person_usd": 44,
+    "local_transport_daily_usd": 22,
+    "highlight_features": [
+      "NEMO Science Museum with giant rooftop interactive splash zone",
+      "Zaanse Schans working windmills and wooden clog making workshop",
+      "Scenic glass-topped canal boat cruise through historic rings",
+      "Keukenhof spring flower fields and Vondelpark playgrounds"
+    ]
+  },
+  {
+    "id": "switzerland-alps",
+    "name": "Interlaken & Swiss Alps, Switzerland",
+    "country": "Switzerland",
+    "continent": "Europe",
+    "region": "Central Europe",
+    "coordinates": {
+      "lat": 46.6863,
+      "lng": 7.8632
+    },
+    "airport_code": "ZRH",
+    "hero_image": "https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Jungfraujoch 'Top of Europe' cogwheel train, crystal turquoise alpine lakes of Brienz & Thun, Lauterbrunnen 72 waterfalls valley, and Swiss chocolate factories.",
+    "primary_categories": [
+      "nature",
+      "adventure",
+      "relaxing",
+      "food_culinary"
+    ],
+    "target_age_groups": [
+      "toddlers",
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "relaxed",
+    "best_seasons": [
+      "Summer",
+      "Winter",
+      "Spring"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "moderate",
+    "climate_type": "alpine",
+    "flight_base_usd": {
+      "low": 580,
+      "avg": 920,
+      "peak": 1450
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 150,
+      "vacation_rental": 260,
+      "family_suite": 350,
+      "luxury_resort": 720
+    },
+    "daily_food_per_person_usd": 55,
+    "local_transport_daily_usd": 38,
+    "highlight_features": [
+      "Jungfraujoch Sphinx Observatory & Ice Palace glacier tunnels",
+      "Lauterbrunnen valley fairy tale waterfalls (inspiration for Rivendell)",
+      "Lake Brienz & Lake Thun scenic paddle steamer boat cruises",
+      "Grindelwald First cliff walk and mountain go-kart rides"
+    ]
+  },
+  {
+    "id": "vienna-salzburg-austria",
+    "name": "Vienna & Salzburg, Austria",
+    "country": "Austria",
+    "continent": "Europe",
+    "region": "Central Europe",
+    "coordinates": {
+      "lat": 48.2082,
+      "lng": 16.3738
+    },
+    "airport_code": "VIE",
+    "hero_image": "https://images.unsplash.com/photo-1516550893923-42d28e5677af?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Schönbrunn Palace gardens & world's oldest zoo, Prater amusement park giant Ferris wheel, Sound of Music Mirabell gardens, and world-famous Sachertorte.",
+    "primary_categories": [
+      "history_culture",
+      "animals_wildlife",
+      "theme_parks",
+      "food_culinary"
+    ],
+    "target_age_groups": [
+      "toddlers",
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "relaxed",
+    "best_seasons": [
+      "Spring",
+      "Summer",
+      "Autumn",
+      "Winter"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "moderate",
+    "climate_type": "continental",
+    "flight_base_usd": {
+      "low": 560,
+      "avg": 890,
+      "peak": 1390
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 105,
+      "vacation_rental": 195,
+      "family_suite": 270,
+      "luxury_resort": 540
+    },
+    "daily_food_per_person_usd": 42,
+    "local_transport_daily_usd": 20,
+    "highlight_features": [
+      "Schönbrunn Tiergarten (world's oldest zoo in imperial palace grounds)",
+      "Vienna Prater Amusement Park and historic giant Ferris wheel",
+      "Salzburg Fortress and Sound of Music film locations",
+      "Haus der Musik interactive sound and conducting museum"
+    ]
+  },
+  {
+    "id": "athens-santorini-greece",
+    "name": "Athens & Santorini, Greece",
+    "country": "Greece",
+    "continent": "Europe",
+    "region": "Southern Europe",
+    "coordinates": {
+      "lat": 37.9838,
+      "lng": 23.7275
+    },
+    "airport_code": "ATH",
+    "hero_image": "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Ancient Parthenon on the Acropolis, Greek mythology discovery, whitewashed cliffside villages overlooking the Aegean caldera, and boat cruises to volcanic springs.",
+    "primary_categories": [
+      "history_culture",
+      "beaches",
+      "nature",
+      "food_culinary"
+    ],
+    "target_age_groups": [
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "moderate",
+    "best_seasons": [
+      "Spring",
+      "Autumn",
+      "Summer"
+    ],
+    "stroller_friendly": false,
+    "crowd_level": "high",
+    "climate_type": "mediterranean",
+    "flight_base_usd": {
+      "low": 590,
+      "avg": 940,
+      "peak": 1480
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 100,
+      "vacation_rental": 190,
+      "family_suite": 275,
+      "luxury_resort": 580
+    },
+    "daily_food_per_person_usd": 38,
+    "local_transport_daily_usd": 24,
+    "highlight_features": [
+      "Acropolis and Parthenon ancient Greek mythology family tour",
+      "Santorini Caldera catamaran sunset sailing with swimming in thermal coves",
+      "Oia iconic blue-domed churches and scenic cliff paths",
+      "Red Beach and Kamari black sand volcanic beaches"
+    ]
+  },
+  {
+    "id": "dubrovnik-croatia",
+    "name": "Dubrovnik & Dalmatian Coast, Croatia",
+    "country": "Croatia",
+    "continent": "Europe",
+    "region": "Southern Europe",
+    "coordinates": {
+      "lat": 42.6507,
+      "lng": 18.0944
+    },
+    "airport_code": "DBV",
+    "hero_image": "https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Medieval stone fortress walls overlooking azure Adriatic waters, Lokrum Island peacock sanctuary, Dubrovnik cable car, and Plitvice Lakes waterfalls.",
+    "primary_categories": [
+      "history_culture",
+      "beaches",
+      "nature",
+      "adventure"
+    ],
+    "target_age_groups": [
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "moderate",
+    "best_seasons": [
+      "Spring",
+      "Summer",
+      "Autumn"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "moderate",
+    "climate_type": "mediterranean",
+    "flight_base_usd": {
+      "low": 570,
+      "avg": 910,
+      "peak": 1440
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 95,
+      "vacation_rental": 180,
+      "family_suite": 250,
+      "luxury_resort": 520
+    },
+    "daily_food_per_person_usd": 36,
+    "local_transport_daily_usd": 22,
+    "highlight_features": [
+      "Dubrovnik Old Town ancient stone city wall walk above the sea",
+      "Lokrum Island short ferry trip (wild peacocks, botanical gardens)",
+      "Dubrovnik Cable Car up to Mount Srd for sunset views",
+      "Sea kayaking along secret sea caves and fortress walls"
+    ]
+  },
+  {
+    "id": "reykjavik-iceland",
+    "name": "Reykjavik & Golden Circle, Iceland",
+    "country": "Iceland",
+    "continent": "Europe",
+    "region": "Northern Europe",
+    "coordinates": {
+      "lat": 64.1466,
+      "lng": -21.9426
+    },
+    "airport_code": "KEF",
+    "hero_image": "https://images.unsplash.com/photo-1504893524553-b855bce32c67?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Gullfoss thundering waterfalls, erupting Strokkur geysers, Blue Lagoon geothermal swimming pools, black sand beaches, and Northern Lights aurora.",
+    "primary_categories": [
+      "nature",
+      "animals_wildlife",
+      "adventure",
+      "science_museums"
+    ],
+    "target_age_groups": [
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "active",
+    "best_seasons": [
+      "Summer",
+      "Winter",
+      "Autumn"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "moderate",
+    "climate_type": "temperate",
+    "flight_base_usd": {
+      "low": 480,
+      "avg": 780,
+      "peak": 1280
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 140,
+      "vacation_rental": 240,
+      "family_suite": 330,
+      "luxury_resort": 660
+    },
+    "daily_food_per_person_usd": 52,
+    "local_transport_daily_usd": 40,
+    "highlight_features": [
+      "Golden Circle: Geysir eruptions, Gullfoss waterfall, Thingvellir rift valley",
+      "Blue Lagoon & Sky Lagoon warm geothermal family baths",
+      "Whale watching boat cruises from Reykjavik Old Harbour",
+      "Northern Lights (Aurora Borealis) viewing during autumn/winter"
+    ]
+  },
+  {
+    "id": "orlando-fl",
+    "name": "Orlando & Theme Parks, Florida",
+    "country": "United States",
+    "continent": "North America",
+    "region": "North America",
+    "coordinates": {
+      "lat": 28.5383,
+      "lng": -81.3792
+    },
+    "airport_code": "MCO",
+    "hero_image": "https://images.unsplash.com/photo-1597466599360-3b9775841aec?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "The world's premier family entertainment capital featuring Walt Disney World, Universal Studios, and endless interactive water parks.",
+    "primary_categories": [
+      "theme_parks",
+      "entertainment",
+      "water_parks",
+      "relaxing"
+    ],
+    "target_age_groups": [
+      "toddlers",
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "moderate",
+    "best_seasons": [
+      "Spring",
+      "Autumn",
+      "Winter"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "high",
+    "climate_type": "subtropical",
+    "flight_base_usd": {
+      "low": 180,
+      "avg": 320,
+      "peak": 550
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 95,
+      "vacation_rental": 185,
+      "family_suite": 240,
+      "luxury_resort": 480
+    },
+    "daily_food_per_person_usd": 45,
+    "local_transport_daily_usd": 40,
+    "highlight_features": [
       "World-class theme parks (Magic Kingdom, Islands of Adventure, Epcot)",
       "Hundreds of family resort pools and lazy rivers",
       "Kennedy Space Center day trip proximity",
@@ -32,327 +1645,1090 @@ export const fallbackDestinations = [
     ]
   },
   {
-    id: "san-diego-ca",
-    name: "San Diego, California",
-    country: "United States",
-    region: "North America",
-    coordinates: { lat: 32.7157, lng: -117.1611 },
-    airport_code: "SAN",
-    hero_image: "https://images.unsplash.com/photo-1506146332389-18140dc7b2fb?auto=format&fit=crop&w=1000&q=80",
-    short_description: "Perfect year-round coastal weather, renowned world-class zoo, Balboa Park museums, and family-friendly beaches like La Jolla Shores.",
-    primary_categories: ["animals_wildlife", "beaches", "science_museums", "nature"],
-    target_age_groups: ["toddlers", "kids", "tweens", "teens", "adults"],
-    pacing: "relaxed",
-    best_seasons: ["Spring", "Summer", "Autumn", "Winter"],
-    stroller_friendly: true,
-    crowd_level: "moderate",
-    climate_type: "mediterranean",
-    flight_base_usd: { low: 190, avg: 340, peak: 580 },
-    lodging_daily_usd: { budget_inn: 120, vacation_rental: 220, family_suite: 280, luxury_resort: 520 },
-    daily_food_per_person_usd: 50,
-    local_transport_daily_usd: 35,
-    highlight_features: [
-      "San Diego Zoo and Safari Park",
-      "Gentle wave beaches at Coronado and La Jolla",
-      "USS Midway Aircraft Carrier interactive museum",
-      "Legoland California nearby in Carlsbad"
+    "id": "san-diego-ca",
+    "name": "San Diego & Coronado, California",
+    "country": "United States",
+    "continent": "North America",
+    "region": "North America",
+    "coordinates": {
+      "lat": 32.7157,
+      "lng": -117.1611
+    },
+    "airport_code": "SAN",
+    "hero_image": "https://images.unsplash.com/photo-1506146332389-18140dc7b2fb?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Perfect year-round coastal weather, renowned world-class zoo, Balboa Park museums, and family-friendly beaches like La Jolla Shores.",
+    "primary_categories": [
+      "animals_wildlife",
+      "beaches",
+      "science_museums",
+      "nature"
+    ],
+    "target_age_groups": [
+      "toddlers",
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "relaxed",
+    "best_seasons": [
+      "Spring",
+      "Summer",
+      "Autumn",
+      "Winter"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "moderate",
+    "climate_type": "mediterranean",
+    "flight_base_usd": {
+      "low": 190,
+      "avg": 340,
+      "peak": 580
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 120,
+      "vacation_rental": 220,
+      "family_suite": 280,
+      "luxury_resort": 520
+    },
+    "daily_food_per_person_usd": 50,
+    "local_transport_daily_usd": 35,
+    "highlight_features": [
+      "San Diego Zoo and Safari Park (giant pandas and safari trucks)",
+      "La Jolla Cove sea lions and calm tidal pools",
+      "Balboa Park museums, miniature train, and carousel",
+      "Legoland California day trip in Carlsbad"
     ]
   },
   {
-    id: "yellowstone-wy",
-    name: "Yellowstone & Grand Teton, Wyoming",
-    country: "United States",
-    region: "North America",
-    coordinates: { lat: 44.4280, lng: -110.5885 },
-    airport_code: "JAC",
-    hero_image: "https://images.unsplash.com/photo-1533497197925-c64639906669?auto=format&fit=crop&w=1000&q=80",
-    short_description: "America's first national park packed with geysers, grizzly bears, bison herds, thermal hot springs, and dramatic mountain peaks.",
-    primary_categories: ["nature", "hiking", "animals_wildlife", "scenery"],
-    target_age_groups: ["kids", "tweens", "teens", "adults"],
-    pacing: "active",
-    best_seasons: ["Summer", "Autumn"],
-    stroller_friendly: false,
-    crowd_level: "high",
-    climate_type: "alpine",
-    flight_base_usd: { low: 280, avg: 450, peak: 720 },
-    lodging_daily_usd: { budget_inn: 130, vacation_rental: 260, family_suite: 310, luxury_resort: 590 },
-    daily_food_per_person_usd: 40,
-    local_transport_daily_usd: 65,
-    highlight_features: [
-      "Old Faithful and Grand Prismatic Spring boardwalks",
-      "Lamar Valley wildlife safaris (bison, wolves, elk)",
-      "Snake River scenic raft floats for all ages",
-      "Junior Ranger educational badge programs"
+    "id": "yellowstone-wy",
+    "name": "Yellowstone & Grand Teton, Wyoming",
+    "country": "United States",
+    "continent": "North America",
+    "region": "North America",
+    "coordinates": {
+      "lat": 44.428,
+      "lng": -110.5885
+    },
+    "airport_code": "BZN",
+    "hero_image": "https://images.unsplash.com/photo-1534880606858-29b0e8a24e8d?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Old Faithful geysers, Grand Prismatic Spring rainbow colors, wild bison herds in Lamar Valley, and majestic Grand Teton mountain reflections.",
+    "primary_categories": [
+      "nature",
+      "animals_wildlife",
+      "adventure",
+      "science_museums"
+    ],
+    "target_age_groups": [
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "active",
+    "best_seasons": [
+      "Summer",
+      "Autumn"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "high",
+    "climate_type": "alpine",
+    "flight_base_usd": {
+      "low": 280,
+      "avg": 450,
+      "peak": 720
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 140,
+      "vacation_rental": 260,
+      "family_suite": 320,
+      "luxury_resort": 600
+    },
+    "daily_food_per_person_usd": 40,
+    "local_transport_daily_usd": 55,
+    "highlight_features": [
+      "Old Faithful erupting geyser and wooden boardwalks",
+      "Grand Prismatic Spring vibrant thermal rainbow rings",
+      "Lamar Valley wildlife safari (wild bison, elk, bears)",
+      "Jenny Lake scenic boat ride under the Grand Tetons"
     ]
   },
   {
-    id: "london-uk",
-    name: "London, United Kingdom",
-    country: "United Kingdom",
-    region: "Europe",
-    coordinates: { lat: 51.5074, lng: -0.1278 },
-    airport_code: "LHR",
-    hero_image: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=1000&q=80",
-    short_description: "Historic palaces, world-class free national museums, West End family theatre, and Harry Potter wizarding adventures.",
-    primary_categories: ["history_culture", "science_museums", "entertainment", "food_culinary"],
-    target_age_groups: ["kids", "tweens", "teens", "adults"],
-    pacing: "moderate",
-    best_seasons: ["Spring", "Summer", "Autumn"],
-    stroller_friendly: true,
-    crowd_level: "high",
-    climate_type: "temperate",
-    flight_base_usd: { low: 480, avg: 750, peak: 1200 },
-    lodging_daily_usd: { budget_inn: 140, vacation_rental: 240, family_suite: 320, luxury_resort: 600 },
-    daily_food_per_person_usd: 55,
-    local_transport_daily_usd: 25,
-    highlight_features: [
-      "Free entry to Natural History Museum and Science Museum",
-      "Tower of London and Crown Jewels with Beefeater tours",
-      "Warner Bros. Studio Tour London - Harry Potter",
-      "Iconic double-decker buses and Thames River clippers"
+    "id": "hawaii-maui-oahu",
+    "name": "Maui & Oahu, Hawaii",
+    "country": "United States",
+    "continent": "North America",
+    "region": "North America",
+    "coordinates": {
+      "lat": 20.7984,
+      "lng": -156.3319
+    },
+    "airport_code": "OGG",
+    "hero_image": "https://images.unsplash.com/photo-1542259009477-d625272157b7?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Haleakala sunrise above the clouds, sea turtle snorkeling at Molokini crater, scenic Road to Hana waterfalls, Waikiki beach, and authentic luaus.",
+    "primary_categories": [
+      "beaches",
+      "nature",
+      "animals_wildlife",
+      "relaxing",
+      "history_culture"
+    ],
+    "target_age_groups": [
+      "toddlers",
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "relaxed",
+    "best_seasons": [
+      "Year-round"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "moderate",
+    "climate_type": "tropical",
+    "flight_base_usd": {
+      "low": 380,
+      "avg": 620,
+      "peak": 980
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 160,
+      "vacation_rental": 290,
+      "family_suite": 380,
+      "luxury_resort": 750
+    },
+    "daily_food_per_person_usd": 55,
+    "local_transport_daily_usd": 45,
+    "highlight_features": [
+      "Molokini Crater family snorkeling with wild sea turtles",
+      "Haleakala volcanic summit above the cloud canopy",
+      "Traditional Polynesian beachfront family luau with fire dancers",
+      "Wailea and Kaanapali calm sandy resort beaches"
     ]
   },
   {
-    id: "tokyo-japan",
-    name: "Tokyo, Japan",
-    country: "Japan",
-    region: "Asia",
-    coordinates: { lat: 35.6762, lng: 139.6503 },
-    airport_code: "HND",
-    hero_image: "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1000&q=80",
-    short_description: "Ultra-modern, incredibly safe, and vibrant city blending cutting-edge tech, anime pop-culture, Tokyo Disney, and ancient shrines.",
-    primary_categories: ["science_museums", "theme_parks", "food_culinary", "history_culture"],
-    target_age_groups: ["kids", "tweens", "teens", "adults"],
-    pacing: "active",
-    best_seasons: ["Spring", "Autumn"],
-    stroller_friendly: true,
-    crowd_level: "high",
-    climate_type: "temperate",
-    flight_base_usd: { low: 650, avg: 980, peak: 1550 },
-    lodging_daily_usd: { budget_inn: 110, vacation_rental: 210, family_suite: 290, luxury_resort: 550 },
-    daily_food_per_person_usd: 40,
-    local_transport_daily_usd: 20,
-    highlight_features: [
-      "Tokyo DisneySea & Disneyland Resort",
-      "teamLab Planets immersive digital art museum",
-      "Ghibli Museum and Akihabara gaming districts",
-      "Immaculately clean, kid-friendly public transport"
+    "id": "new-york-city",
+    "name": "New York City, New York",
+    "country": "United States",
+    "continent": "North America",
+    "region": "North America",
+    "coordinates": {
+      "lat": 40.7128,
+      "lng": -74.006
+    },
+    "airport_code": "JFK",
+    "hero_image": "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Broadway family musicals, Central Park playgrounds and zoo, Statue of Liberty ferry, American Museum of Natural History, and Top of the Rock views.",
+    "primary_categories": [
+      "entertainment",
+      "history_culture",
+      "science_museums",
+      "food_culinary"
+    ],
+    "target_age_groups": [
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "active",
+    "best_seasons": [
+      "Spring",
+      "Autumn",
+      "Winter"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "high",
+    "climate_type": "continental",
+    "flight_base_usd": {
+      "low": 150,
+      "avg": 280,
+      "peak": 480
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 140,
+      "vacation_rental": 250,
+      "family_suite": 340,
+      "luxury_resort": 680
+    },
+    "daily_food_per_person_usd": 55,
+    "local_transport_daily_usd": 20,
+    "highlight_features": [
+      "Central Park Zoo, Alice in Wonderland statue & model sailboat pond",
+      "American Museum of Natural History (giant blue whale & dinosaurs)",
+      "Statue of Liberty and Ellis Island ferry cruise",
+      "Broadway shows like The Lion King, Aladdin, and Wicked"
     ]
   },
   {
-    id: "costa-rica",
-    name: "Arenal & Manuel Antonio, Costa Rica",
-    country: "Costa Rica",
-    region: "Central America",
-    coordinates: { lat: 9.7489, lng: -83.7534 },
-    airport_code: "SJO",
-    hero_image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1000&q=80",
-    short_description: "Lush rainforests, active volcano thermal springs, wildlife reserves filled with sloths and monkeys, plus family zipline adventures.",
-    primary_categories: ["nature", "animals_wildlife", "adventure", "beaches"],
-    target_age_groups: ["kids", "tweens", "teens", "adults"],
-    pacing: "active",
-    best_seasons: ["Winter", "Spring"],
-    stroller_friendly: false,
-    crowd_level: "moderate",
-    climate_type: "tropical",
-    flight_base_usd: { low: 290, avg: 480, peak: 750 },
-    lodging_daily_usd: { budget_inn: 85, vacation_rental: 170, family_suite: 220, luxury_resort: 420 },
-    daily_food_per_person_usd: 35,
-    local_transport_daily_usd: 50,
-    highlight_features: [
-      "Rainforest hanging bridges and sloth sanctuaries",
-      "Volcanic natural hot spring water parks (Baldi / Tabacon)",
-      "Manuel Antonio National Park beach and monkey trails",
-      "Chocolate making tours and beginner surf schools"
+    "id": "banff-canada",
+    "name": "Banff & Lake Louise, Canada",
+    "country": "Canada",
+    "continent": "North America",
+    "region": "North America",
+    "coordinates": {
+      "lat": 51.1784,
+      "lng": -115.5708
+    },
+    "airport_code": "YYC",
+    "hero_image": "https://images.unsplash.com/photo-1503614472-8c93d56e92ce?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Vibrant turquoise glacial waters at Lake Louise & Moraine Lake, Banff Gondola panoramic summit views, Johnston Canyon catwalks, and wild elk.",
+    "primary_categories": [
+      "nature",
+      "animals_wildlife",
+      "adventure",
+      "relaxing"
+    ],
+    "target_age_groups": [
+      "toddlers",
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "relaxed",
+    "best_seasons": [
+      "Summer",
+      "Winter",
+      "Autumn"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "moderate",
+    "climate_type": "alpine",
+    "flight_base_usd": {
+      "low": 260,
+      "avg": 420,
+      "peak": 680
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 130,
+      "vacation_rental": 240,
+      "family_suite": 310,
+      "luxury_resort": 620
+    },
+    "daily_food_per_person_usd": 45,
+    "local_transport_daily_usd": 38,
+    "highlight_features": [
+      "Canoeing on world-famous Lake Louise & Moraine Lake turquoise waters",
+      "Banff Gondola ride to Sulphur Mountain boardwalks",
+      "Johnston Canyon lower falls suspended catwalk walk (stroller accessible)",
+      "Banff Upper Hot Springs thermal mineral family pools"
     ]
   },
   {
-    id: "cancun-riviera-maya",
-    name: "Cancun & Riviera Maya, Mexico",
-    country: "Mexico",
-    region: "North America",
-    coordinates: { lat: 20.6296, lng: -87.0739 },
-    airport_code: "CUN",
-    hero_image: "https://images.unsplash.com/photo-1512815046278-8bc611c0dc89?auto=format&fit=crop&w=1000&q=80",
-    short_description: "Turquoise Caribbean beaches, all-inclusive family eco-parks (Xcaret, Xel-Há), underground cenote swimming, and Mayan ruins.",
-    primary_categories: ["beaches", "water_parks", "relaxing", "nature", "history_culture"],
-    target_age_groups: ["toddlers", "kids", "tweens", "teens", "adults"],
-    pacing: "relaxed",
-    best_seasons: ["Winter", "Spring", "Autumn"],
-    stroller_friendly: true,
-    crowd_level: "moderate",
-    climate_type: "tropical",
-    flight_base_usd: { low: 220, avg: 380, peak: 620 },
-    lodging_daily_usd: { budget_inn: 90, vacation_rental: 160, family_suite: 260, luxury_resort: 480 },
-    daily_food_per_person_usd: 35,
-    local_transport_daily_usd: 30,
-    highlight_features: [
-      "Xcaret & Xel-Ha all-inclusive eco-archaeological water parks",
-      "Crystal clear natural cenote swimming for all skill levels",
-      "Calm shallow beach zones in Puerto Morelos and Isla Mujeres",
-      "Tulum cliffside ocean ruins"
+    "id": "vancouver-bc",
+    "name": "Vancouver & Whistler, Canada",
+    "country": "Canada",
+    "continent": "North America",
+    "region": "North America",
+    "coordinates": {
+      "lat": 49.2827,
+      "lng": -123.1207
+    },
+    "airport_code": "YVR",
+    "hero_image": "https://images.unsplash.com/photo-1559511260-66a65e09b245?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Stanley Park seawall bike trails, Capilano Suspension Bridge canopy walks, Granville Island public market, and scenic Sea-to-Sky highway to Whistler.",
+    "primary_categories": [
+      "nature",
+      "animals_wildlife",
+      "science_museums",
+      "adventure",
+      "food_culinary"
+    ],
+    "target_age_groups": [
+      "toddlers",
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "relaxed",
+    "best_seasons": [
+      "Summer",
+      "Spring",
+      "Autumn"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "moderate",
+    "climate_type": "temperate",
+    "flight_base_usd": {
+      "low": 250,
+      "avg": 410,
+      "peak": 660
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 125,
+      "vacation_rental": 225,
+      "family_suite": 295,
+      "luxury_resort": 590
+    },
+    "daily_food_per_person_usd": 44,
+    "local_transport_daily_usd": 25,
+    "highlight_features": [
+      "Capilano Suspension Bridge Park & Treetops Adventure",
+      "Stanley Park seawall family tandem bike rentals and totem poles",
+      "Granville Island Kids Market with water park and toy shops",
+      "Science World interactive geodesic dome exhibits"
     ]
   },
   {
-    id: "south-korea",
-    name: "Seoul & Jeju Island, South Korea",
-    country: "South Korea",
-    region: "Asia",
-    coordinates: { lat: 37.5665, lng: 126.9780 },
-    airport_code: "ICN",
-    hero_image: "https://images.unsplash.com/photo-1538485399081-7191377e8241?auto=format&fit=crop&w=1000&q=80",
-    short_description: "Ultra-safe, high-tech family destination with Lotte World theme park, Gyeongbokgung Palace, interactive science museums, Han River parks, and Jeju's waterfalls.",
-    primary_categories: ["theme_parks", "history_culture", "food_culinary", "science_museums", "nature"],
-    target_age_groups: ["toddlers", "kids", "tweens", "teens", "adults"],
-    pacing: "moderate",
-    best_seasons: ["Spring", "Autumn"],
-    stroller_friendly: true,
-    crowd_level: "moderate",
-    climate_type: "temperate",
-    flight_base_usd: { low: 680, avg: 1050, peak: 1550 },
-    lodging_daily_usd: { budget_inn: 85, vacation_rental: 150, family_suite: 230, luxury_resort: 450 },
-    daily_food_per_person_usd: 35,
-    local_transport_daily_usd: 25,
-    highlight_features: [
-      "Lotte World indoor & outdoor amusement park & mega aquarium",
-      "Gyeongbokgung Palace hanbok dressing & guard changing ceremony",
-      "Han River family biking, ramen cookers & cruise",
-      "Jeju Island volcanic lava tubes, tea fields & teddy bear museum"
+    "id": "cancun-mexico",
+    "name": "Cancun & Riviera Maya, Mexico",
+    "country": "Mexico",
+    "continent": "North America",
+    "region": "Central America",
+    "coordinates": {
+      "lat": 21.1619,
+      "lng": -86.8515
+    },
+    "airport_code": "CUN",
+    "hero_image": "https://images.unsplash.com/photo-1510097467424-192d713fd8c2?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "All-inclusive family beach resorts, crystal underground cenote swimming, Xcaret eco-archaeological park, and Mayan pyramids of Chichen Itza.",
+    "primary_categories": [
+      "beaches",
+      "theme_parks",
+      "nature",
+      "history_culture",
+      "water_parks"
+    ],
+    "target_age_groups": [
+      "toddlers",
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "relaxed",
+    "best_seasons": [
+      "Winter",
+      "Spring",
+      "Autumn"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "high",
+    "climate_type": "tropical",
+    "flight_base_usd": {
+      "low": 240,
+      "avg": 390,
+      "peak": 650
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 85,
+      "vacation_rental": 160,
+      "family_suite": 230,
+      "luxury_resort": 460
+    },
+    "daily_food_per_person_usd": 32,
+    "local_transport_daily_usd": 30,
+    "highlight_features": [
+      "Xcaret and Xel-Há giant eco-waterparks (snorkeling with tropical fish)",
+      "Swimming in freshwater open-air jungle cenotes",
+      "Day trip to ancient Mayan ruins of Tulum & Chichen Itza",
+      "All-inclusive beachfront resorts with kid waterparks"
     ]
   },
   {
-    id: "japan-tokyo",
-    name: "Tokyo & Kyoto, Japan",
-    country: "Japan",
-    region: "Asia",
-    coordinates: { lat: 35.6762, lng: 139.6503 },
-    airport_code: "NRT",
-    hero_image: "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1000&q=80",
-    short_description: "World-class family safety, Tokyo Disneyland & DisneySea, teamLab Planets digital art wonderland, Shinkansen bullet trains, and Kyoto bamboo forests.",
-    primary_categories: ["theme_parks", "science_museums", "history_culture", "food_culinary", "nature"],
-    target_age_groups: ["toddlers", "kids", "tweens", "teens", "adults"],
-    pacing: "moderate",
-    best_seasons: ["Spring", "Autumn"],
-    stroller_friendly: true,
-    crowd_level: "high",
-    climate_type: "temperate",
-    flight_base_usd: { low: 720, avg: 1120, peak: 1650 },
-    lodging_daily_usd: { budget_inn: 95, vacation_rental: 175, family_suite: 260, luxury_resort: 520 },
-    daily_food_per_person_usd: 40,
-    local_transport_daily_usd: 30,
-    highlight_features: [
-      "Tokyo Disneyland & Tokyo DisneySea ocean-themed wonderland",
-      "teamLab Planets immersive mirror & water digital art museum",
-      "Shinkansen high-speed bullet train rides across Japan",
-      "Kyoto Arashiyama Monkey Park & magical bamboo forest"
+    "id": "costa-rica",
+    "name": "Costa Rica (Arenal & Manuel Antonio)",
+    "country": "Costa Rica",
+    "continent": "Latin America & Caribbean",
+    "region": "Central America",
+    "coordinates": {
+      "lat": 9.7489,
+      "lng": -83.7534
+    },
+    "airport_code": "SJO",
+    "hero_image": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Wild sloths and monkeys in rainforest canopies, Arenal volcano hot springs, zipline adventures, hanging bridges, and Pacific surf beaches.",
+    "primary_categories": [
+      "nature",
+      "animals_wildlife",
+      "adventure",
+      "beaches",
+      "relaxing"
+    ],
+    "target_age_groups": [
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "active",
+    "best_seasons": [
+      "Winter",
+      "Spring"
+    ],
+    "stroller_friendly": false,
+    "crowd_level": "moderate",
+    "climate_type": "tropical",
+    "flight_base_usd": {
+      "low": 320,
+      "avg": 520,
+      "peak": 820
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 75,
+      "vacation_rental": 145,
+      "family_suite": 210,
+      "luxury_resort": 440
+    },
+    "daily_food_per_person_usd": 28,
+    "local_transport_daily_usd": 35,
+    "highlight_features": [
+      "Manuel Antonio National Park: Spot wild sloths, capuchin monkeys, toucans",
+      "Arenal Volcano natural hot springs pools for all ages",
+      "Mistico Arenal Hanging Bridges walk through the cloud forest",
+      "Chocolate making & organic coffee plantation tours"
     ]
   },
   {
-    id: "london-uk",
-    name: "London & Cotswolds, United Kingdom",
-    country: "United Kingdom",
-    region: "Europe",
-    coordinates: { lat: 51.5074, lng: -0.1278 },
-    airport_code: "LHR",
-    hero_image: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=1000&q=80",
-    short_description: "Royal palaces, Warner Bros. Harry Potter Studio Tour, world-class free science & natural history museums, and double-decker bus rides.",
-    primary_categories: ["history_culture", "science_museums", "entertainment", "food_culinary"],
-    target_age_groups: ["toddlers", "kids", "tweens", "teens", "adults"],
-    pacing: "moderate",
-    best_seasons: ["Spring", "Summer", "Autumn"],
-    stroller_friendly: true,
-    crowd_level: "high",
-    climate_type: "temperate",
-    flight_base_usd: { low: 520, avg: 850, peak: 1350 },
-    lodging_daily_usd: { budget_inn: 120, vacation_rental: 220, family_suite: 310, luxury_resort: 590 },
-    daily_food_per_person_usd: 50,
-    local_transport_daily_usd: 35,
-    highlight_features: [
-      "Warner Bros. Studio Tour London - The Making of Harry Potter",
-      "Natural History & Science Museums with giant robotic dinosaurs (Free Entry)",
-      "Tower of London, Crown Jewels & iconic Tower Bridge",
-      "Hyde Park Diana Memorial Playground & London Eye ride"
+    "id": "bahamas-nassau",
+    "name": "Bahamas (Nassau & Paradise Island)",
+    "country": "Bahamas",
+    "continent": "Latin America & Caribbean",
+    "region": "Caribbean",
+    "coordinates": {
+      "lat": 25.0479,
+      "lng": -77.3554
+    },
+    "airport_code": "NAS",
+    "hero_image": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Atlantis Aquaventure water park with Mayan temple slides, swimming with dolphins, crystal turquoise beaches, and swimming pig island day trips.",
+    "primary_categories": [
+      "beaches",
+      "water_parks",
+      "animals_wildlife",
+      "relaxing"
+    ],
+    "target_age_groups": [
+      "toddlers",
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "relaxed",
+    "best_seasons": [
+      "Winter",
+      "Spring",
+      "Autumn"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "moderate",
+    "climate_type": "tropical",
+    "flight_base_usd": {
+      "low": 260,
+      "avg": 420,
+      "peak": 680
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 130,
+      "vacation_rental": 240,
+      "family_suite": 330,
+      "luxury_resort": 680
+    },
+    "daily_food_per_person_usd": 48,
+    "local_transport_daily_usd": 30,
+    "highlight_features": [
+      "Atlantis Paradise Island Aquaventure water park & lazy rivers",
+      "Dolphin Cay interactive marine mammal encounters",
+      "Exuma day trips to swim with friendly wild pigs & nurse sharks",
+      "Cable Beach soft pink sands and calm clear shallow waters"
     ]
   },
   {
-    id: "paris-france",
-    name: "Paris & French Riviera, France",
-    country: "France",
-    region: "Europe",
-    coordinates: { lat: 48.8566, lng: 2.3522 },
-    airport_code: "CDG",
-    hero_image: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1000&q=80",
-    short_description: "Iconic Eiffel Tower carousel, Disneyland Paris, Seine river boat cruises, Jardin du Luxembourg toy sailboats, and world-renowned bakeries.",
-    primary_categories: ["history_culture", "theme_parks", "food_culinary", "relaxing"],
-    target_age_groups: ["toddlers", "kids", "tweens", "teens", "adults"],
-    pacing: "relaxed",
-    best_seasons: ["Spring", "Summer", "Autumn"],
-    stroller_friendly: true,
-    crowd_level: "high",
-    climate_type: "temperate",
-    flight_base_usd: { low: 540, avg: 880, peak: 1390 },
-    lodging_daily_usd: { budget_inn: 130, vacation_rental: 230, family_suite: 320, luxury_resort: 610 },
-    daily_food_per_person_usd: 50,
-    local_transport_daily_usd: 30,
-    highlight_features: [
-      "Disneyland Paris & Walt Disney Studios Park",
-      "Eiffel Tower summit views and antique carousel rides",
-      "Jardin du Luxembourg pony rides and vintage wooden sailboats",
-      "Seine River glass-canopy family sightseeing cruise"
+    "id": "punta-cana-dr",
+    "name": "Punta Cana, Dominican Republic",
+    "country": "Dominican Republic",
+    "continent": "Latin America & Caribbean",
+    "region": "Caribbean",
+    "coordinates": {
+      "lat": 18.5601,
+      "lng": -68.3725
+    },
+    "airport_code": "PUJ",
+    "hero_image": "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Palms lining endless turquoise Caribbean beaches, all-inclusive family beachfront resorts with waterparks, Saona Island catamarans, and Monkeyland.",
+    "primary_categories": [
+      "beaches",
+      "water_parks",
+      "relaxing",
+      "animals_wildlife"
+    ],
+    "target_age_groups": [
+      "toddlers",
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "relaxed",
+    "best_seasons": [
+      "Winter",
+      "Spring"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "moderate",
+    "climate_type": "tropical",
+    "flight_base_usd": {
+      "low": 270,
+      "avg": 440,
+      "peak": 710
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 80,
+      "vacation_rental": 150,
+      "family_suite": 220,
+      "luxury_resort": 450
+    },
+    "daily_food_per_person_usd": 30,
+    "local_transport_daily_usd": 25,
+    "highlight_features": [
+      "Bavaro Beach calm turquoise swimming waters with coral reefs",
+      "Monkeyland guided interactions with friendly squirrel monkeys",
+      "Saona Island speedboat tour with shallow natural swimming pools",
+      "Resort pirate ship splash pads and kids clubs"
     ]
   },
   {
-    id: "rome-italy",
-    name: "Rome & Florence, Italy",
-    country: "Italy",
-    region: "Europe",
-    coordinates: { lat: 41.9028, lng: 12.4964 },
-    airport_code: "FCO",
-    hero_image: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&w=1000&q=80",
-    short_description: "Living history museum featuring the Colosseum, family pizza & gelato masterclasses, Trevi Fountain wishing, and Vatican wonders.",
-    primary_categories: ["history_culture", "food_culinary", "relaxing", "nature"],
-    target_age_groups: ["kids", "tweens", "teens", "adults"],
-    pacing: "moderate",
-    best_seasons: ["Spring", "Autumn"],
-    stroller_friendly: false,
-    crowd_level: "high",
-    climate_type: "mediterranean",
-    flight_base_usd: { low: 560, avg: 890, peak: 1400 },
-    lodging_daily_usd: { budget_inn: 110, vacation_rental: 195, family_suite: 275, luxury_resort: 550 },
-    daily_food_per_person_usd: 45,
-    local_transport_daily_usd: 25,
-    highlight_features: [
-      "Colosseum & Gladiator school interactive family experience",
-      "Authentic family pizza-making and artisan gelato workshop",
-      "Trevi Fountain coin tossing and Piazza Navona artists",
-      "Borghese Gardens four-person tandem bike rental"
+    "id": "cusco-machu-picchu",
+    "name": "Cusco & Machu Picchu, Peru",
+    "country": "Peru",
+    "continent": "Latin America & Caribbean",
+    "region": "South America",
+    "coordinates": {
+      "lat": -13.5319,
+      "lng": -71.9675
+    },
+    "airport_code": "CUZ",
+    "hero_image": "https://images.unsplash.com/photo-1526392060635-9d6019884377?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "The lost Incan city of Machu Picchu in the clouds, Sacred Valley llama and alpaca farms, panoramic glass-roof train rides, and colorful textile markets.",
+    "primary_categories": [
+      "history_culture",
+      "nature",
+      "animals_wildlife",
+      "adventure"
+    ],
+    "target_age_groups": [
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "active",
+    "best_seasons": [
+      "Spring",
+      "Summer",
+      "Autumn"
+    ],
+    "stroller_friendly": false,
+    "crowd_level": "moderate",
+    "climate_type": "alpine",
+    "flight_base_usd": {
+      "low": 580,
+      "avg": 920,
+      "peak": 1420
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 60,
+      "vacation_rental": 125,
+      "family_suite": 180,
+      "luxury_resort": 410
+    },
+    "daily_food_per_person_usd": 24,
+    "local_transport_daily_usd": 25,
+    "highlight_features": [
+      "Machu Picchu Incan citadel exploration with roaming alpacas",
+      "PeruRail Vistadome glass-ceiling panoramic train through the Andes",
+      "Awana Kancha camelid farm (feed friendly llamas & vicunas)",
+      "Pisac colorful artisan market & Maras salt terraced ponds"
     ]
   },
   {
-    id: "costa-rica",
-    name: "Arenal Volcano & Manuel Antonio, Costa Rica",
-    country: "Costa Rica",
-    region: "Central America",
-    coordinates: { lat: 10.4678, lng: -84.7032 },
-    airport_code: "SJO",
-    hero_image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1000&q=80",
-    short_description: "Rainforest canopy bridges, wild sloth and monkey spotting, gentle hot springs, and white sand Pacific beaches.",
-    primary_categories: ["nature", "animals_wildlife", "adventure", "beaches", "relaxing"],
-    target_age_groups: ["toddlers", "kids", "tweens", "teens", "adults"],
-    pacing: "relaxed",
-    best_seasons: ["Winter", "Spring"],
-    stroller_friendly: false,
-    crowd_level: "low",
-    climate_type: "tropical",
-    flight_base_usd: { low: 320, avg: 490, peak: 780 },
-    lodging_daily_usd: { budget_inn: 85, vacation_rental: 155, family_suite: 240, luxury_resort: 490 },
-    daily_food_per_person_usd: 35,
-    local_transport_daily_usd: 45,
-    highlight_features: [
-      "Mistico Arenal Hanging Bridges guided sloth and toucan tour",
-      "Eco Termales family-friendly natural hot springs",
-      "Manuel Antonio National Park beach with wild monkeys",
-      "La Fortuna waterfall and chocolate making plantation tour"
+    "id": "rio-de-janeiro-brazil",
+    "name": "Rio de Janeiro & Iguazu Falls, Brazil",
+    "country": "Brazil",
+    "continent": "Latin America & Caribbean",
+    "region": "South America",
+    "coordinates": {
+      "lat": -22.9068,
+      "lng": -43.1729
+    },
+    "airport_code": "GIG",
+    "hero_image": "https://images.unsplash.com/photo-1483729558449-99ef09a8c325?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Christ the Redeemer atop Corcovado mountain, Sugarloaf cable cars, Copacabana and Ipanema family beaches, and the awe-inspiring Iguazu Falls.",
+    "primary_categories": [
+      "nature",
+      "beaches",
+      "history_culture",
+      "adventure"
+    ],
+    "target_age_groups": [
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "moderate",
+    "best_seasons": [
+      "Spring",
+      "Autumn",
+      "Winter"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "moderate",
+    "climate_type": "tropical",
+    "flight_base_usd": {
+      "low": 650,
+      "avg": 1050,
+      "peak": 1580
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 75,
+      "vacation_rental": 145,
+      "family_suite": 215,
+      "luxury_resort": 460
+    },
+    "daily_food_per_person_usd": 30,
+    "local_transport_daily_usd": 22,
+    "highlight_features": [
+      "Corcovado red cogwheel train up to Christ the Redeemer statue",
+      "Sugarloaf Mountain twin cable car ride at sunset",
+      "Iguazu Falls (275 colossal waterfalls with boardwalks into Devil's Throat)",
+      "Ipanema Beach promenade with fresh coconut water stands"
+    ]
+  },
+  {
+    "id": "dubai-uae",
+    "name": "Dubai & Abu Dhabi, UAE",
+    "country": "United Arab Emirates",
+    "continent": "Middle East & Africa",
+    "region": "Middle East",
+    "coordinates": {
+      "lat": 25.2048,
+      "lng": 55.2708
+    },
+    "airport_code": "DXB",
+    "hero_image": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Burj Khalifa 148th floor observatory, indoor Ski Dubai snow park, giant Dubai Mall aquarium, desert sunset camel safaris, and Ferrari World.",
+    "primary_categories": [
+      "theme_parks",
+      "entertainment",
+      "water_parks",
+      "science_museums"
+    ],
+    "target_age_groups": [
+      "toddlers",
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "moderate",
+    "best_seasons": [
+      "Winter",
+      "Spring",
+      "Autumn"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "moderate",
+    "climate_type": "subtropical",
+    "flight_base_usd": {
+      "low": 680,
+      "avg": 1080,
+      "peak": 1620
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 95,
+      "vacation_rental": 180,
+      "family_suite": 260,
+      "luxury_resort": 550
+    },
+    "daily_food_per_person_usd": 42,
+    "local_transport_daily_usd": 28,
+    "highlight_features": [
+      "Burj Khalifa observation deck & Dubai Fountain dancing water show",
+      "Dubai Aquarium & Underwater Zoo giant acrylic tunnel",
+      "Aquaventure Waterpark and Ski Dubai indoor snow play zone",
+      "Desert 4x4 dunes safari with camel rides and bedouin dinner"
+    ]
+  },
+  {
+    "id": "venice-italy",
+    "name": "Venice & Dolomites, Italy",
+    "country": "Italy",
+    "continent": "Europe",
+    "region": "Southern Europe",
+    "coordinates": {
+      "lat": 45.4408,
+      "lng": 12.3155
+    },
+    "airport_code": "VCE",
+    "hero_image": "https://images.unsplash.com/photo-1514890547357-a9ee288728e0?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Car-free stone bridges and canals, singing gondoliers on the Grand Canal, colorful glassblowing on Murano Island, and scenic jagged Dolomite peaks.",
+    "primary_categories": [
+      "history_culture",
+      "nature",
+      "food_culinary",
+      "relaxing"
+    ],
+    "target_age_groups": [
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "relaxed",
+    "best_seasons": [
+      "Spring",
+      "Autumn"
+    ],
+    "stroller_friendly": false,
+    "crowd_level": "high",
+    "climate_type": "mediterranean",
+    "flight_base_usd": {
+      "low": 570,
+      "avg": 910,
+      "peak": 1410
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 120,
+      "vacation_rental": 210,
+      "family_suite": 290,
+      "luxury_resort": 610
+    },
+    "daily_food_per_person_usd": 44,
+    "local_transport_daily_usd": 28,
+    "highlight_features": [
+      "Traditional wooden Gondola ride through quiet hidden canals",
+      "Murano & Burano island boat trip with rainbow-painted houses",
+      "St. Mark's Square pigeon feeding and Doge's Palace secret passages",
+      "Scenic Dolomite mountain day trip with alpine cable cars"
+    ]
+  },
+  {
+    "id": "munich-bavaria",
+    "name": "Munich & Bavarian Castles, Germany",
+    "country": "Germany",
+    "continent": "Europe",
+    "region": "Central Europe",
+    "coordinates": {
+      "lat": 48.1351,
+      "lng": 11.582
+    },
+    "airport_code": "MUC",
+    "hero_image": "https://images.unsplash.com/photo-1587330979470-3595ac045ab0?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Neuschwanstein fairytale castle (inspiration for Disney's castle), massive English Garden with river surfing, Deutsches Museum technology, and BMW World.",
+    "primary_categories": [
+      "history_culture",
+      "science_museums",
+      "nature",
+      "food_culinary"
+    ],
+    "target_age_groups": [
+      "toddlers",
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "moderate",
+    "best_seasons": [
+      "Spring",
+      "Summer",
+      "Autumn",
+      "Winter"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "moderate",
+    "climate_type": "continental",
+    "flight_base_usd": {
+      "low": 540,
+      "avg": 870,
+      "peak": 1380
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 110,
+      "vacation_rental": 200,
+      "family_suite": 275,
+      "luxury_resort": 550
+    },
+    "daily_food_per_person_usd": 42,
+    "local_transport_daily_usd": 22,
+    "highlight_features": [
+      "Neuschwanstein Castle horse-drawn carriage day trip",
+      "Deutsches Museum (one of the world's largest interactive science museums)",
+      "Marienplatz historic Glockenspiel mechanical clock show",
+      "English Garden giant wooden playground and beer garden pretzels"
+    ]
+  },
+  {
+    "id": "san-francisco-ca",
+    "name": "San Francisco & Yosemite, California",
+    "country": "United States",
+    "continent": "North America",
+    "region": "North America",
+    "coordinates": {
+      "lat": 37.7749,
+      "lng": -122.4194
+    },
+    "airport_code": "SFO",
+    "hero_image": "https://images.unsplash.com/photo-1501594907352-04cda38ebc29?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Historic cable cars clanging over steep hills, sea lions barking at Pier 39, Exploratorium hands-on science, and giant sequoia redwoods in Yosemite.",
+    "primary_categories": [
+      "science_museums",
+      "animals_wildlife",
+      "nature",
+      "history_culture"
+    ],
+    "target_age_groups": [
+      "toddlers",
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "moderate",
+    "best_seasons": [
+      "Spring",
+      "Summer",
+      "Autumn"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "moderate",
+    "climate_type": "mediterranean",
+    "flight_base_usd": {
+      "low": 180,
+      "avg": 320,
+      "peak": 540
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 135,
+      "vacation_rental": 235,
+      "family_suite": 310,
+      "luxury_resort": 620
+    },
+    "daily_food_per_person_usd": 50,
+    "local_transport_daily_usd": 25,
+    "highlight_features": [
+      "Riding open-air historic wooden Cable Cars across the hills",
+      "Pier 39 barking sea lions and sourdough bread bakeries",
+      "Exploratorium (hundreds of tactile interactive science exhibits)",
+      "Yosemite National Park towering granite cliffs and waterfalls"
+    ]
+  },
+  {
+    "id": "grand-canyon-az",
+    "name": "Grand Canyon & Sedona, Arizona",
+    "country": "United States",
+    "continent": "North America",
+    "region": "North America",
+    "coordinates": {
+      "lat": 36.0544,
+      "lng": -112.1401
+    },
+    "airport_code": "PHX",
+    "hero_image": "https://images.unsplash.com/photo-1474044159687-1ee9f3a51722?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Awe-inspiring mile-deep Grand Canyon panoramas, historic Grand Canyon Railway steam train, red rock off-road Pink Jeep tours in Sedona, and stargazing.",
+    "primary_categories": [
+      "nature",
+      "adventure",
+      "animals_wildlife",
+      "science_museums"
+    ],
+    "target_age_groups": [
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "active",
+    "best_seasons": [
+      "Spring",
+      "Autumn"
+    ],
+    "stroller_friendly": true,
+    "crowd_level": "moderate",
+    "climate_type": "alpine",
+    "flight_base_usd": {
+      "low": 210,
+      "avg": 350,
+      "peak": 590
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 115,
+      "vacation_rental": 215,
+      "family_suite": 285,
+      "luxury_resort": 560
+    },
+    "daily_food_per_person_usd": 42,
+    "local_transport_daily_usd": 45,
+    "highlight_features": [
+      "Grand Canyon South Rim paved scenic walking trails and rim shuttles",
+      "Grand Canyon Railway historic cowboy steam train from Williams",
+      "Sedona red rock 4x4 Pink Jeep off-road family safari",
+      "Lowell Observatory dark sky telescope stargazing in Flagstaff"
+    ]
+  },
+  {
+    "id": "cairo-egypt",
+    "name": "Cairo & Giza Pyramids, Egypt",
+    "country": "Egypt",
+    "continent": "Middle East & Africa",
+    "region": "North Africa",
+    "coordinates": {
+      "lat": 30.0444,
+      "lng": 31.2357
+    },
+    "airport_code": "CAI",
+    "hero_image": "https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "The Great Pyramids of Giza, the Great Sphinx, Grand Egyptian Museum King Tutankhamun gold treasures, camel rides, and scenic Nile felucca sailing.",
+    "primary_categories": [
+      "history_culture",
+      "adventure",
+      "science_museums"
+    ],
+    "target_age_groups": [
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "moderate",
+    "best_seasons": [
+      "Winter",
+      "Spring",
+      "Autumn"
+    ],
+    "stroller_friendly": false,
+    "crowd_level": "moderate",
+    "climate_type": "subtropical",
+    "flight_base_usd": {
+      "low": 680,
+      "avg": 1050,
+      "peak": 1580
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 55,
+      "vacation_rental": 115,
+      "family_suite": 170,
+      "luxury_resort": 390
+    },
+    "daily_food_per_person_usd": 22,
+    "local_transport_daily_usd": 25,
+    "highlight_features": [
+      "Great Pyramids of Giza and Sphinx family camel ride",
+      "Grand Egyptian Museum (GEM) Tutankhamun golden burial masks",
+      "Traditional wooden Felucca sailboat sunset cruise on the Nile",
+      "Khan el-Khalili bazaar spice and lantern walking tour"
+    ]
+  },
+  {
+    "id": "serengeti-tanzania",
+    "name": "Serengeti & Zanzibar, Tanzania",
+    "country": "Tanzania",
+    "continent": "Middle East & Africa",
+    "region": "East Africa",
+    "coordinates": {
+      "lat": -2.3333,
+      "lng": 34.8333
+    },
+    "airport_code": "JRO",
+    "hero_image": "https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "The Great Wildebeest Migration, Ngorongoro volcanic crater Big Five safari (lions, giraffes, zebras), and Zanzibar white sand spice island beaches.",
+    "primary_categories": [
+      "animals_wildlife",
+      "nature",
+      "beaches",
+      "adventure"
+    ],
+    "target_age_groups": [
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "active",
+    "best_seasons": [
+      "Summer",
+      "Winter",
+      "Autumn"
+    ],
+    "stroller_friendly": false,
+    "crowd_level": "low",
+    "climate_type": "tropical",
+    "flight_base_usd": {
+      "low": 950,
+      "avg": 1450,
+      "peak": 2100
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 120,
+      "vacation_rental": 220,
+      "family_suite": 350,
+      "luxury_resort": 750
+    },
+    "daily_food_per_person_usd": 40,
+    "local_transport_daily_usd": 65,
+    "highlight_features": [
+      "Open-roof 4x4 Land Cruiser safari game drives spotting lions and cheetahs",
+      "Ngorongoro Crater (world's largest intact volcanic caldera wildlife haven)",
+      "Zanzibar Stone Town spice tours and crystal coral beach resorts",
+      "Hot air balloon safari at sunrise over the Serengeti plains"
+    ]
+  },
+  {
+    "id": "galapagos-ecuador",
+    "name": "Galapagos Islands, Ecuador",
+    "country": "Ecuador",
+    "continent": "Latin America & Caribbean",
+    "region": "South America",
+    "coordinates": {
+      "lat": -0.9538,
+      "lng": -90.9656
+    },
+    "airport_code": "GPS",
+    "hero_image": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1000&q=80",
+    "short_description": "Close encounters with wild giant tortoises, swimming with playful sea lions and penguins, marine iguanas on black lava, and pristine protected bays.",
+    "primary_categories": [
+      "animals_wildlife",
+      "nature",
+      "adventure",
+      "beaches",
+      "science_museums"
+    ],
+    "target_age_groups": [
+      "kids",
+      "tweens",
+      "teens",
+      "adults"
+    ],
+    "pacing": "active",
+    "best_seasons": [
+      "Year-round"
+    ],
+    "stroller_friendly": false,
+    "crowd_level": "low",
+    "climate_type": "tropical",
+    "flight_base_usd": {
+      "low": 720,
+      "avg": 1150,
+      "peak": 1680
+    },
+    "lodging_daily_usd": {
+      "budget_inn": 90,
+      "vacation_rental": 180,
+      "family_suite": 260,
+      "luxury_resort": 580
+    },
+    "daily_food_per_person_usd": 38,
+    "local_transport_daily_usd": 40,
+    "highlight_features": [
+      "Charles Darwin Research Station & giant tortoise breeding sanctuary",
+      "Snorkeling with friendly wild sea lion pups and green sea turtles",
+      "Bartolomé Island iconic volcanic pinnacle rock and penguin encounters",
+      "Tortuga Bay soft white sand beach and marine iguana trails"
     ]
   }
 ];
