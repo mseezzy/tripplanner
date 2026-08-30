@@ -1,4 +1,6 @@
 @echo off
+setlocal EnableDelayedExpansion
+
 echo ==========================================================
 echo Deploy Family Travel Planner Backend to Google Cloud Run
 echo ==========================================================
@@ -6,7 +8,7 @@ echo ==========================================================
 :: Check for gcloud CLI
 where gcloud >nul 2>nul
 if %errorlevel% neq 0 (
-    echo [ERROR] Google Cloud SDK (gcloud CLI) is not installed.
+    echo [ERROR] Google Cloud SDK gcloud CLI is not installed.
     echo Please download and install it from: https://cloud.google.com/sdk/docs/install
     pause
     exit /b 1
@@ -19,10 +21,10 @@ if "%PROJECT_ID%"=="" (
     exit /b 1
 )
 
-set /p REGION="Enter Deployment Region (default: us-central1): "
+set /p REGION="Enter Deployment Region [default: us-central1]: "
 if "%REGION%"=="" set REGION=us-central1
 
-set /p GEMINI_KEY="Enter your Google Gemini API Key (AIzaSy...): "
+set /p GEMINI_KEY="Enter your Google Gemini API Key [AIzaSy...]: "
 
 echo.
 echo [1/3] Setting Google Cloud Project to %PROJECT_ID%...
@@ -51,6 +53,6 @@ echo.
 echo ==========================================================
 echo Deployment Completed!
 echo Copy the Service URL provided above (e.g. https://family-travel-planner-xyz.a.run.app)
-echo Set VITE_API_BASE_URL=<your-url>/api in your frontend .env
+echo Set VITE_API_BASE_URL=your-service-url/api in your frontend .env
 echo ==========================================================
 pause
