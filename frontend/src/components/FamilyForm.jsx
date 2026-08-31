@@ -22,7 +22,8 @@ import {
   Alert,
   Autocomplete,
   ToggleButton,
-  ToggleButtonGroup
+  ToggleButtonGroup,
+  InputAdornment
 } from '@mui/material';
 import {
   PersonAdd,
@@ -348,6 +349,18 @@ export default function FamilyForm({ onSubmit, loading, initialValues }) {
 
   const [originCity, setOriginCity] = useState(initialValues?.origin_city || 'Chicago (ORD)');
   const [budgetTier, setBudgetTier] = useState(initialValues?.budget_tier || 'moderate');
+  const [budgetMode, setBudgetMode] = useState(
+    initialValues?.budget_min || initialValues?.budget_max ? 'range' : 'range'
+  );
+  const [budgetMin, setBudgetMin] = useState(initialValues?.budget_min !== undefined && initialValues?.budget_min !== null ? initialValues.budget_min : '');
+  const [budgetMax, setBudgetMax] = useState(initialValues?.budget_max !== undefined && initialValues?.budget_max !== null ? initialValues.budget_max : '');
+
+  const isBudgetError = Boolean(
+    budgetMode === 'range' &&
+    budgetMin !== '' &&
+    budgetMax !== '' &&
+    parseInt(budgetMin, 10) > parseInt(budgetMax, 10)
+  );
 
   const addDestinationStop = () => {
     setTripStops([
@@ -453,7 +466,12 @@ export default function FamilyForm({ onSubmit, loading, initialValues }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (isBudgetError) return;
+
     const validStops = tripStops.filter((s) => s.destination && s.destination.trim());
+    const parsedMin = budgetMode === 'range' && budgetMin !== '' ? parseInt(budgetMin, 10) : undefined;
+    const parsedMax = budgetMode === 'range' && budgetMax !== '' ? parseInt(budgetMax, 10) : undefined;
+
     onSubmit({
       family_members: familyMembers,
       likes,
@@ -467,7 +485,9 @@ export default function FamilyForm({ onSubmit, loading, initialValues }) {
       destinations: validStops.length > 0 ? validStops : null,
       preferred_destination: validStops[0]?.destination || '',
       origin_city: originCity,
-      budget_tier: budgetTier
+      budget_tier: budgetTier,
+      budget_min: parsedMin,
+      budget_max: parsedMax
     });
   };
 
@@ -930,8 +950,8 @@ export default function FamilyForm({ onSubmit, loading, initialValues }) {
             </Paper>
           </Grid>
 
-          {/* SECTION 5: ORIGIN & BUDGET TIER */}
-          <Grid item xs={12} sm={6} md={6}>
+          {/* SECTION 5: ORIGIN & BUDGET SPECIFICATION */}
+          <Grid item xs={12} md={5}>
             <GlobalAirportInput
               label="Departure Airport / City (Roundtrip Origin)"
               placeholder="Search any airport code or city (e.g. JFK, LHR, ICN, HND, ORD, LAX, CDG)..."
@@ -940,20 +960,117 @@ export default function FamilyForm({ onSubmit, loading, initialValues }) {
             />
           </Grid>
 
-          <Grid item xs={12} sm={6} md={6}>
-            <FormControl fullWidth>
-              <InputLabel>Budget Tier</InputLabel>
-              <Select
-                value={budgetTier}
-                label="Budget Tier"
-                onChange={(e) => setBudgetTier(e.target.value)}
-              >
-                <MenuItem value="budget">$ Economy / Budget</MenuItem>
-                <MenuItem value="moderate">$$ Moderate (Family Standard)</MenuItem>
-                <MenuItem value="upscale">$$$ Upscale Comfort</MenuItem>
-                <MenuItem value="luxury">$$$$ Luxury Resorts</MenuItem>
-              </Select>
-            </FormControl>
+          <Grid item xs={12} md={7}>
+            <Paper
+              elevation={0}
+              sx={{
+                p: 2,
+                bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : '#f8fafc',
+                borderRadius: 2.5,
+                border: `1px solid ${isBudgetError ? theme.palette.error.main : theme.palette.divider}`
+              }}
+            >
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5, flexWrap: 'wrap', gap: 1 }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: 0.8 }}>
+                  <AttachMoney fontSize="small" color="primary" />
+                  Trip Budget Planning
+                </Typography>
+                <ToggleButtonGroup
+                  value={budgetMode}
+                  exclusive
+                  size="small"
+                  onChange={(_, val) => val && setBudgetMode(val)}
+                  aria-label="Budget Selection Mode"
+                >
+                  <ToggleButton value="range" sx={{ py: 0.3, px: 1.5, fontSize: '0.75rem', fontWeight: 700 }}>
+                    💵 Custom Range ($)
+                  </ToggleButton>
+                  <ToggleButton value="tier" sx={{ py: 0.3, px: 1.5, fontSize: '0.75rem', fontWeight: 700 }}>
+                    📊 Preset Tier
+                  </ToggleButton>
+                </ToggleButtonGroup>
+              </Box>
+
+              {budgetMode === 'range' ? (
+                <Box>
+                  <Grid container spacing={1.5}>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        fullWidth
+                        size="small"
+                        type="number"
+                        id="budget-min-input"
+                        label="Minimum Budget (USD)"
+                        placeholder="e.g. 1500 (optional)"
+                        value={budgetMin}
+                        onChange={(e) => setBudgetMin(e.target.value)}
+                        error={isBudgetError}
+                        inputProps={{ min: 0, step: 50, 'aria-label': 'Minimum Budget in USD' }}
+                        InputProps={{
+                          startAdornment: <InputAdornment position="start">$</InputAdornment>
+                        }}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        fullWidth
+                        size="small"
+                        type="number"
+                        id="budget-max-input"
+                        label="Maximum Budget (USD)"
+                        placeholder="e.g. 5000 (optional)"
+                        value={budgetMax}
+                        onChange={(e) => setBudgetMax(e.target.value)}
+                        error={isBudgetError}
+                        inputProps={{ min: 0, step: 50, 'aria-label': 'Maximum Budget in USD' }}
+                        InputProps={{
+                          startAdornment: <InputAdornment position="start">$</InputAdornment>
+                        }}
+                      />
+                    </Grid>
+                  </Grid>
+
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      display: 'block',
+                      mt: 1,
+                      fontWeight: 500,
+                      color: isBudgetError
+                        ? 'error.main'
+                        : budgetMin !== '' || budgetMax !== ''
+                        ? 'primary.main'
+                        : 'text.secondary'
+                    }}
+                  >
+                    {isBudgetError
+                      ? '⚠️ Minimum budget cannot exceed maximum budget.'
+                      : budgetMin !== '' && budgetMax !== ''
+                      ? `🎯 Recommendations will target total realistic costs between $${parseInt(budgetMin, 10).toLocaleString()} and $${parseInt(budgetMax, 10).toLocaleString()}.`
+                      : budgetMin !== ''
+                      ? `🎯 Recommendations will target total realistic costs of at least $${parseInt(budgetMin, 10).toLocaleString()}.`
+                      : budgetMax !== ''
+                      ? `🎯 Recommendations will target total realistic costs up to $${parseInt(budgetMax, 10).toLocaleString()}.`
+                      : 'ℹ️ Optional: Leave blank for open bounds or enter target minimum/maximum budget.'}
+                  </Typography>
+                </Box>
+              ) : (
+                <FormControl fullWidth size="small">
+                  <InputLabel id="budget-tier-select-label">Preset Budget Tier</InputLabel>
+                  <Select
+                    labelId="budget-tier-select-label"
+                    value={budgetTier}
+                    label="Preset Budget Tier"
+                    onChange={(e) => setBudgetTier(e.target.value)}
+                  >
+                    <MenuItem value="budget">$ Economy / Budget (~$1,200 - $2,500)</MenuItem>
+                    <MenuItem value="moderate">$$ Moderate Family Standard (~$2,500 - $5,000)</MenuItem>
+                    <MenuItem value="upscale">$$$ Upscale Comfort (~$5,000 - $8,500)</MenuItem>
+                    <MenuItem value="luxury">$$$$ Luxury Resorts (~$8,500+)</MenuItem>
+                  </Select>
+                </FormControl>
+              )}
+            </Paper>
           </Grid>
 
           {/* SUBMIT BUTTON */}

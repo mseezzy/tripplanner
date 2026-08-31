@@ -57,17 +57,28 @@ async def discover_dynamic_destinations_ai(
     origin_airport: str = "ORD",
     budget_tier: str = "moderate",
     travel_month: Optional[int] = None,
-    api_key: Optional[str] = None
+    api_key: Optional[str] = None,
+    budget_min: Optional[int] = None,
+    budget_max: Optional[int] = None
 ) -> Optional[List[Dict[str, Any]]]:
     """
     Dynamically discovers and synthesizes 8-12 worldwide destination candidates on the fly
-    tailored specifically to the family travelers, interests, month, and budget tier.
+    tailored specifically to the family travelers, interests, month, and budget tier or range.
     """
     active_key = api_key or settings.GEMINI_API_KEY
     if not active_key:
         return None
 
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={active_key}"
+
+    budget_desc = budget_tier
+    if budget_min is not None or budget_max is not None:
+        if budget_min is not None and budget_max is not None:
+            budget_desc = f"Custom range: ${budget_min:,} - ${budget_max:,}"
+        elif budget_min is not None:
+            budget_desc = f"Minimum budget target: ${budget_min:,}+"
+        elif budget_max is not None:
+            budget_desc = f"Maximum budget cap: up to ${budget_max:,}"
 
     prompt = f"""
 You are an expert global travel discovery algorithm.
@@ -78,7 +89,7 @@ FAMILY TRAVEL PROFILE:
 - Interests/Likes: {likes}
 - Constraints/Dislikes: {dislikes}
 - Departure Origin: {origin_airport}
-- Budget Tier: {budget_tier}
+- Budget Parameter: {budget_desc}
 - Travel Month: {travel_month or 'Flexible'}
 
 Return a JSON ARRAY of 8 to 12 destination objects with these exact fields:
