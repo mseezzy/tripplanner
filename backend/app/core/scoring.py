@@ -101,7 +101,10 @@ def calculate_destination_score(
     likes: List[str],
     dislikes: List[str],
     budget_tier: str = "moderate",
-    origin_coords: Optional[Dict[str, float]] = None
+    origin_coords: Optional[Dict[str, float]] = None,
+    budget_min: Optional[int] = None,
+    budget_max: Optional[int] = None,
+    duration_days: int = 5
 ) -> Dict[str, Any]:
     score = 70.0  # Base score
     reasons: List[str] = []
@@ -165,32 +168,76 @@ def calculate_destination_score(
         if "hiking" in dis_norm and "hiking" in dest_categories:
             score -= 6
 
-    # 4. Origin Distance & Budget Tier Alignment
-    dest_coords = destination.get("coordinates", {})
-    dest_avg_lodging = destination.get("lodging_daily_usd", {}).get("family_suite", 250)
-    
-    if origin_coords and dest_coords and "lat" in dest_coords and "lat" in origin_coords:
-        dist_miles = calculate_haversine_miles(
-            origin_coords["lat"], origin_coords["lng"],
-            dest_coords["lat"], dest_coords["lng"]
-        )
-        if budget_tier in ["budget", "economy"]:
-            if dist_miles <= 550:
-                score += 24
-                reasons.insert(0, f"Regional / short-haul distance (~{int(dist_miles)} miles) - optimal for economy budget")
-            elif dist_miles <= 1200:
-                score += 10
-            elif dist_miles > 2800:
-                score -= 28  # Heavy penalty for intercontinental flights on a budget
-                reasons.append("Long-haul international flight cost exceeds budget tier")
-        elif budget_tier == "luxury":
-            if dist_miles > 2500 or dest_avg_lodging > 300:
-                score += 10
+    # 4. Explicit Budget Range Evaluation (Story #1)
+    num_family = max(len(family_members), 1)
+    dur = max(duration_days, 1)
+    flight_per_person = destination.get("flight_base_usd", {}).get("avg", 450)
+    lodging_daily = destination.get("lodging_daily_usd", {}).get("family_suite", destination.get("lodging_daily_usd", {}).get("vacation_rental", 200))
+    food_daily = destination.get("daily_food_per_person_usd", 45) * num_family
+    transport_daily = destination.get("local_transport_daily_usd", 35)
+
+    est_trip_cost = (flight_per_person * num_family) + (lodging_daily * dur) + (food_daily * dur) + (transport_daily * dur)
+
+    if budget_min is not None or budget_max is not None:
+        if budget_min is not None and budget_max is not None:
+            if budget_min <= est_trip_cost <= budget_max:
+                score += 25
+                reasons.insert(0, f"Fits your custom budget range (${budget_min:,} - ${budget_max:,})")
+            elif est_trip_cost > budget_max:
+                overage_pct = (est_trip_cost - budget_max) / budget_max
+                penalty = min(50, int(30 + overage_pct * 30))
+                score -= penalty
+                reasons.append(f"Estimated trip cost (~${est_trip_cost:,}) exceeds maximum budget of ${budget_max:,}")
+            elif est_trip_cost < budget_min:
+                underage_pct = (budget_min - est_trip_cost) / budget_min
+                penalty = min(40, int(25 + underage_pct * 25))
+                score -= penalty
+                reasons.append(f"Estimated trip cost (~${est_trip_cost:,}) is below requested minimum of ${budget_min:,}")
+        elif budget_max is not None:
+            if est_trip_cost <= budget_max:
+                score += 20
+                reasons.insert(0, f"Under maximum budget limit of ${budget_max:,}")
+            else:
+                overage_pct = (est_trip_cost - budget_max) / budget_max
+                penalty = min(50, int(30 + overage_pct * 30))
+                score -= penalty
+                reasons.append(f"Estimated trip cost (~${est_trip_cost:,}) exceeds maximum budget of ${budget_max:,}")
+        elif budget_min is not None:
+            if est_trip_cost >= budget_min:
+                score += 20
+                reasons.insert(0, f"Meets minimum budget target of ${budget_min:,}")
+            else:
+                underage_pct = (budget_min - est_trip_cost) / budget_min
+                penalty = min(45, int(25 + underage_pct * 25))
+                score -= penalty
+                reasons.append(f"Estimated trip cost (~${est_trip_cost:,}) is below requested minimum of ${budget_min:,}")
     else:
-        if budget_tier in ["budget", "economy"] and dest_avg_lodging > 300:
-            score -= 15
-        elif budget_tier == "luxury" and dest_avg_lodging > 300:
-            score += 8
+        # Fallback to standard budget tier logic
+        dest_coords = destination.get("coordinates", {})
+        dest_avg_lodging = destination.get("lodging_daily_usd", {}).get("family_suite", 250)
+        
+        if origin_coords and dest_coords and "lat" in dest_coords and "lat" in origin_coords:
+            dist_miles = calculate_haversine_miles(
+                origin_coords["lat"], origin_coords["lng"],
+                dest_coords["lat"], dest_coords["lng"]
+            )
+            if budget_tier in ["budget", "economy"]:
+                if dist_miles <= 550:
+                    score += 24
+                    reasons.insert(0, f"Regional / short-haul distance (~{int(dist_miles)} miles) - optimal for economy budget")
+                elif dist_miles <= 1200:
+                    score += 10
+                elif dist_miles > 2800:
+                    score -= 28  # Heavy penalty for intercontinental flights on a budget
+                    reasons.append("Long-haul international flight cost exceeds budget tier")
+            elif budget_tier == "luxury":
+                if dist_miles > 2500 or dest_avg_lodging > 300:
+                    score += 10
+        else:
+            if budget_tier in ["budget", "economy"] and dest_avg_lodging > 300:
+                score -= 15
+            elif budget_tier == "luxury" and dest_avg_lodging > 300:
+                score += 8
 
     # Normalize between 50 and 99
     final_score = int(max(55, min(99, score)))
@@ -199,7 +246,8 @@ def calculate_destination_score(
         "match_score": final_score,
         "score_reasons": reasons[:4],
         "age_suitability": f"{int(age_ratio * 100)}% family age match",
-        "member_enjoyment": member_enjoyment
+        "member_enjoyment": member_enjoyment,
+        "estimated_trip_cost": est_trip_cost
     }
 
 def filter_and_rank_activities(

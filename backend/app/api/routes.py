@@ -78,6 +78,8 @@ class RecommendationRequest(BaseModel):
     preferred_destination: Optional[str] = None
     origin_city: Optional[str] = "Chicago (ORD)"
     budget_tier: Optional[str] = "moderate"
+    budget_min: Optional[int] = None
+    budget_max: Optional[int] = None
 
 @router.get("/health")
 def health_check():
@@ -226,7 +228,9 @@ async def get_recommendations(req: RecommendationRequest):
             dislikes=req.dislikes,
             origin_airport=origin_name,
             budget_tier=req.budget_tier or "moderate",
-            travel_month=req.travel_month
+            travel_month=req.travel_month,
+            budget_min=req.budget_min,
+            budget_max=req.budget_max
         )
         if dynamic_ai and isinstance(dynamic_ai, list) and len(dynamic_ai) > 0:
             dyn_ids = set(d.get("id") or d.get("name") for d in dynamic_ai)
@@ -236,7 +240,11 @@ async def get_recommendations(req: RecommendationRequest):
     scored_all = []
     for d in candidate_pool:
         sc = calculate_destination_score(
-            d, family_dicts, req.likes, req.dislikes, req.budget_tier or "moderate", origin_coords=origin_coords
+            d, family_dicts, req.likes, req.dislikes, req.budget_tier or "moderate",
+            origin_coords=origin_coords,
+            budget_min=req.budget_min,
+            budget_max=req.budget_max,
+            duration_days=req.duration_days or 5
         )
         d_copy = dict(d)
         d_copy.update(sc)
@@ -308,7 +316,10 @@ async def get_recommendations(req: RecommendationRequest):
 
         # Score destination and compute member enjoyment meters
         score_info = calculate_destination_score(
-            matched_dest, family_dicts, req.likes, req.dislikes, req.budget_tier or "moderate"
+            matched_dest, family_dicts, req.likes, req.dislikes, req.budget_tier or "moderate",
+            budget_min=req.budget_min,
+            budget_max=req.budget_max,
+            duration_days=stop_duration
         )
         scored_dest = dict(matched_dest)
         scored_dest.update(score_info)

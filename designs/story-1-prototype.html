@@ -13,31 +13,31 @@
   </style>
 </head>
 <body class="bg-slate-50 text-slate-900 min-h-screen p-6 md:p-12 antialiased">
-  <div class="max-w-4xl mx-auto space-y-10">
+  <main class="max-w-4xl mx-auto space-y-10">
     
     <!-- Header -->
     <header class="border-b border-slate-200 pb-6">
       <div class="flex items-center gap-3">
-        <span class="bg-blue-600 text-white text-xs font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">Story #1 Prototype</span>
-        <span class="text-slate-500 text-sm font-medium">Google Stitch Design Preview</span>
+        <span class="bg-blue-700 text-white text-xs font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">Story #1 Prototype</span>
+        <span class="text-slate-600 text-sm font-medium">Google Stitch Design Preview</span>
       </div>
       <h1 class="text-3xl font-bold text-slate-900 mt-2">Custom Trip Budget Range Selector</h1>
-      <p class="text-slate-600 mt-1">Allows users to specify explicit Minimum and Maximum trip budget bounds rather than only selecting hardcoded tiers.</p>
+      <p class="text-slate-700 mt-1">Allows users to specify explicit Minimum and Maximum trip budget bounds rather than only selecting hardcoded tiers.</p>
     </header>
 
     <!-- Interactive Component Demo -->
-    <section class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200">
-      <h2 class="text-lg font-semibold text-slate-900 mb-4">Interactive Demo</h2>
+    <section aria-labelledby="interactive-demo-heading" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200">
+      <h2 id="interactive-demo-heading" class="text-lg font-semibold text-slate-900 mb-4">Interactive Demo</h2>
       
       <div class="space-y-6 max-w-xl">
         <!-- Budget Mode Toggle -->
         <div>
-          <label class="block text-sm font-semibold text-slate-700 mb-2">Budget Selection Mode</label>
-          <div class="inline-flex p-1 bg-slate-100 rounded-xl border border-slate-200" role="tablist">
-            <button id="mode-range" onclick="setMode('range')" class="px-4 py-2 text-sm font-medium rounded-lg transition-all bg-white text-blue-600 shadow-sm">
+          <label id="mode-label" class="block text-sm font-semibold text-slate-800 mb-2">Budget Selection Mode</label>
+          <div class="inline-flex p-1 bg-slate-100 rounded-xl border border-slate-200" role="tablist" aria-labelledby="mode-label">
+            <button id="mode-range" role="tab" aria-selected="true" onclick="setMode('range')" class="px-4 py-2 text-sm font-medium rounded-lg transition-all bg-white text-blue-700 shadow-sm">
               💵 Custom Range ($)
             </button>
-            <button id="mode-tier" onclick="setMode('tier')" class="px-4 py-2 text-sm font-medium rounded-lg transition-all text-slate-600 hover:text-slate-900">
+            <button id="mode-tier" role="tab" aria-selected="false" onclick="setMode('tier')" class="px-4 py-2 text-sm font-medium rounded-lg transition-all text-slate-700 hover:text-slate-900">
               📊 Preset Tier
             </button>
           </div>
@@ -48,11 +48,11 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <!-- Min Budget -->
             <div>
-              <label for="min-budget" class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
+              <label for="min-budget" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
                 Minimum Budget (USD)
               </label>
               <div class="relative rounded-xl shadow-sm">
-                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 font-semibold">$</div>
+                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-500 font-semibold" aria-hidden="true">$</div>
                 <input
                   type="number"
                   id="min-budget"
@@ -61,18 +61,19 @@
                   step="50"
                   placeholder="e.g. 1000 (optional)"
                   oninput="updatePreview()"
-                  class="block w-full rounded-xl border border-slate-300 py-3 pl-8 pr-4 text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-600 focus:outline-none transition-all sm:text-sm"
+                  aria-describedby="feedback-text"
+                  class="block w-full rounded-xl border border-slate-300 py-3 pl-8 pr-4 text-slate-900 placeholder:text-slate-500 focus:border-blue-700 focus:ring-2 focus:ring-blue-700 focus:outline-none transition-all sm:text-sm"
                 />
               </div>
             </div>
 
             <!-- Max Budget -->
             <div>
-              <label for="max-budget" class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
+              <label for="max-budget" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
                 Maximum Budget (USD)
               </label>
               <div class="relative rounded-xl shadow-sm">
-                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 font-semibold">$</div>
+                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-500 font-semibold" aria-hidden="true">$</div>
                 <input
                   type="number"
                   id="max-budget"
@@ -81,23 +82,24 @@
                   step="50"
                   placeholder="e.g. 5000 (optional)"
                   oninput="updatePreview()"
-                  class="block w-full rounded-xl border border-slate-300 py-3 pl-8 pr-4 text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-600 focus:outline-none transition-all sm:text-sm"
+                  aria-describedby="feedback-text"
+                  class="block w-full rounded-xl border border-slate-300 py-3 pl-8 pr-4 text-slate-900 placeholder:text-slate-500 focus:border-blue-700 focus:ring-2 focus:ring-blue-700 focus:outline-none transition-all sm:text-sm"
                 />
               </div>
             </div>
           </div>
 
           <!-- Dynamic Helper / Error Text -->
-          <div id="range-feedback" class="text-xs text-slate-500 flex items-center gap-1.5 bg-slate-50 p-3 rounded-lg border border-slate-200">
-            <span>ℹ️</span>
+          <div id="range-feedback" class="text-xs text-slate-700 flex items-center gap-1.5 bg-slate-50 p-3 rounded-lg border border-slate-200" role="status" aria-live="polite">
+            <span aria-hidden="true">ℹ️</span>
             <span id="feedback-text">Trip recommendations will target total realistic costs between <strong>$1,500</strong> and <strong>$4,500</strong>.</span>
           </div>
         </div>
 
         <!-- Tier Dropdown (Hidden initially) -->
         <div id="tier-inputs" class="hidden space-y-2">
-          <label for="tier-select" class="block text-xs font-semibold uppercase tracking-wider text-slate-600">Preset Budget Tier</label>
-          <select id="tier-select" class="block w-full rounded-xl border border-slate-300 py-3 px-4 text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-600 sm:text-sm">
+          <label for="tier-select" class="block text-xs font-semibold uppercase tracking-wider text-slate-700">Preset Budget Tier</label>
+          <select id="tier-select" class="block w-full rounded-xl border border-slate-300 py-3 px-4 text-slate-900 focus:border-blue-700 focus:ring-2 focus:ring-blue-700 sm:text-sm">
             <option value="budget">$ Economy / Budget (~$1,200 - $2,500)</option>
             <option value="moderate" selected>$$ Moderate Family Standard (~$2,500 - $5,000)</option>
             <option value="upscale">$$$ Upscale Comfort (~$5,000 - $8,500)</option>
@@ -108,41 +110,41 @@
     </section>
 
     <!-- Component States Showcase (8 States) -->
-    <section class="space-y-6">
-      <h2 class="text-xl font-bold text-slate-900">8 Component States Coverage</h2>
+    <section aria-labelledby="states-heading" class="space-y-6">
+      <h2 id="states-heading" class="text-xl font-bold text-slate-900">8 Component States Coverage</h2>
       
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- 1. Default State -->
         <div class="bg-white p-5 rounded-xl border border-slate-200 space-y-2">
-          <span class="text-xs font-bold text-slate-500 uppercase">1. Default / Idle</span>
+          <label for="state-default" class="text-xs font-bold text-slate-700 uppercase block">1. Default / Idle</label>
           <div class="relative">
-            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span>
-            <input type="text" value="2000" readonly class="w-full pl-8 pr-3 py-2 border border-slate-300 rounded-lg text-sm bg-white" />
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500" aria-hidden="true">$</span>
+            <input id="state-default" type="text" value="2000" readonly aria-label="Default Budget Example" class="w-full pl-8 pr-3 py-2 border border-slate-300 rounded-lg text-sm bg-white text-slate-900" />
           </div>
         </div>
 
         <!-- 2. Focus-Visible State -->
         <div class="bg-white p-5 rounded-xl border border-slate-200 space-y-2">
-          <span class="text-xs font-bold text-blue-600 uppercase">2. Focus-Visible (Keyboard Accessible)</span>
+          <label for="state-focus" class="text-xs font-bold text-blue-800 uppercase block">2. Focus-Visible (Keyboard Accessible)</label>
           <div class="relative">
-            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-blue-600">$</span>
-            <input type="text" value="3500" readonly class="w-full pl-8 pr-3 py-2 border-blue-600 ring-2 ring-blue-600 ring-offset-2 rounded-lg text-sm outline-none" />
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-blue-800" aria-hidden="true">$</span>
+            <input id="state-focus" type="text" value="3500" readonly aria-label="Focus-Visible Budget Example" class="w-full pl-8 pr-3 py-2 border-blue-700 ring-2 ring-blue-700 ring-offset-2 rounded-lg text-sm outline-none text-slate-900" />
           </div>
         </div>
 
         <!-- 3. Error State (Min > Max) -->
         <div class="bg-white p-5 rounded-xl border border-red-200 space-y-2">
-          <span class="text-xs font-bold text-red-600 uppercase">3. Error State (Validation Failure)</span>
-          <div class="grid grid-cols-2 gap-2">
-            <input type="text" value="5000" readonly class="pl-3 pr-2 py-1.5 border border-red-500 rounded-lg text-sm bg-red-50 text-red-900" />
-            <input type="text" value="2000" readonly class="pl-3 pr-2 py-1.5 border border-red-500 rounded-lg text-sm bg-red-50 text-red-900" />
+          <span id="error-state-label" class="text-xs font-bold text-red-800 uppercase block">3. Error State (Validation Failure)</span>
+          <div class="grid grid-cols-2 gap-2" role="group" aria-labelledby="error-state-label">
+            <input type="text" value="5000" readonly aria-label="Error State Min Budget ($5000)" class="pl-3 pr-2 py-1.5 border border-red-600 rounded-lg text-sm bg-red-50 text-red-900" />
+            <input type="text" value="2000" readonly aria-label="Error State Max Budget ($2000)" class="pl-3 pr-2 py-1.5 border border-red-600 rounded-lg text-sm bg-red-50 text-red-900" />
           </div>
-          <p class="text-xs text-red-600 font-medium">⚠️ Minimum budget cannot exceed maximum budget ($5,000 > $2,000).</p>
+          <p class="text-xs text-red-800 font-medium">⚠️ Minimum budget cannot exceed maximum budget ($5,000 > $2,000).</p>
         </div>
 
         <!-- 4. Loading Skeleton -->
-        <div class="bg-white p-5 rounded-xl border border-slate-200 space-y-2">
-          <span class="text-xs font-bold text-slate-500 uppercase">4. Loading Skeleton (CLS Free)</span>
+        <div class="bg-white p-5 rounded-xl border border-slate-200 space-y-2" aria-busy="true" aria-label="Loading Budget Skeleton">
+          <span class="text-xs font-bold text-slate-700 uppercase block">4. Loading Skeleton (CLS Free)</span>
           <div class="grid grid-cols-2 gap-2 animate-pulse">
             <div class="h-10 bg-slate-200 rounded-lg"></div>
             <div class="h-10 bg-slate-200 rounded-lg"></div>
@@ -151,32 +153,32 @@
 
         <!-- 5. Only Min Budget (Open Upper Bound) -->
         <div class="bg-white p-5 rounded-xl border border-slate-200 space-y-2">
-          <span class="text-xs font-bold text-emerald-600 uppercase">5. Open Upper Bound (Min Only)</span>
-          <p class="text-xs text-slate-600">Min: $2,500 | Max: (Open)</p>
-          <span class="inline-block bg-emerald-50 text-emerald-700 text-xs px-2 py-1 rounded font-medium">Target: $2,500+</span>
+          <span class="text-xs font-bold text-emerald-800 uppercase block">5. Open Upper Bound (Min Only)</span>
+          <p class="text-xs text-slate-700">Min: $2,500 | Max: (Open)</p>
+          <span class="inline-block bg-emerald-100 text-emerald-900 text-xs px-2 py-1 rounded font-medium">Target: $2,500+</span>
         </div>
 
         <!-- 6. Only Max Budget (Open Lower Bound) -->
         <div class="bg-white p-5 rounded-xl border border-slate-200 space-y-2">
-          <span class="text-xs font-bold text-emerald-600 uppercase">6. Open Lower Bound (Max Only)</span>
-          <p class="text-xs text-slate-600">Min: (Open) | Max: $3,000</p>
-          <span class="inline-block bg-emerald-50 text-emerald-700 text-xs px-2 py-1 rounded font-medium">Target: Up to $3,000</span>
+          <span class="text-xs font-bold text-emerald-800 uppercase block">6. Open Lower Bound (Max Only)</span>
+          <p class="text-xs text-slate-700">Min: (Open) | Max: $3,000</p>
+          <span class="inline-block bg-emerald-100 text-emerald-900 text-xs px-2 py-1 rounded font-medium">Target: Up to $3,000</span>
         </div>
 
         <!-- 7. Disabled State -->
-        <div class="bg-white p-5 rounded-xl border border-slate-200 space-y-2 opacity-60">
-          <span class="text-xs font-bold text-slate-500 uppercase">7. Disabled State</span>
-          <input type="text" disabled value="Custom budget locked" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-100 cursor-not-allowed" />
+        <div class="bg-white p-5 rounded-xl border border-slate-200 space-y-2 opacity-80">
+          <label for="state-disabled" class="text-xs font-bold text-slate-700 uppercase block">7. Disabled State</label>
+          <input id="state-disabled" type="text" disabled value="Custom budget locked" aria-label="Disabled Budget Field" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-slate-100 text-slate-700 cursor-not-allowed" />
         </div>
 
         <!-- 8. Empty / Default Placeholder -->
         <div class="bg-white p-5 rounded-xl border border-slate-200 space-y-2">
-          <span class="text-xs font-bold text-slate-500 uppercase">8. Empty / Placeholders</span>
-          <input type="text" placeholder="e.g. 1500 (optional)" readonly class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm placeholder:text-slate-400" />
+          <label for="state-empty" class="text-xs font-bold text-slate-700 uppercase block">8. Empty / Placeholders</label>
+          <input id="state-empty" type="text" placeholder="e.g. 1500 (optional)" readonly aria-label="Empty Budget Placeholder" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm placeholder:text-slate-500 text-slate-900" />
         </div>
       </div>
     </section>
-  </div>
+  </main>
 
   <script>
     function setMode(mode) {
@@ -186,13 +188,17 @@
       const tierInputs = document.getElementById('tier-inputs');
 
       if (mode === 'range') {
-        rangeBtn.className = "px-4 py-2 text-sm font-medium rounded-lg transition-all bg-white text-blue-600 shadow-sm";
-        tierBtn.className = "px-4 py-2 text-sm font-medium rounded-lg transition-all text-slate-600 hover:text-slate-900";
+        rangeBtn.className = "px-4 py-2 text-sm font-medium rounded-lg transition-all bg-white text-blue-700 shadow-sm";
+        rangeBtn.setAttribute('aria-selected', 'true');
+        tierBtn.className = "px-4 py-2 text-sm font-medium rounded-lg transition-all text-slate-700 hover:text-slate-900";
+        tierBtn.setAttribute('aria-selected', 'false');
         rangeInputs.classList.remove('hidden');
         tierInputs.classList.add('hidden');
       } else {
-        tierBtn.className = "px-4 py-2 text-sm font-medium rounded-lg transition-all bg-white text-blue-600 shadow-sm";
-        rangeBtn.className = "px-4 py-2 text-sm font-medium rounded-lg transition-all text-slate-600 hover:text-slate-900";
+        tierBtn.className = "px-4 py-2 text-sm font-medium rounded-lg transition-all bg-white text-blue-700 shadow-sm";
+        tierBtn.setAttribute('aria-selected', 'true');
+        rangeBtn.className = "px-4 py-2 text-sm font-medium rounded-lg transition-all text-slate-700 hover:text-slate-900";
+        rangeBtn.setAttribute('aria-selected', 'false');
         tierInputs.classList.remove('hidden');
         rangeInputs.classList.add('hidden');
       }
@@ -205,19 +211,19 @@
       const feedbackText = document.getElementById('feedback-text');
 
       if (minVal && maxVal && minVal > maxVal) {
-        feedback.className = "text-xs text-red-700 flex items-center gap-1.5 bg-red-50 p-3 rounded-lg border border-red-200";
+        feedback.className = "text-xs text-red-800 flex items-center gap-1.5 bg-red-50 p-3 rounded-lg border border-red-200";
         feedbackText.innerHTML = `⚠️ <strong>Error:</strong> Minimum budget ($${minVal.toLocaleString()}) cannot be greater than Maximum budget ($${maxVal.toLocaleString()}).`;
       } else if (minVal && maxVal) {
-        feedback.className = "text-xs text-slate-700 flex items-center gap-1.5 bg-slate-50 p-3 rounded-lg border border-slate-200";
+        feedback.className = "text-xs text-slate-800 flex items-center gap-1.5 bg-slate-50 p-3 rounded-lg border border-slate-200";
         feedbackText.innerHTML = `Trip recommendations will target total realistic costs between <strong>$${minVal.toLocaleString()}</strong> and <strong>$${maxVal.toLocaleString()}</strong>.`;
       } else if (minVal) {
-        feedback.className = "text-xs text-slate-700 flex items-center gap-1.5 bg-slate-50 p-3 rounded-lg border border-slate-200";
+        feedback.className = "text-xs text-slate-800 flex items-center gap-1.5 bg-slate-50 p-3 rounded-lg border border-slate-200";
         feedbackText.innerHTML = `Trip recommendations will target total realistic costs of at least <strong>$${minVal.toLocaleString()}</strong> (lower bound).`;
       } else if (maxVal) {
-        feedback.className = "text-xs text-slate-700 flex items-center gap-1.5 bg-slate-50 p-3 rounded-lg border border-slate-200";
+        feedback.className = "text-xs text-slate-800 flex items-center gap-1.5 bg-slate-50 p-3 rounded-lg border border-slate-200";
         feedbackText.innerHTML = `Trip recommendations will target total realistic costs up to <strong>$${maxVal.toLocaleString()}</strong> (upper bound).`;
       } else {
-        feedback.className = "text-xs text-slate-500 flex items-center gap-1.5 bg-slate-50 p-3 rounded-lg border border-slate-200";
+        feedback.className = "text-xs text-slate-700 flex items-center gap-1.5 bg-slate-50 p-3 rounded-lg border border-slate-200";
         feedbackText.innerHTML = `Leave either field blank for open lower or upper bounds.`;
       }
     }
