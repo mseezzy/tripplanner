@@ -12,6 +12,9 @@ import {
   Tabs,
   Tab,
   Avatar,
+  Alert,
+  AlertTitle,
+  Paper,
   useTheme
 } from '@mui/material';
 import {
@@ -21,7 +24,9 @@ import {
   Accessible,
   Speed,
   TrendingUp,
-  SwapHoriz
+  SwapHoriz,
+  WarningAmber,
+  AttachMoney
 } from '@mui/icons-material';
 
 import { getDestinationImage, getCategoryFallbackImage } from '../utils/imageUtils';
@@ -32,17 +37,26 @@ export default function DestinationCard({
   onSelectDestination,
   weather,
   isMultiDestination,
-  stops = []
+  stops = [],
+  noBudgetMatches = false,
+  nearBudgetAlternatives = []
 }) {
   const theme = useTheme();
   const [selectedRegion, setSelectedRegion] = React.useState('All');
 
   const REGIONS = ['All', 'Asia & Pacific', 'Europe', 'North America', 'Latin America & Caribbean', 'Middle East & Africa'];
 
+  // Exclude destinations with <= 0% match score or budget violations
+  const validDestinations = React.useMemo(() => {
+    return (allDestinations || []).filter(
+      (d) => d && (d.match_score === undefined || d.match_score > 0) && !d.budget_violation
+    );
+  }, [allDestinations]);
+
   const filteredDestinations = React.useMemo(() => {
-    if (selectedRegion === 'All') return allDestinations;
-    return allDestinations.filter((d) => d.continent === selectedRegion || d.region?.includes(selectedRegion));
-  }, [allDestinations, selectedRegion]);
+    if (selectedRegion === 'All') return validDestinations;
+    return validDestinations.filter((d) => d.continent === selectedRegion || d.region?.includes(selectedRegion));
+  }, [validDestinations, selectedRegion]);
 
   return (
     <Card sx={{ overflow: 'hidden', mb: 3 }}>
@@ -85,8 +99,73 @@ export default function DestinationCard({
         </Box>
       )}
 
+      {/* Out of Budget Alert & Near-Budget Alternatives Banner (Story #3) */}
+      {noBudgetMatches && (
+        <Alert
+          severity="warning"
+          variant="filled"
+          icon={<WarningAmber fontSize="medium" />}
+          sx={{
+            m: 2,
+            borderRadius: 2.5,
+            bgcolor: theme.palette.mode === 'dark' ? 'rgba(245, 158, 11, 0.15)' : '#fffbeb',
+            color: theme.palette.mode === 'dark' ? '#fef3c7' : '#78350f',
+            border: '1px solid #fcd34d',
+            '& .MuiAlert-icon': { color: '#d97706' }
+          }}
+        >
+          <AlertTitle sx={{ fontWeight: 800, fontSize: '1.05rem', mb: 0.5 }}>
+            No Vacations Found Within Your Exact Budget Limit
+          </AlertTitle>
+          <Typography variant="body2" sx={{ color: theme.palette.mode === 'dark' ? '#fde68a' : '#92400e', mb: 1.5 }}>
+            All destination packages for your travelers exceed the requested budget ceiling. Below are the closest destinations within reach with minor budget adjustments:
+          </Typography>
+
+          {nearBudgetAlternatives && nearBudgetAlternatives.length > 0 && (
+            <Grid container spacing={1.5} sx={{ mt: 0.5 }}>
+              {nearBudgetAlternatives.slice(0, 4).map((alt) => (
+                <Grid item xs={12} sm={6} key={alt.id}>
+                  <Paper
+                    elevation={0}
+                    sx={{
+                      p: 1.5,
+                      bgcolor: theme.palette.mode === 'dark' ? 'rgba(0,0,0,0.3)' : '#ffffff',
+                      border: '1px solid rgba(245, 158, 11, 0.35)',
+                      borderRadius: 2,
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
+                    }}
+                  >
+                    <Box>
+                      <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'text.primary' }}>
+                        {alt.name?.split(',')[0]}
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block' }}>
+                        Est. Trip: ${alt.estimated_cost?.toLocaleString()}
+                      </Typography>
+                    </Box>
+                    <Chip
+                      size="small"
+                      label={`+$${alt.additional_budget_needed?.toLocaleString()} needed`}
+                      sx={{
+                        bgcolor: '#fef3c7',
+                        color: '#92400e',
+                        fontWeight: 800,
+                        fontSize: '0.72rem',
+                        border: '1px solid #fde68a'
+                      }}
+                    />
+                  </Paper>
+                </Grid>
+              ))}
+            </Grid>
+          )}
+        </Alert>
+      )}
+
       {/* Worldwide Destination Candidate Explorer with Global Region Filters */}
-      {!isMultiDestination && allDestinations.length > 1 && (
+      {!isMultiDestination && validDestinations.length > 1 && (
         <Box sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: 'background.subtle', px: 2, pt: 1.5, pb: 0.5 }}>
           {/* Global Continent / Region Filter Chips */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, overflowX: 'auto', mb: 1, pb: 0.5, '&::-webkit-scrollbar': { display: 'none' } }}>

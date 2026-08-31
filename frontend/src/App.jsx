@@ -218,6 +218,8 @@ export default function App() {
                     weather={tripData.weather}
                     isMultiDestination={tripData.is_multi_destination}
                     stops={tripData.stops}
+                    noBudgetMatches={tripData.no_budget_matches}
+                    nearBudgetAlternatives={tripData.near_budget_alternatives}
                   />
 
                   {/* Local Events & Seasonal Festivals */}

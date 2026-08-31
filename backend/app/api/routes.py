@@ -251,7 +251,10 @@ async def get_recommendations(req: RecommendationRequest):
         scored_all.append(d_copy)
     scored_all.sort(key=lambda x: x["match_score"], reverse=True)
 
-    # Hard budget filter: if budget_min or budget_max is specified, only include candidates within budget
+    # Hard budget filter & near-budget alternatives calculation (Story #3)
+    no_budget_matches = False
+    near_budget_alternatives = []
+
     if req.budget_min is not None or req.budget_max is not None:
         valid_budget_destinations = [
             d for d in scored_all 
@@ -259,6 +262,37 @@ async def get_recommendations(req: RecommendationRequest):
         ]
         if valid_budget_destinations:
             scored_all = valid_budget_destinations
+        else:
+            no_budget_matches = True
+            for d in candidate_pool:
+                est_cost = d.get("estimated_trip_cost", 0)
+                if not est_cost:
+                    sc_tmp = calculate_destination_score(
+                        d, family_dicts, req.likes, req.dislikes,
+                        duration_days=req.duration_days or 5
+                    )
+                    est_cost = sc_tmp.get("estimated_trip_cost", 1500)
+                
+                diff = 0
+                if req.budget_max is not None and est_cost > req.budget_max:
+                    diff = est_cost - req.budget_max
+                elif req.budget_min is not None and est_cost < req.budget_min:
+                    diff = req.budget_min - est_cost
+                
+                near_budget_alternatives.append({
+                    "id": d.get("id"),
+                    "name": d.get("name"),
+                    "continent": d.get("continent"),
+                    "region": d.get("region"),
+                    "estimated_cost": est_cost,
+                    "additional_budget_needed": max(1, diff),
+                    "primary_categories": d.get("primary_categories", []),
+                    "target_age_groups": d.get("target_age_groups", []),
+                    "score_reasons": d.get("score_reasons", [])
+                })
+            near_budget_alternatives.sort(key=lambda x: x["additional_budget_needed"])
+            # In no_budget_matches mode, fallback to closest candidate for display
+            scored_all = sorted(candidate_pool, key=lambda x: abs(x.get("estimated_trip_cost", 1500) - (req.budget_max or 1500)))
 
     # Enrich top candidates with live Wikipedia photography if missing
     for top_d in scored_all[:5]:
@@ -506,12 +540,20 @@ async def get_recommendations(req: RecommendationRequest):
         and (target_month is None or target_month in ev.get("months", []))
     ]
 
+    # Filter all_ranked_destinations to strictly exclude zero/negative scores and budget violations
+    filtered_ranked_destinations = [
+        d for d in scored_all 
+        if d.get("match_score", 0) > 0 and not d.get("budget_violation", False)
+    ] if not (req.destinations and len(req.destinations) > 1) else [s["destination"] for s in processed_stops]
+
     return {
         "is_multi_destination": num_stops > 1,
         "total_stops": num_stops,
         "stops": processed_stops,
         "destination": primary_dest,
-        "all_ranked_destinations": scored_all if not (req.destinations and len(req.destinations) > 1) else [s["destination"] for s in processed_stops],
+        "no_budget_matches": no_budget_matches,
+        "near_budget_alternatives": near_budget_alternatives[:6],
+        "all_ranked_destinations": filtered_ranked_destinations,
         "flights": flight_data,
         "lodging": primary_lodging,
         "activities": primary_activities,
