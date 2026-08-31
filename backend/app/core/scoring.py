@@ -178,38 +178,36 @@ def calculate_destination_score(
 
     est_trip_cost = (flight_per_person * num_family) + (lodging_daily * dur) + (food_daily * dur) + (transport_daily * dur)
 
+    budget_violation = False
+
     if budget_min is not None or budget_max is not None:
         if budget_min is not None and budget_max is not None:
             if budget_min <= est_trip_cost <= budget_max:
                 score += 25
                 reasons.insert(0, f"Fits your custom budget range (${budget_min:,} - ${budget_max:,})")
             elif est_trip_cost > budget_max:
-                overage_pct = (est_trip_cost - budget_max) / budget_max
-                penalty = min(50, int(30 + overage_pct * 30))
-                score -= penalty
+                budget_violation = True
+                score = -100.0
                 reasons.append(f"Estimated trip cost (~${est_trip_cost:,}) exceeds maximum budget of ${budget_max:,}")
             elif est_trip_cost < budget_min:
-                underage_pct = (budget_min - est_trip_cost) / budget_min
-                penalty = min(40, int(25 + underage_pct * 25))
-                score -= penalty
+                budget_violation = True
+                score = -100.0
                 reasons.append(f"Estimated trip cost (~${est_trip_cost:,}) is below requested minimum of ${budget_min:,}")
         elif budget_max is not None:
             if est_trip_cost <= budget_max:
                 score += 20
                 reasons.insert(0, f"Under maximum budget limit of ${budget_max:,}")
             else:
-                overage_pct = (est_trip_cost - budget_max) / budget_max
-                penalty = min(50, int(30 + overage_pct * 30))
-                score -= penalty
+                budget_violation = True
+                score = -100.0
                 reasons.append(f"Estimated trip cost (~${est_trip_cost:,}) exceeds maximum budget of ${budget_max:,}")
         elif budget_min is not None:
             if est_trip_cost >= budget_min:
                 score += 20
                 reasons.insert(0, f"Meets minimum budget target of ${budget_min:,}")
             else:
-                underage_pct = (budget_min - est_trip_cost) / budget_min
-                penalty = min(45, int(25 + underage_pct * 25))
-                score -= penalty
+                budget_violation = True
+                score = -100.0
                 reasons.append(f"Estimated trip cost (~${est_trip_cost:,}) is below requested minimum of ${budget_min:,}")
     else:
         # Fallback to standard budget tier logic
@@ -239,15 +237,19 @@ def calculate_destination_score(
             elif budget_tier == "luxury" and dest_avg_lodging > 300:
                 score += 8
 
-    # Normalize between 50 and 99
-    final_score = int(max(55, min(99, score)))
+    # Normalize score: if budget violation, keep negative to disqualify; otherwise 55-99
+    if budget_violation:
+        final_score = -100
+    else:
+        final_score = int(max(55, min(99, score)))
 
     return {
         "match_score": final_score,
         "score_reasons": reasons[:4],
         "age_suitability": f"{int(age_ratio * 100)}% family age match",
         "member_enjoyment": member_enjoyment,
-        "estimated_trip_cost": est_trip_cost
+        "estimated_trip_cost": est_trip_cost,
+        "budget_violation": budget_violation
     }
 
 def filter_and_rank_activities(

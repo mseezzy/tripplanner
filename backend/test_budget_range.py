@@ -1,7 +1,9 @@
 import asyncio
+import pytest
 import httpx
 from app.main import app
 
+@pytest.mark.asyncio
 async def test_budget_range_support():
     """
     TDD Test Suite for User Story #1: Budget Range Support

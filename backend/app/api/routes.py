@@ -251,6 +251,15 @@ async def get_recommendations(req: RecommendationRequest):
         scored_all.append(d_copy)
     scored_all.sort(key=lambda x: x["match_score"], reverse=True)
 
+    # Hard budget filter: if budget_min or budget_max is specified, only include candidates within budget
+    if req.budget_min is not None or req.budget_max is not None:
+        valid_budget_destinations = [
+            d for d in scored_all 
+            if not d.get("budget_violation", False) and d.get("match_score", 0) > 0
+        ]
+        if valid_budget_destinations:
+            scored_all = valid_budget_destinations
+
     # Enrich top candidates with live Wikipedia photography if missing
     for top_d in scored_all[:5]:
         await enrich_destination_with_wiki(top_d)
