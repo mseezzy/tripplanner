@@ -1,8 +1,10 @@
 import asyncio
 import httpx
+import pytest
 from app.main import app
 from app.api.routes import load_destinations, load_activities
 
+@pytest.mark.asyncio
 async def test_backend():
     print("Testing backend data loading...")
     destinations = load_destinations()
