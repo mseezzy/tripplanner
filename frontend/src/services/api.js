@@ -1,5 +1,32 @@
 const isGitHubPages = typeof window !== 'undefined' && (window.location.hostname.endsWith('github.io') || window.location.protocol === 'file:');
-const API_BASE_URL = import.meta.env?.VITE_API_BASE_URL || import.meta.env?.VITE_API_URL || (isGitHubPages ? null : '/api');
+export const API_BASE_URL = import.meta.env?.VITE_API_BASE_URL || import.meta.env?.VITE_API_URL || (isGitHubPages ? null : '/api');
+
+export async function authApiRequest(endpoint, options = {}) {
+  const base = API_BASE_URL || '/api';
+  const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  const url = `${base.replace(/\/$/, '')}${cleanEndpoint}`;
+
+  try {
+    const res = await fetch(url, options);
+    const contentType = res.headers.get('content-type') || '';
+
+    if (contentType.includes('application/json')) {
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.detail || data.message || `Request failed with status ${res.status}`);
+      }
+      return data;
+    }
+
+    if (!res.ok) {
+      throw new Error(`Authentication service returned error (${res.status}).`);
+    }
+
+    throw new Error('Received non-JSON response from authentication server.');
+  } catch (err) {
+    throw err;
+  }
+}
 
 export async function fetchWikipediaSummary(query) {
   if (!query || !query.trim()) return null;

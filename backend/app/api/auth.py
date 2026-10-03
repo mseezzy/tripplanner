@@ -1,4 +1,4 @@
-﻿import uuid
+import uuid
 import datetime
 from typing import Optional
 from fastapi import APIRouter, HTTPException, status, Header
@@ -173,9 +173,11 @@ def mfa_challenge(req: MfaChallengeRequest):
 def sso_callback(req: SSOCallbackRequest):
     email = req.email.lower()
     user = user_db.get(email)
+    is_new_user = False
     
     if not user:
-        # Create user via SSO (pre-verified)
+        # Create user via SSO (pre-verified account creation)
+        is_new_user = True
         user_db[email] = {
             'email': email,
             'name': req.name,
@@ -184,11 +186,11 @@ def sso_callback(req: SSOCallbackRequest):
             'verification_token': None,
             'mfa_enabled': False,
             'totp_secret': None,
-            'sso_providers': [req.provider]
+            'sso_providers': [req.provider.lower()]
         }
     else:
-        if req.provider not in user.get('sso_providers', []):
-            user.setdefault('sso_providers', []).append(req.provider)
+        if req.provider.lower() not in user.get('sso_providers', []):
+            user.setdefault('sso_providers', []).append(req.provider.lower())
         user['is_verified'] = True
 
     user = user_db[email]
@@ -196,12 +198,13 @@ def sso_callback(req: SSOCallbackRequest):
     return {
         'access_token': access_token,
         'token_type': 'bearer',
+        'is_new_user': is_new_user,
         'user': {
             'email': email,
             'name': user['name'],
             'is_verified': True,
             'mfa_enabled': user['mfa_enabled'],
-            'sso_provider': req.provider
+            'sso_provider': req.provider.lower()
         }
     }
 
