@@ -246,6 +246,7 @@ def calculate_destination_score(
     return {
         "match_score": final_score,
         "score_reasons": reasons[:4],
+        "reasons": reasons[:4],
         "age_suitability": f"{int(age_ratio * 100)}% family age match",
         "member_enjoyment": member_enjoyment,
         "estimated_trip_cost": est_trip_cost,

@@ -30,8 +30,12 @@ import MapView from './components/MapView';
 import PrintExport from './components/PrintExport';
 import ShareDialog from './components/ShareDialog';
 import ChatConcierge from './components/ChatConcierge';
+import AuthModal from './components/AuthModal';
+import { useAuth } from './context/AuthContext';
 
 export default function App() {
+  const { user, isAuthenticated } = useAuth();
+  const [authModalOpen, setAuthModalOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [loading, setLoading] = useState(false);
   const [tripData, setTripData] = useState(null);
@@ -150,6 +154,7 @@ export default function App() {
           onShare={() => setShareOpen(true)}
           onReset={handleReset}
           backendConnected={backendConnected}
+          onOpenAuth={() => setAuthModalOpen(true)}
         />
 
         <Container maxWidth="lg" sx={{ py: { xs: 3, md: 5 }, flex: 1 }}>
@@ -301,6 +306,12 @@ export default function App() {
           onClose={() => setShareOpen(false)}
           tripData={tripData}
           rawParams={rawParams}
+        />
+
+        {/* User Authentication & MFA Gateway Modal */}
+        <AuthModal
+          open={authModalOpen || (!isAuthenticated && !loading)}
+          onClose={() => setAuthModalOpen(false)}
         />
 
         {/* Floating Gemini AI Travel Concierge */}

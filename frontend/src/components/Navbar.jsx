@@ -18,8 +18,11 @@ import {
   Share,
   GitHub,
   CheckCircle,
-  CloudOff
+  CloudOff,
+  AccountCircle,
+  Logout
 } from '@mui/icons-material';
+import { useAuth } from '../context/AuthContext';
 
 export default function Navbar({
   darkMode,
@@ -28,9 +31,11 @@ export default function Navbar({
   onPrint,
   onShare,
   onReset,
-  backendConnected
+  backendConnected,
+  onOpenAuth
 }) {
   const theme = useTheme();
+  const { user, logout, isAuthenticated } = useAuth();
 
   return (
     <AppBar
@@ -130,6 +135,35 @@ export default function Navbar({
                 New Plan
               </Button>
             </>
+          )}
+
+          {/* User Account / Sign In */}
+          {isAuthenticated ? (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Chip
+                avatar={<AccountCircle />}
+                label={user?.name || user?.email}
+                color="primary"
+                variant="outlined"
+                size="small"
+                sx={{ fontWeight: 600, display: { xs: 'none', sm: 'inline-flex' } }}
+              />
+              <Tooltip title="Log Out">
+                <IconButton size="small" onClick={logout} color="inherit">
+                  <Logout fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          ) : (
+            <Button
+              variant="contained"
+              color="primary"
+              size="small"
+              onClick={onOpenAuth}
+              sx={{ borderRadius: 2, fontWeight: 700 }}
+            >
+              Sign In
+            </Button>
           )}
 
           {/* Dark / Light Mode Toggle */}
