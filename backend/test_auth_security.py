@@ -1,4 +1,4 @@
-﻿import pytest
+import pytest
 from fastapi.testclient import TestClient
 from app.main import app
 from app.core.security import (
@@ -109,8 +109,10 @@ def test_mfa_login_flow():
     assert mfa_challenge.status_code == 200
     assert 'access_token' in mfa_challenge.json()
 
-def test_sso_authentication_google_facebook_github():
-    for provider in ['google', 'facebook', 'github']:
+def test_sso_authentication_popular_providers():
+    # Popular free travel & general identity providers: Google, Apple, Facebook, GitHub
+    for provider in ['google', 'apple', 'facebook', 'github']:
+        # 1. Initial SSO Sign-Up / Account Creation
         sso_res = client.post('/api/auth/sso/callback', json={
             'provider': provider,
             'email': f'sso_{provider}@example.com',
@@ -118,5 +120,19 @@ def test_sso_authentication_google_facebook_github():
             'sso_token': f'mock_{provider}_token_12345'
         })
         assert sso_res.status_code == 200
-        assert 'access_token' in sso_res.json()
-        assert sso_res.json()['user']['is_verified'] is True
+        data = sso_res.json()
+        assert 'access_token' in data
+        assert data['user']['is_verified'] is True
+        assert data['is_new_user'] is True, f"Expected is_new_user=True for initial SSO sign-up with {provider}"
+
+        # 2. Subsequent SSO Login with existing account
+        sso_login_res = client.post('/api/auth/sso/callback', json={
+            'provider': provider,
+            'email': f'sso_{provider}@example.com',
+            'name': f'SSO {provider.capitalize()} User',
+            'sso_token': f'mock_{provider}_token_67890'
+        })
+        assert sso_login_res.status_code == 200
+        login_data = sso_login_res.json()
+        assert login_data['is_new_user'] is False, f"Expected is_new_user=False for subsequent SSO login with {provider}"
+
